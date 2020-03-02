@@ -1,0 +1,52 @@
+name: webblen_web_app
+description: A new Flutter project.
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  #Web Dependencies
+  flutter_html: ^0.11.1
+
+  #Data Management
+  provider: ^4.0.4
+
+  #Firebase
+#  cloud_firestore: ^0.13.3
+#  firebase_storage: ^3.1.1
+#  firebase_auth: ^0.15.4
+#  firebase_dynamic_links: ^0.5.0+9
+#  cloud_functions: ^0.4.2
+
+  #Other Dependencies
+  algolia: ^0.1.7
+  font_awesome_flutter: 8.5.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+  fonts:
+      - family: Helvetica Neue
+        fonts:
+          - asset: assets/fonts/HelveticaNeueThin.ttf
+            weight: 300
+          - asset: assets/fonts/HelveticaNeueLight.ttf
+            weight: 400
+          - asset: assets/fonts/HelveticaNeue.ttf
+            weight: 500
+          - asset: assets/fonts/HelveticaNeueMedium.ttf
+            weight: 600
+          - asset: assets/fonts/HelveticaNeueBold.ttf
+            weight: 700
+
