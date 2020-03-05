@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:webblen_web_app/widgets/home/home_search_bar.dart';
 
-class LargeBody extends StatelessWidget {
+class DesktopHomeBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(

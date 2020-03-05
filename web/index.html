@@ -1,46 +1,17 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="webblen_web_app">
-  <link rel="apple-touch-icon" href="/icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="shortcut icon" type="image/png" href="/favicon.png"/>
-
-  <title>Webblen</title>
-  <link rel="manifest" href="/manifest.json">
+  <title>Webblen Web App</title>
+  <script defer src="main.dart.js" type="application/javascript"></script>
 </head>
+
 <body>
-  <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/7.9.1/firebase-analytics.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('/flutter_service_worker.js');
-      });
-    }
-  </script>
-  <script>
-    var firebaseConfig = {
-      apiKey: "AIzaSyApD1l8k7XAUQ7jOMA0p9edI6JllSbCawM",
-      authDomain: "webblen-events.firebaseapp.com",
-      databaseURL: "https://webblen-events.firebaseio.com",
-      projectId: "webblen-events",
-      storageBucket: "webblen-events.appspot.com",
-      messagingSenderId: "618036466482",
-      appId: "1:618036466482:web:3f151d8b02823c136afd2b",
-      measurementId: "G-EY3MS24T6B"
-    };
-    firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
-  </script>
-  <script src="main.dart.js" type="application/javascript"></script>
+<script src="https://www.gstatic.com/firebasejs/7.9.3/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.9.3/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.9.3/firebase-firestore.js"></script>
 </body>
+
 </html>
