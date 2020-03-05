@@ -2,23 +2,26 @@ import 'dart:html' as html;
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:webblen_web_app/styles/custom_colors.dart';
-import 'package:webblen_web_app/utils/responsive_layout.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_icon_button.dart';
+import 'package:webblen_web_app/widgets/common/navigation/nav_bar_logo.dart';
 
 class Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: 32.0),
-      decoration: BoxDecoration(
-        color: CustomColors.iosOffWhite,
-        border: Border(
-          top: BorderSide(color: CustomColors.textFieldGray, width: 2.0),
+    return ResponsiveBuilder(
+      builder: (context, sizingInfo) => Container(
+        margin: EdgeInsets.only(top: 32.0),
+        decoration: BoxDecoration(
+          color: CustomColors.iosOffWhite,
+          border: Border(
+            top: BorderSide(color: CustomColors.textFieldGray, width: 2.0),
+          ),
         ),
+        padding: EdgeInsets.symmetric(vertical: 24.0),
+        child: sizingInfo.deviceScreenType == DeviceScreenType.Mobile ? Container() : LargeFooterContent(),
       ),
-      padding: EdgeInsets.symmetric(vertical: 24.0),
-      child: ResponsiveLayout.isSmallScreen(context) ? Container() : LargeFooterContent(),
     );
   }
 }
@@ -39,14 +42,7 @@ class LargeFooterContent extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Container(
-                    height: ResponsiveLayout.isSmallScreen(context) ? 25.0 : 30,
-                    //padding: EdgeInsets.all(8.0),
-                    child: Image.asset(
-                      "assets/images/webblen_logo_text.png",
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                  NavBarLogo(),
                 ],
               ),
             ),

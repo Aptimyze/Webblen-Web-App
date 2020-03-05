@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:webblen_web_app/styles/custom_colors.dart';
-import 'package:webblen_web_app/utils/responsive_layout.dart';
 
 class HomeSearchButton extends StatelessWidget {
   @override
@@ -22,7 +21,7 @@ class HomeSearchButton extends StatelessWidget {
         child: Icon(
           Icons.search,
           color: Colors.white,
-          size: ResponsiveLayout.isSmallScreen(context) ? 12 : 20.0,
+          size: 20,
         ),
       ),
     );
