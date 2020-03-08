@@ -1,3 +1,2 @@
-analyzer:
-  enable-experiment:
-    - extension-methods
+enable-experiment:
+  - extension-methods

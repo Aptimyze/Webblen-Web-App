@@ -1,8 +1,14 @@
 import 'package:firebase/firebase.dart' as fb;
 import 'package:flutter/material.dart';
-import 'package:webblen_web_app/pages/home/home_page.dart';
+
+import 'locater.dart';
+import 'routing/route_names.dart';
+import 'routing/router.dart';
+import 'services/navigation/navigation_service.dart';
+import 'widgets/layout/layout_template.dart';
 
 void main() {
+  setupLocater();
   fb.initializeApp(
     apiKey: "AIzaSyApD1l8k7XAUQ7jOMA0p9edI6JllSbCawM",
     authDomain: "webblen-events.firebaseapp.com",
@@ -28,7 +34,12 @@ class WebblenWebApp extends StatelessWidget {
               fontFamily: "Helvetica Neue",
             ),
       ),
-      home: HomePage(),
+      builder: (context, child) => LayoutTemplate(
+        child: child,
+      ),
+      navigatorKey: locator<NavigationService>().navigatorKey,
+      onGenerateRoute: generateRoute,
+      initialRoute: HomeRoute,
     );
   }
 }

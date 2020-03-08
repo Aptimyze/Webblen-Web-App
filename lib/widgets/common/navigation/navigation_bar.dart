@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:webblen_web_app/extensions/hover_extensions.dart';
+import 'package:webblen_web_app/locater.dart';
+import 'package:webblen_web_app/routing/route_names.dart';
+import 'package:webblen_web_app/services/navigation/navigation_service.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_color_button.dart';
 
 import 'nav_bar_logo.dart';
+import 'nav_item.dart';
 
 class NavigationBar extends StatelessWidget {
   @override
@@ -29,6 +34,10 @@ class NavigationBarTabletDesktop extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
+              NavItem(
+                onTap: () => locator<NavigationService>().navigateTo(EventsRoute),
+                title: "Events",
+              ).showCursorOnHover,
               CustomColorButton(
                 text: "Login",
                 textSize: null,

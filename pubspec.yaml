@@ -4,7 +4,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.6.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -12,6 +12,9 @@ dependencies:
 
   #Web Dependencies
   responsive_builder: ^0.1.5
+  get_it: ^4.0.0
+  http: ^0.12.0+2
+
 
   #Data Management
   provider: ^4.0.4
