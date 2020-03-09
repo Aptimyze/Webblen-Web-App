@@ -9,6 +9,7 @@ class Event {
   String imageURL;
   String city;
   String streetAddress;
+  String locale;
   List sharedComs;
   List tags;
   String category;
@@ -40,6 +41,7 @@ class Event {
     this.imageURL,
     this.city,
     this.streetAddress,
+    this.locale,
     this.sharedComs,
     this.tags,
     this.category,
@@ -73,6 +75,7 @@ class Event {
           imageURL: data['imageURL'],
           city: data['city'],
           streetAddress: data['streetAddress'],
+          locale: data['locale'],
           sharedComs: data['sharedComs'],
           tags: data['tags'],
           category: data['category'],
@@ -105,6 +108,7 @@ class Event {
         'imageURL': this.imageURL,
         'city': this.city,
         'streetAddress': this.streetAddress,
+        'locale': this.locale,
         'sharedComs': this.sharedComs,
         'tags': this.tags,
         'category': this.category,

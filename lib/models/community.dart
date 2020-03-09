@@ -8,6 +8,7 @@ class Community {
   List pendingMemberIDs;
   List memberIDs;
   List cities;
+  List locales;
   List approvedEventIDs;
   List pendingEventIDs;
   List approvedPostIDs;
@@ -30,6 +31,7 @@ class Community {
     this.pendingMemberIDs,
     this.memberIDs,
     this.cities,
+    this.locales,
     this.approvedEventIDs,
     this.pendingEventIDs,
     this.approvedPostIDs,
@@ -54,6 +56,7 @@ class Community {
           pendingMemberIDs: data['pendingMemberIDs'],
           memberIDs: data['memberIDs'],
           cities: data['cities'],
+          locales: data['locales'],
           approvedEventIDs: data['approvedEventIDs'],
           pendingEventIDs: data['pendingEventIDs'],
           approvedPostIDs: data['approvedPostIDs'],
@@ -77,6 +80,7 @@ class Community {
         'pendingMemberIDs': this.pendingMemberIDs,
         'memberIDs': this.memberIDs,
         'cities': this.cities,
+        'locales': this.locales,
         'approvedEventIDs': this.approvedEventIDs,
         'pendingEventIDs': this.pendingEventIDs,
         'approvedPostIDs': this.approvedPostIDs,

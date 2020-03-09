@@ -1,5 +1,7 @@
 import 'package:firebase/firebase.dart' as fb;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'locater.dart';
 import 'routing/route_names.dart';
@@ -26,20 +28,23 @@ class WebblenWebApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        textTheme: Theme.of(context).textTheme.apply(
-              fontFamily: "Helvetica Neue",
-            ),
+    return MultiProvider(
+      providers: [StreamProvider<FirebaseUser>.value(value: FirebaseAuth.instance.onAuthStateChanged)],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Webblen',
+        theme: ThemeData(
+          textTheme: Theme.of(context).textTheme.apply(
+                fontFamily: "Helvetica Neue",
+              ),
+        ),
+        builder: (context, child) => LayoutTemplate(
+          child: child,
+        ),
+        navigatorKey: locator<NavigationService>().navigatorKey,
+        onGenerateRoute: generateRoute,
+        initialRoute: HomeRoute,
       ),
-      builder: (context, child) => LayoutTemplate(
-        child: child,
-      ),
-      navigatorKey: locator<NavigationService>().navigatorKey,
-      onGenerateRoute: generateRoute,
-      initialRoute: HomeRoute,
     );
   }
 }
