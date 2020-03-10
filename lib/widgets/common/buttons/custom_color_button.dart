@@ -55,6 +55,7 @@ class CustomColorButton extends StatelessWidget {
                         style: TextStyle(
                           color: textColor,
                           fontSize: textSize != null ? textSize : 16.0,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                       fit: BoxFit.scaleDown,

@@ -5,6 +5,12 @@ import 'nav_drawer_header.dart';
 import 'nav_drawer_item.dart';
 
 class NavDrawer extends StatelessWidget {
+  final bool isSignedIn;
+  final VoidCallback navigateToAccountLoginPage;
+  final VoidCallback navigateToEventsPage;
+  final VoidCallback navigateToWalletPage;
+  final VoidCallback navigateToAccountPage;
+  NavDrawer({this.isSignedIn, this.navigateToAccountPage, this.navigateToWalletPage, this.navigateToEventsPage, this.navigateToAccountLoginPage});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -12,11 +18,20 @@ class NavDrawer extends StatelessWidget {
       width: 300,
       child: Column(
         children: <Widget>[
-          NavDrawerHeader(),
+          NavDrawerHeader(
+            isSignedIn: isSignedIn,
+            navigateToAccountPage: navigateToAccountPage,
+            navigateToAccountLoginPage: navigateToAccountLoginPage,
+          ),
           NavDrawerItem(
-            onTap: null,
+            onTap: navigateToEventsPage,
             title: "Events",
             iconData: FontAwesomeIcons.calendar,
+          ),
+          NavDrawerItem(
+            onTap: navigateToAccountLoginPage,
+            title: "Login",
+            iconData: FontAwesomeIcons.signInAlt,
           ),
         ],
       ),

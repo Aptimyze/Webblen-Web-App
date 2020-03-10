@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:webblen_web_app/constants/strings.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/styles/custom_colors.dart';
@@ -19,6 +20,10 @@ class _IndexEventsPageState extends State<IndexEventsPage> {
   GoogleMapsPlaces _places = GoogleMapsPlaces(
     apiKey: Strings.googleAPIKEY,
   );
+
+  testAlert() {
+    Alert(context: context, title: "RFLUTTER ALERT", desc: "Flutter is more awesome with RFlutter Alert.").show();
+  }
 
   openGoogleAutoComplete() async {
     Prediction p = await PlacesAutocomplete.show(
@@ -50,7 +55,7 @@ class _IndexEventsPageState extends State<IndexEventsPage> {
       child: ScreenTypeLayout(
         desktop: DesktopView(
           cityFilter: cityFilter,
-          openGoogleAutoComplete: () => openGoogleAutoComplete(),
+          openGoogleAutoComplete: () => testAlert(), //() => openGoogleAutoComplete(),
         ),
         tablet: TabletView(
           cityFilter: cityFilter,

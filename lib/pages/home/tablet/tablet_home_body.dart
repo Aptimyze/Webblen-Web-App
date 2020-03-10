@@ -5,7 +5,7 @@ class TabletHomeBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.max,
+      //mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Text(
@@ -39,19 +39,17 @@ class TabletHomeBody extends StatelessWidget {
           padding: EdgeInsets.only(top: 16.0, bottom: 8.0, left: 16.0, right: 16.0),
           child: HomeSearchBar(),
         ),
-        Center(
-          child: Image.asset(
-            "assets/images/directions.png",
-            fit: BoxFit.cover,
-            scale: 1,
-          ),
+        Image.asset(
+          "assets/images/directions.png",
+          fit: BoxFit.cover,
+          //scale: 1,
         ),
-        SizedBox(
-          height: 32,
-        ),
-        SizedBox(
-          height: 30,
-        )
+//            SizedBox(
+//              height: 32,
+//              ),
+//            SizedBox(
+//              height: 30,
+//              )
       ],
     );
   }

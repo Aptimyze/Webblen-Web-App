@@ -6,16 +6,16 @@ class HomeSearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      //padding: EdgeInsets.symmetric(horizontal: 8),
+      //margin: EdgeInsets.only(left: 8.0, right: 8.0),
       height: 60,
-      width: 600,
+      //width: 600,
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(30), boxShadow: [BoxShadow(color: Colors.black12, offset: Offset(0, 8), blurRadius: 8)]),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Container(
-            width: 400,
+            constraints: BoxConstraints(maxWidth: 270),
             child: TextField(
               onChanged: null,
               cursorColor: Colors.black,

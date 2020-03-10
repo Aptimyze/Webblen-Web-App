@@ -2,26 +2,79 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
-import 'package:webblen_web_app/locater.dart';
-import 'package:webblen_web_app/routing/route_names.dart';
-import 'package:webblen_web_app/services/navigation/navigation_service.dart';
-import 'package:webblen_web_app/widgets/common/buttons/custom_color_button.dart';
+import 'package:webblen_web_app/styles/custom_colors.dart';
 
 import 'nav_bar_logo.dart';
 import 'nav_item.dart';
 
 class NavigationBar extends StatelessWidget {
+  final bool isSignedIn;
+  final VoidCallback openNavDrawer;
+  final VoidCallback navigateToAccountLoginPage;
+  final VoidCallback navigateToHomePage;
+  final VoidCallback navigateToEventsPage;
+  final VoidCallback navigateToWalletPage;
+  final VoidCallback navigateToAccountPage;
+
+  NavigationBar({
+    this.isSignedIn,
+    this.openNavDrawer,
+    this.navigateToAccountLoginPage,
+    this.navigateToHomePage,
+    this.navigateToAccountPage,
+    this.navigateToEventsPage,
+    this.navigateToWalletPage,
+  });
+
   @override
   Widget build(BuildContext context) {
     return ScreenTypeLayout(
-      desktop: NavigationBarTabletDesktop(),
-      tablet: NavigationBarTabletDesktop(),
-      mobile: NavigationBarMobile(),
+      desktop: NavigationBarTabletDesktop(
+        isSignedIn: isSignedIn,
+        navigateToAccountLoginPage: navigateToAccountLoginPage,
+        navigateToHomePage: navigateToHomePage,
+        navigateToAccountPage: navigateToAccountPage,
+        navigateToEventsPage: navigateToEventsPage,
+        navigateToWalletPage: navigateToWalletPage,
+      ),
+      tablet: NavigationBarTabletDesktop(
+        isSignedIn: isSignedIn,
+        navigateToAccountLoginPage: navigateToAccountLoginPage,
+        navigateToHomePage: navigateToHomePage,
+        navigateToAccountPage: navigateToAccountPage,
+        navigateToEventsPage: navigateToEventsPage,
+        navigateToWalletPage: navigateToWalletPage,
+      ),
+      mobile: NavigationBarMobile(
+        isSignedIn: isSignedIn,
+        openNavDrawer: openNavDrawer,
+        navigateToAccountLoginPage: navigateToAccountLoginPage,
+        navigateToHomePage: navigateToHomePage,
+        navigateToAccountPage: navigateToAccountPage,
+        navigateToEventsPage: navigateToEventsPage,
+        navigateToWalletPage: navigateToWalletPage,
+      ),
     );
   }
 }
 
 class NavigationBarTabletDesktop extends StatelessWidget {
+  final bool isSignedIn;
+  final VoidCallback navigateToAccountLoginPage;
+  final VoidCallback navigateToHomePage;
+  final VoidCallback navigateToEventsPage;
+  final VoidCallback navigateToWalletPage;
+  final VoidCallback navigateToAccountPage;
+
+  NavigationBarTabletDesktop({
+    this.isSignedIn,
+    this.navigateToAccountLoginPage,
+    this.navigateToHomePage,
+    this.navigateToAccountPage,
+    this.navigateToEventsPage,
+    this.navigateToWalletPage,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,23 +83,28 @@ class NavigationBarTabletDesktop extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          NavBarLogo(),
+          GestureDetector(
+            onTap: navigateToHomePage,
+            child: NavBarLogo(),
+          ).showCursorOnHover,
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               NavItem(
-                onTap: () => locator<NavigationService>().navigateTo(EventsRoute),
+                onTap: navigateToEventsPage,
                 title: "Events",
+                color: Colors.black,
               ).showCursorOnHover,
-              CustomColorButton(
-                text: "Login",
-                textSize: null,
-                textColor: Colors.black,
-                backgroundColor: Colors.white,
-                width: 100.00,
-                height: 45.0,
-                onPressed: null,
-              )
+              NavItem(
+                onTap: navigateToWalletPage,
+                title: "Wallet",
+                color: Colors.black,
+              ).showCursorOnHover,
+              NavItem(
+                onTap: navigateToAccountLoginPage,
+                title: "Login",
+                color: CustomColors.webblenRed,
+              ).showCursorOnHover,
             ],
           ),
         ],
@@ -56,6 +114,24 @@ class NavigationBarTabletDesktop extends StatelessWidget {
 }
 
 class NavigationBarMobile extends StatelessWidget {
+  final bool isSignedIn;
+  final VoidCallback openNavDrawer;
+  final VoidCallback navigateToAccountLoginPage;
+  final VoidCallback navigateToHomePage;
+  final VoidCallback navigateToEventsPage;
+  final VoidCallback navigateToWalletPage;
+  final VoidCallback navigateToAccountPage;
+
+  NavigationBarMobile({
+    this.isSignedIn,
+    this.openNavDrawer,
+    this.navigateToAccountLoginPage,
+    this.navigateToHomePage,
+    this.navigateToAccountPage,
+    this.navigateToEventsPage,
+    this.navigateToWalletPage,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -66,10 +142,13 @@ class NavigationBarMobile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           IconButton(
-            onPressed: null,
+            onPressed: openNavDrawer,
             icon: Icon(FontAwesomeIcons.bars, color: Colors.black, size: 24.0),
-          ),
-          NavBarLogo(),
+          ).showCursorOnHover,
+          GestureDetector(
+            onTap: navigateToHomePage,
+            child: NavBarLogo(),
+          ).showCursorOnHover,
         ],
       ),
     );

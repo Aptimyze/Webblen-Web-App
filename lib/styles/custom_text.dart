@@ -14,7 +14,7 @@ class CustomText extends StatelessWidget {
   Widget build(BuildContext context) {
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.00),
-      child: SelectableText(
+      child: Text(
         text,
         style: TextStyle(
           fontSize: fontSize,
