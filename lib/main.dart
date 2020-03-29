@@ -19,8 +19,6 @@ void main() {
     storageBucket: "webblen-events.appspot.com",
     messagingSenderId: "618036466482",
   );
-
-  fb.auth().signInAnonymously();
   runApp(WebblenWebApp());
 }
 

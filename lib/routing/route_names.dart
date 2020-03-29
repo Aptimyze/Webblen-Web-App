@@ -1,7 +1,9 @@
 const String HomeRoute = "/home";
 const String EventsRoute = "/events";
+const String CreateEventRoute = "/event/new";
 const String AccountLoginRoute = "/login";
 const String AccountRegistrationRoute = "/register";
 const String AccountConfirmationRoute = "/confirmation";
 const String AccountRoute = "/account";
+const String AccountSetupRoute = "/account/setup";
 const String EventTicketsRoute = "/event_tickets";

@@ -1,162 +1,80 @@
 class WebblenUser {
-  List blockedUsers;
+  String messageToken;
   String username;
   String uid;
-  String profile_pic;
-  double eventPoints;
-  double impactPoints;
-  int lastCheckInTimeInMilliseconds;
-  List eventHistory;
-  List rewards;
+  String profilePicURL;
   List savedEvents;
+  List tags;
   List friends;
-  List friendRequests;
-  List achievements;
-  bool isCommunityBuilder;
-  bool isNewCommunityBuilder;
-  bool notifyFlashEvents;
-  bool notifyFriendRequests;
-  bool notifyHotEvents;
-  bool notifySuggestedEvents;
-  bool notifyWalletDeposits;
-  bool notifyNewMessages;
-  int lastNotifInMilliseconds;
-  int messageNotificationCount;
-  int friendRequestNotificationCount;
-  int achievementNotificationCount;
-  int eventNotificationCount;
-  int walletNotificationCount;
-  int communityBuilderNotificationCount;
-  int notificationCount;
-  bool isOnWaitList;
-  String messageToken;
-  bool isNew;
-  bool canMakeAds;
-  int apLvl;
+  List blockedUsers;
+  double webblen;
   double ap;
-  int lastPayoutTimeInMilliseconds;
+  int apLvl;
   int eventsToLvlUp;
+  int lastCheckInTimeInMilliseconds;
+  int lastNotifInMilliseconds;
+  int lastPayoutTimeInMilliseconds;
+  bool canMakeAds;
+  bool isAdmin;
 
   WebblenUser({
-    this.blockedUsers,
+    this.messageToken,
     this.username,
     this.uid,
-    this.profile_pic,
-    this.eventPoints,
-    this.impactPoints,
-    this.lastCheckInTimeInMilliseconds,
-    this.eventHistory,
-    this.rewards,
+    this.profilePicURL,
     this.savedEvents,
+    this.tags,
     this.friends,
-    this.friendRequests,
-    this.achievements,
-    this.notifyFlashEvents,
-    this.notifyFriendRequests,
-    this.notifyHotEvents,
-    this.notifySuggestedEvents,
-    this.notifyWalletDeposits,
-    this.notifyNewMessages,
-    this.lastNotifInMilliseconds,
-    this.messageNotificationCount,
-    this.friendRequestNotificationCount,
-    this.achievementNotificationCount,
-    this.eventNotificationCount,
-    this.walletNotificationCount,
-    this.isCommunityBuilder,
-    this.communityBuilderNotificationCount,
-    this.notificationCount,
-    this.isNewCommunityBuilder,
-    this.isOnWaitList,
-    this.messageToken,
-    this.isNew,
-    this.canMakeAds,
-    this.apLvl,
+    this.blockedUsers,
+    this.webblen,
     this.ap,
-    this.lastPayoutTimeInMilliseconds,
+    this.apLvl,
     this.eventsToLvlUp,
+    this.lastCheckInTimeInMilliseconds,
+    this.lastNotifInMilliseconds,
+    this.lastPayoutTimeInMilliseconds,
+    this.canMakeAds,
+    this.isAdmin,
   });
 
   WebblenUser.fromMap(Map<String, dynamic> data)
       : this(
-          blockedUsers: data['blockedUsers'],
+          messageToken: data['messageToken'],
           username: data['username'],
           uid: data['uid'],
-          profile_pic: data['profile_pic'],
-          eventPoints: data['eventPoints'] * 1.00,
-          impactPoints: data['impactPoints'] * 1.00,
-//      userLat: data['userLat'],
-//      userLon: data['userLon'],
-          lastCheckInTimeInMilliseconds: data['lastCheckInTimeInMilliseconds'],
-          eventHistory: data['eventHistory'],
-          rewards: data['rewards'],
+          profilePicURL: data['profilePicURL'],
           savedEvents: data['savedEvents'],
+          tags: data['tags'],
           friends: data['friends'],
-          friendRequests: data['friendRequests'],
-          achievements: data['acheivements'],
-          notifyHotEvents: data['notifyHotEvents'],
-          notifyFlashEvents: data['notifyFlashEvents'],
-          notifyFriendRequests: data['notifyFriendRequests'],
-          notifySuggestedEvents: data['notifySuggestedEvents'],
-          notifyWalletDeposits: data['notifyWalletDeposits'],
-          notifyNewMessages: data['notifyNewMessages'],
-          lastNotifInMilliseconds: data['lastNotifInMilliseconds'],
-          messageNotificationCount: data['messageNotificationCount'],
-          friendRequestNotificationCount: data['friendRequestNotificationCount'],
-          achievementNotificationCount: data['achievementNotificationCount'],
-          eventNotificationCount: data['eventNotificationCount'],
-          walletNotificationCount: data['walletNotificationCount'],
-          isCommunityBuilder: data['isCommunityBuilder'],
-          isNewCommunityBuilder: data['isNewCommunityBuilder'],
-          communityBuilderNotificationCount: data['communityBuilderNotificationCount'],
-          notificationCount: data['notificationCount'],
-          isOnWaitList: data['isOnWaitList'],
-          messageToken: data['messageToken'],
-          isNew: data['isNew'],
-          canMakeAds: data['canMakeAds'],
+          blockedUsers: data['blockedUsers'],
+          webblen: data['webblen'],
           ap: data['ap'],
           apLvl: data['apLvl'],
-          lastPayoutTimeInMilliseconds: data['lastPayoutTimeInMilliseconds'],
           eventsToLvlUp: data['eventsToLvlUp'],
+          lastCheckInTimeInMilliseconds: data['lastCheckInTimeInMilliseconds'],
+          lastNotifInMilliseconds: data['lastNotifInMilliseconds'],
+          lastPayoutTimeInMilliseconds: data['lastPayoutTimeInMilliseconds'],
+          canMakeAds: data['canMakeAds'],
+          isAdmin: data['isAdmin'],
         );
 
   Map<String, dynamic> toMap() => {
-        'blockedUsers': this.blockedUsers,
+        'messageToken': this.messageToken,
         'username': this.username,
         'uid': this.uid,
-        'profile_pic': this.profile_pic,
-        'eventPoints': this.eventPoints,
-        'impactPoints': this.impactPoints,
-        'lastCheckInTimeInMilliseconds': this.lastCheckInTimeInMilliseconds,
-        'eventHistory': this.eventHistory,
-        'rewards': this.rewards,
+        'profilePicURL': this.profilePicURL,
         'savedEvents': this.savedEvents,
+        'tags': this.tags,
         'friends': this.friends,
-        'friendRequests': this.friendRequests,
-        'achievements': this.achievements,
-        'notifyFlashEvents': this.notifyFlashEvents,
-        'notifyHotEvents': this.notifyHotEvents,
-        'notifyFriendRequests': this.notifyFriendRequests,
-        'notifySuggestedEvents': this.notifySuggestedEvents,
-        'notifyWalletDeposits': this.notifyWalletDeposits,
-        'notifyNewMessages': this.notifyNewMessages,
-        'lastNotifInMilliseconds': this.lastNotifInMilliseconds,
-        'messageNotificationCount': this.messageNotificationCount,
-        'friendRequestNotificationCount': this.friendRequestNotificationCount,
-        'achievementNotificationCount': this.achievementNotificationCount,
-        'eventNotificationCount': this.eventNotificationCount,
-        'walletNotificationCount': this.walletNotificationCount,
-        'isCommunityBuilder': this.isCommunityBuilder,
-        'communityBuilderNotificationCount': this.communityBuilderNotificationCount,
-        'isNewCommunityBuilder': this.isNewCommunityBuilder,
-        'notificationCount': this.notificationCount,
-        'isOnWaitList': this.isOnWaitList,
-        'messageToken': this.messageToken,
-        'isNew': this.isNew,
-        'canMakeAds': this.canMakeAds,
+        'blockedUsers': this.blockedUsers,
+        'webblen': this.webblen,
         'ap': this.ap,
         'apLvl': this.apLvl,
-        'lastPayoutTimeInMilliseconds': this.lastPayoutTimeInMilliseconds,
         'eventsToLvlUp': this.eventsToLvlUp,
+        'lastCheckInTimeInMilliseconds': this.lastCheckInTimeInMilliseconds,
+        'lastNotifInMilliseconds': this.lastNotifInMilliseconds,
+        'lastPayoutTimeInMilliseconds': this.lastPayoutTimeInMilliseconds,
+        'canMakeAds': this.canMakeAds,
+        'isAdmin': this.isAdmin,
       };
 }

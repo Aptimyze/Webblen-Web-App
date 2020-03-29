@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
 class CenteredView extends StatelessWidget {
-  final double height;
   final Widget child;
-  CenteredView({this.height, this.child});
+  final bool addVerticalPadding;
+  CenteredView({this.child, this.addVerticalPadding});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: height,
-      padding: EdgeInsets.symmetric(horizontal: 48, vertical: 16),
-      alignment: Alignment.topCenter,
+      padding: EdgeInsets.symmetric(
+        horizontal: 25,
+      ),
+      //alignment: Alignment.topCenter,
       constraints: BoxConstraints(maxWidth: 1200),
       child: child,
     );

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:webblen_web_app/widgets/common/images/round_pic.dart';
 
 class NavDrawerHeader extends StatelessWidget {
-  final bool isSignedIn;
+  final String authStatus;
   final VoidCallback navigateToAccountPage;
   final VoidCallback navigateToAccountLoginPage;
-  NavDrawerHeader({this.isSignedIn, this.navigateToAccountPage, this.navigateToAccountLoginPage});
+  NavDrawerHeader({this.authStatus, this.navigateToAccountPage, this.navigateToAccountLoginPage});
   @override
   Widget build(BuildContext context) {
     return Container(

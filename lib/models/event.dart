@@ -7,9 +7,12 @@ class Event {
   String name;
   String desc;
   String imageURL;
-  String city;
+  String venueName;
   String streetAddress;
-  String locale;
+  String city;
+  String state;
+  String zipPostalCode;
+  String countryRegion;
   List sharedComs;
   List tags;
   String category;
@@ -41,7 +44,9 @@ class Event {
     this.imageURL,
     this.city,
     this.streetAddress,
-    this.locale,
+    this.state,
+    this.zipPostalCode,
+    this.countryRegion,
     this.sharedComs,
     this.tags,
     this.category,
@@ -75,7 +80,9 @@ class Event {
           imageURL: data['imageURL'],
           city: data['city'],
           streetAddress: data['streetAddress'],
-          locale: data['locale'],
+          state: data['state'],
+          zipPostalCode: data['zipPostalCode'],
+          countryRegion: data['countryRegion'],
           sharedComs: data['sharedComs'],
           tags: data['tags'],
           category: data['category'],
@@ -108,7 +115,9 @@ class Event {
         'imageURL': this.imageURL,
         'city': this.city,
         'streetAddress': this.streetAddress,
-        'locale': this.locale,
+        'state': this.state,
+        'zipPostalCode': this.zipPostalCode,
+        'countryRegion': this.countryRegion,
         'sharedComs': this.sharedComs,
         'tags': this.tags,
         'category': this.category,

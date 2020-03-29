@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:webblen_web_app/styles/custom_colors.dart';
+import 'package:webblen_web_app/constants/custom_colors.dart';
 
 class HomeSearchButton extends StatelessWidget {
   @override

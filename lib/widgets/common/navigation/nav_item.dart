@@ -10,14 +10,14 @@ class NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 12.0),
+      padding: EdgeInsets.only(left: 14.0),
       child: GestureDetector(
         onTap: onTap,
         child: Text(
           title,
           style: TextStyle(
             fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
             color: color,
           ),
         ),

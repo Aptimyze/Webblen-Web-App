@@ -4,7 +4,7 @@ class NavBarLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 30,
+      height: 25,
       child: Image.asset(
         "assets/images/webblen_logo_text.png",
         fit: BoxFit.cover,

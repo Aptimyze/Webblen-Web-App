@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class RoundPic extends StatelessWidget {
   final String picURL;
@@ -14,16 +13,10 @@ class RoundPic extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: size,
-      width: size,
-      color: Colors.black38,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(size / 2),
-        child: picURL == null
-            ? isUserPic ? Icon(FontAwesomeIcons.user, color: Colors.black) : Icon(FontAwesomeIcons.question, color: Colors.black)
-            : Image.network(picURL, fit: BoxFit.contain),
-      ),
+    return CircleAvatar(
+      radius: size / 2,
+      backgroundImage: NetworkImage(picURL),
+      backgroundColor: Colors.grey,
     );
   }
 }
