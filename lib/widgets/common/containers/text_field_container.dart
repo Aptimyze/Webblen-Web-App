@@ -14,7 +14,8 @@ class TextFieldContainer extends StatelessWidget {
       width: width != null ? width : null,
       padding: EdgeInsets.only(left: 8.0),
       decoration: BoxDecoration(
-        color: CustomColors.textFieldGray,
+        color: CustomColors.iosOffWhite,
+        border: Border.all(width: 1.0, color: Colors.black12),
         borderRadius: BorderRadius.all(
           Radius.circular(8.0),
         ),

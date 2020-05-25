@@ -1,5 +1,6 @@
 class Strings {
-  static final String googleAPIKEY = "AIzaSyApD1l8k7XAUQ7jOMA0p9edI6JllSbCawM";
+  static final String googleAPIKEY = "AIzaSyBJVHmY_WAjWfpz69S_4n-Bt6HRc-YO6WM";
+  static final String proxyMapsURL = "https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api";
 
   //Methods
   bool isEmailValid(String val) {
@@ -157,8 +158,56 @@ class Strings {
     'Other',
   ];
 
+  static final List<String> eventTypeFilters = [
+    'None',
+    'Appearance/Signing',
+    'Attraction',
+    'Camp, Trip, or Retreat',
+    'Class, Training, or Workshop',
+    'Concert/Performance',
+    'Conference',
+    'Convention',
+    'Dinner/Gala',
+    'E-Sports Tournament',
+    'Festival/Fair',
+    'Game/Competition',
+    'Networking Event',
+    'Party/Social Gathering',
+    'Race/Endurance Event',
+    'Rally',
+    'Screening',
+    'Seminar/Talk',
+    'Tour',
+    'Tournament',
+    'Tradeshow/Expo',
+    'Other',
+  ];
+
   static final List<String> eventCategories = [
     'Select Event Category',
+    'Auto, Boat, & Air',
+    'Business/Professional',
+    'Charity/Causes',
+    'Family & Education',
+    'Fashion & Beauty',
+    'Film, Media, & Entertainment',
+    'Food/Drink',
+    'Government/Politics',
+    'Health & Wellness',
+    'Hobbies/Special Interests',
+    'Home/Lifestyle',
+    'Music',
+    'Religion/Spirituality',
+    'School Activities',
+    'Science/Technology',
+    'Seasonal/Holiday',
+    'Sports/Fitness',
+    'Theatre/Visual Arts',
+    'Travel/Outdoor',
+  ];
+
+  static final List<String> eventCategoryFilters = [
+    'None',
     'Auto, Boat, & Air',
     'Business/Professional',
     'Charity/Causes',

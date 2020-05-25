@@ -8,7 +8,6 @@ import 'package:webblen_web_app/locater.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/routing/route_names.dart';
 import 'package:webblen_web_app/services/navigation/navigation_service.dart';
-import 'package:webblen_web_app/widgets/common/navigation/footer.dart';
 import 'package:webblen_web_app/widgets/common/navigation/nav_drawer/nav_drawer.dart';
 import 'package:webblen_web_app/widgets/common/navigation/navigation_bar.dart';
 
@@ -44,7 +43,7 @@ class _LayoutTemplateState extends State<LayoutTemplate> {
                   authStatus: user == null ? "unknown" : user.isAnonymous ? "anonymous" : "loggedIn",
                   navigateToAccountLoginPage: () => locator<NavigationService>().navigateTo(AccountLoginRoute),
                   navigateToEventsPage: () => locator<NavigationService>().navigateTo(EventsRoute),
-                  navigateToWalletPage: null,
+                  navigateToWalletPage: () => locator<NavigationService>().navigateTo(WalletRoute),
                   navigateToAccountPage: () => locator<NavigationService>().navigateTo(AccountRoute),
                 )
               : null,
@@ -59,20 +58,15 @@ class _LayoutTemplateState extends State<LayoutTemplate> {
                   navigateToAccountLoginPage: () => locator<NavigationService>().navigateTo(AccountLoginRoute),
                   navigateToHomePage: () => locator<NavigationService>().navigateTo(HomeRoute),
                   navigateToEventsPage: () => locator<NavigationService>().navigateTo(EventsRoute),
-                  navigateToWalletPage: null,
+                  navigateToWalletPage: () => locator<NavigationService>().navigateTo(WalletRoute),
                   navigateToAccountPage: () => locator<NavigationService>().navigateTo(AccountRoute),
                 ),
                 Container(
                   constraints: BoxConstraints(
-                    maxHeight: sizingInfo.deviceScreenType == DeviceScreenType.Desktop
-                        ? MediaQuery.of(context).size.height
-                        : sizingInfo.deviceScreenType == DeviceScreenType.Tablet
-                            ? MediaQuery.of(context).size.height + 200
-                            : MediaQuery.of(context).size.height,
+                    maxHeight: MediaQuery.of(context).size.height,
                   ),
                   child: widget.child,
                 ),
-                Footer(),
               ],
             ),
           ),

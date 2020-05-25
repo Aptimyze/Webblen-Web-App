@@ -13,7 +13,7 @@ class ImageUploadService {
     String imageFilePath = '$fileType/$fileKey.png';
     uploadTask = fb.storage().refFromURL("gs://webblen-events.appspot.com").child(imageFilePath).put(file);
     uploadTaskSnapshot = await uploadTask.future;
-    imgURL = await uploadTaskSnapshot.ref.getDownloadURL().toString();
+    imgURL = await (await uploadTaskSnapshot.ref.getDownloadURL()).toString();
     return imgURL;
   }
 }

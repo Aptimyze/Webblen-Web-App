@@ -14,6 +14,8 @@ dependencies:
   responsive_builder: ^0.1.5
   get_it: ^4.0.0
   http: ^0.12.0+2
+  url_launcher: ^5.4.2
+  js: ^0.6.0
 
 
   #Data Management
@@ -24,14 +26,20 @@ dependencies:
 #  firebase_storage: ^3.1.1
   firebase_auth: ^0.15.4
 #  firebase_dynamic_links: ^0.5.0+9
-#  cloud_functions: ^0.4.2
+  cloud_functions: ^0.4.2
 
   #Location
   flutter_google_places: ^0.2.4
+  google_places_flutter: ^1.0.5
+  timezone: ^0.5.7
+  geoflutterfire: ^2.1.0
+
 
   #Other Dependencies
+  qr_flutter: ^3.2.0
   algolia: ^0.1.7
   font_awesome_flutter: 8.5.0
+  random_string: ^1.1.0
   rflutter_alert: ^1.0.3
   flutter_signin_button: ^1.0.0
   flutter_masked_text: ^0.8.0

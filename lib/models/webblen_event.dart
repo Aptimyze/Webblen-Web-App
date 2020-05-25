@@ -1,20 +1,30 @@
-class Event {
+import 'dart:convert';
+
+import 'package:webblen_web_app/locater.dart';
+import 'package:webblen_web_app/routing/route_names.dart';
+import 'package:webblen_web_app/services/navigation/navigation_service.dart';
+
+class WebblenEvent {
   String id;
   String authorID;
   String chatID;
-  String ticketDistroID;
+  bool hasTickets;
   bool flashEvent;
-  String name;
+  bool isDigitalEvent;
+  String digitalEventLink;
+  String title;
   String desc;
   String imageURL;
   String venueName;
   String streetAddress;
+  List nearbyZipcodes;
   String city;
-  String state;
-  String zipPostalCode;
-  String countryRegion;
+  String province;
+  double lat;
+  double lon;
   List sharedComs;
   List tags;
+  String type;
   String category;
   int clicks;
   String website;
@@ -33,22 +43,27 @@ class Event {
   String privacy;
   bool reported;
 
-  Event({
+  WebblenEvent({
     this.id,
     this.authorID,
     this.chatID,
-    this.ticketDistroID,
+    this.hasTickets,
     this.flashEvent,
-    this.name,
+    this.isDigitalEvent,
+    this.digitalEventLink,
+    this.title,
     this.desc,
     this.imageURL,
-    this.city,
+    this.venueName,
+    this.nearbyZipcodes,
     this.streetAddress,
-    this.state,
-    this.zipPostalCode,
-    this.countryRegion,
+    this.city,
+    this.province,
+    this.lat,
+    this.lon,
     this.sharedComs,
     this.tags,
+    this.type,
     this.category,
     this.clicks,
     this.website,
@@ -68,23 +83,28 @@ class Event {
     this.reported,
   });
 
-  Event.fromMap(Map<String, dynamic> data)
+  WebblenEvent.fromMap(Map<String, dynamic> data)
       : this(
           id: data['id'],
           authorID: data['authorID'],
           chatID: data['chatID'],
-          ticketDistroID: data['ticketDistroID'],
+          hasTickets: data['hasTickets'],
           flashEvent: data['flashEvent'],
-          name: data['name'],
+          isDigitalEvent: data['isDigitalEvent'],
+          digitalEventLink: data['digitalEventLink'],
+          title: data['title'],
           desc: data['desc'],
           imageURL: data['imageURL'],
-          city: data['city'],
+          venueName: data['venueName'],
+          nearbyZipcodes: data['nearbyZipcodes'],
           streetAddress: data['streetAddress'],
-          state: data['state'],
-          zipPostalCode: data['zipPostalCode'],
-          countryRegion: data['countryRegion'],
+          city: data['city'],
+          province: data['province'],
+          lat: data['lat'],
+          lon: data['lon'],
           sharedComs: data['sharedComs'],
           tags: data['tags'],
+          type: data['type'],
           category: data['category'],
           clicks: data['clicks'],
           website: data['website'],
@@ -108,18 +128,23 @@ class Event {
         'id': this.id,
         'authorID': this.authorID,
         'chatID': this.chatID,
-        'ticketDistroID': this.ticketDistroID,
+        'hasTickets': this.hasTickets,
         'flashEvent': this.flashEvent,
-        'name': this.name,
+        'isDigitalEvent': this.isDigitalEvent,
+        'digitalEventLink': this.digitalEventLink,
+        'title': this.title,
         'desc': this.desc,
         'imageURL': this.imageURL,
-        'city': this.city,
+        'venueName': this.venueName,
+        'nearbyZipcodes': this.nearbyZipcodes,
         'streetAddress': this.streetAddress,
-        'state': this.state,
-        'zipPostalCode': this.zipPostalCode,
-        'countryRegion': this.countryRegion,
+        'city': this.city,
+        'province': this.province,
+        'lat': this.lat,
+        'lon': this.lon,
         'sharedComs': this.sharedComs,
         'tags': this.tags,
+        'type': this.type,
         'category': this.category,
         'clicks': this.clicks,
         'website': this.website,
@@ -138,4 +163,21 @@ class Event {
         'privacy': this.privacy,
         'reported': this.reported,
       };
+
+  final NavigationService _navigationService = locator<NavigationService>();
+  void navigateToEvent(String eventID) {
+    _navigationService.navigateTo(EventsDetailsRoute, queryParams: {'id': eventID});
+  }
+
+  void navigateToEventTickets(String eventID) {
+    _navigationService.navigateTo(EventTicketsSelectionRoute, queryParams: {'id': eventID});
+  }
+
+  void navigateToWalletTickets(String eventID) {
+    _navigationService.navigateTo(WalletEventTicketsRoute, queryParams: {'id': eventID});
+  }
+
+  void navigateToPurchaseTicketsPage(String eventID, List<Map<String, dynamic>> ticketsToPurchase) {
+    _navigationService.navigateTo(EventTicketsPurchaseRoute, queryParams: {'id': eventID, 'ticketsToPurchase': jsonEncode(ticketsToPurchase)});
+  }
 }

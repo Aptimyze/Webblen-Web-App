@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_icon_button.dart';
-import 'package:webblen_web_app/widgets/common/navigation/nav_bar_logo.dart';
+import 'package:webblen_web_app/widgets/common/images/webblen_logo.dart';
 
 class Footer extends StatelessWidget {
   @override
@@ -42,7 +42,7 @@ class LargeFooterContent extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  NavBarLogo(),
+                  WebblenLogo(),
                 ],
               ),
             ),

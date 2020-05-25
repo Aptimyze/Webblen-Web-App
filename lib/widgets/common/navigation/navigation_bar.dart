@@ -3,8 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
+import 'package:webblen_web_app/widgets/common/images/webblen_logo.dart';
 
-import 'nav_bar_logo.dart';
 import 'nav_item.dart';
 
 class NavigationBar extends StatelessWidget {
@@ -98,7 +98,7 @@ class NavigationBarTabletDesktop extends StatelessWidget {
               children: <Widget>[
                 GestureDetector(
                   onTap: navigateToHomePage,
-                  child: NavBarLogo(),
+                  child: WebblenLogo(),
                 ).showCursorOnHover,
                 authStatus == "unknown"
                     ? Row()
@@ -181,7 +181,7 @@ class NavigationBarMobile extends StatelessWidget {
           ).showCursorOnHover,
           GestureDetector(
             onTap: navigateToHomePage,
-            child: NavBarLogo(),
+            child: WebblenLogo(),
           ).showCursorOnHover,
         ],
       ),

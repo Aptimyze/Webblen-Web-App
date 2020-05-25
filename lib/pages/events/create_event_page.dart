@@ -14,12 +14,18 @@ import 'package:responsive_builder/responsive_builder.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
 import 'package:webblen_web_app/constants/strings.dart';
+import 'package:webblen_web_app/constants/timezones.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
+import 'package:webblen_web_app/firebase/data/event.dart';
+import 'package:webblen_web_app/firebase/services/authentication.dart';
+import 'package:webblen_web_app/models/ticket_distro.dart';
+import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/widgets/common/alerts/custom_alerts.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_color_button.dart';
 import 'package:webblen_web_app/widgets/common/containers/text_field_container.dart';
+import 'package:webblen_web_app/widgets/common/navigation/footer.dart';
+import 'package:webblen_web_app/widgets/common/state/progress_indicator.dart';
 import 'package:webblen_web_app/widgets/common/text/custom_text.dart';
-import 'package:webblen_web_app/widgets/layout/centered_view.dart';
 
 class CreateEventPage extends StatefulWidget {
   @override
@@ -27,19 +33,25 @@ class CreateEventPage extends StatefulWidget {
 }
 
 class _CreateEventPageState extends State<CreateEventPage> {
+  String currentUID;
+  bool isLoading = true;
+  TextEditingController controller = TextEditingController();
   GlobalKey formKey = GlobalKey<FormState>();
   //Event Details
   String eventTitle;
   String eventDesc;
   //Location Details
-  bool enterAddressManually = false;
-  String eventAddress;
+  bool isDigitalEvent = false;
   String venueName;
+  double lat;
+  double lon;
+  String eventAddress;
   String address1;
   String address2;
   String city;
-  String state;
+  String state = "AL";
   String zipPostalCode;
+  String digitalEventLink;
   //Date & Time Details
   DateTime selectedDateTime = DateTime(
     DateTime.now().year,
@@ -57,11 +69,13 @@ class _CreateEventPageState extends State<CreateEventPage> {
   String endDate;
   String startTime;
   String endTime;
+  String timezone = "CDT";
   // Event Image
   File eventImgFile;
   Uint8List eventImgByteMemory;
 
   //Ticketing
+  TicketDistro ticketDistro = TicketDistro(tickets: [], fees: [], discountCodes: [], usedTicketIDs: [], validTicketIDs: []);
   GlobalKey ticketFormKey = GlobalKey<FormState>();
   GlobalKey feeFormKey = GlobalKey<FormState>();
   GlobalKey discountFormKey = GlobalKey<FormState>();
@@ -74,19 +88,18 @@ class _CreateEventPageState extends State<CreateEventPage> {
   bool showTicketForm = false;
   bool showFeeForm = false;
   bool showDiscountCodeForm = false;
-  List<Map<String, dynamic>> eventTickets = [];
   String ticketName;
   String ticketPrice;
   String ticketQuantity;
-  List<Map<String, dynamic>> eventFees = [];
   String feeName;
   String feeAmount;
-  List<Map<String, dynamic>> discountCodes = [];
   String discountCodeName;
   String discountCodeQuantity;
   String discountCodePercentage;
 
   //Additional Info & Social Links
+  String privacy = 'public';
+  List<String> privacyOptions = ['public', 'private'];
   String eventType = 'Select Event Type';
   String eventCategory = 'Select Event Category';
   String fbProfileName;
@@ -95,6 +108,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
   //Other
   GoogleMapsPlaces _places = GoogleMapsPlaces(
     apiKey: Strings.googleAPIKEY,
+    baseUrl: Strings.proxyMapsURL,
   );
 
   openGoogleAutoComplete() async {
@@ -104,6 +118,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
       onError: (res) {
         print(res.errorMessage);
       },
+      proxyBaseUrl: Strings.proxyMapsURL,
       mode: Mode.overlay,
       language: "en",
       components: [
@@ -115,17 +130,9 @@ class _CreateEventPageState extends State<CreateEventPage> {
     );
     PlacesDetailsResponse detail = await _places.getDetailsByPlaceId(p.placeId);
     eventAddress = detail.result.formattedAddress;
-    setState(() {
-      eventAddress = detail.result.formattedAddress;
-    });
-  }
-
-  changeEnterAddressManuallyStatus() {
-    if (enterAddressManually) {
-      enterAddressManually = false;
-    } else {
-      enterAddressManually = true;
-    }
+    zipPostalCode = detail.result.addressComponents[7].longName;
+    lat = detail.result.geometry.location.lat;
+    lon = detail.result.geometry.location.lng;
     setState(() {});
   }
 
@@ -206,6 +213,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
   Widget eventTitleField() {
     return TextFieldContainer(
       child: TextFormField(
+        initialValue: eventTitle,
         cursorColor: Colors.black,
         validator: (value) => value.isEmpty ? 'Field Cannot be Empty' : null,
         onChanged: (value) {
@@ -225,109 +233,94 @@ class _CreateEventPageState extends State<CreateEventPage> {
     );
   }
 
+  Widget isDigitalEventCheckBox() {
+    return Row(
+      children: <Widget>[
+        CustomText(
+          context: context,
+          text: "This is a Digital/Online Event",
+          textColor: Colors.black,
+          textAlign: TextAlign.left,
+          fontSize: 14.0,
+          fontWeight: FontWeight.w500,
+        ),
+        Checkbox(
+          activeColor: CustomColors.webblenRed,
+          value: isDigitalEvent,
+          onChanged: (val) {
+            isDigitalEvent = val;
+            setState(() {});
+          },
+        ).showCursorOnHover,
+      ],
+    );
+  }
+
+  Widget eventVenueNameField() {
+    return TextFieldContainer(
+      child: TextFormField(
+        initialValue: venueName,
+        cursorColor: Colors.black,
+        onChanged: (value) {
+          setState(() {
+            venueName = value.trim();
+          });
+        },
+        inputFormatters: [
+          LengthLimitingTextInputFormatter(75),
+        ],
+        decoration: InputDecoration(
+          hintText: "Venue Name",
+          border: InputBorder.none,
+        ),
+      ),
+    );
+  }
+
   Widget eventLocationField(SizingInformation screenzSize) {
-    return enterAddressManually
-        ? Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                TextFieldContainer(
-                  child: TextFormField(
-                    cursorColor: Colors.black,
-                    validator: (value) => value.isEmpty && enterAddressManually ? 'Field Cannot be Empty' : null,
-                    onSaved: (value) => address1 = value.trim(),
-                    decoration: InputDecoration(
-                      hintText: "Address",
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 8.0),
-                TextFieldContainer(
-                  child: TextFormField(
-                    cursorColor: Colors.black,
-                    onSaved: (value) => address2 = value.trim(),
-                    decoration: InputDecoration(
-                      hintText: "Address 2",
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 8.0),
-                Row(
-                  mainAxisAlignment: screenzSize.isMobile ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
-                  children: <Widget>[
-                    TextFieldContainer(
-                      width: 200,
-                      child: TextFormField(
-                        cursorColor: Colors.black,
-                        validator: (value) => value.isEmpty && enterAddressManually ? 'Field Cannot be Empty' : null,
-                        onSaved: (value) => city = value.trim(),
-                        decoration: InputDecoration(
-                          hintText: "City",
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16.0),
-                    TextFieldContainer(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 12,
-                        ),
-                        child: DropdownButton(
-                            isDense: true,
-                            underline: Container(),
-                            value: state == null ? Strings.statesList[0] : state,
-                            items: Strings.statesList.map((String val) {
-                              return DropdownMenuItem<String>(
-                                value: val,
-                                child: Text(val),
-                              );
-                            }).toList(),
-                            onChanged: (val) {
-                              setState(() {
-                                state = val;
-                              });
-                            }).showCursorOnHover,
-                      ),
-                    ),
-                    SizedBox(width: 16.0),
-                    TextFieldContainer(
-                      width: screenzSize.isDesktop ? 200 : 150,
-                      child: TextFormField(
-                        cursorColor: Colors.black,
-                        validator: (value) => value.isEmpty && enterAddressManually ? 'Field Cannot be Empty' : null,
-                        onSaved: (value) => zipPostalCode = value.trim(),
-                        decoration: InputDecoration(
-                          hintText: "Zip/Postal",
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          )
-        : GestureDetector(
-            onTap: () => openGoogleAutoComplete(),
-            child: TextFieldContainer(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  vertical: 16,
-                ),
-                child: CustomText(
-                  context: context,
-                  text: eventAddress == null ? "Search for Address" : eventAddress,
-                  textColor: eventAddress == null ? Colors.black54 : Colors.black,
-                  textAlign: TextAlign.left,
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w400,
-                ),
+    return GestureDetector(
+      onTap: () => openGoogleAutoComplete(),
+      child: TextFieldContainer(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Container(
+              height: 40.0,
+              padding: EdgeInsets.only(top: 10.0),
+              child: CustomText(
+                context: context,
+                text: eventAddress == null || eventAddress.isEmpty ? "Search for Address" : eventAddress,
+                textColor: eventAddress == null || eventAddress.isEmpty ? Colors.black54 : Colors.black,
+                textAlign: TextAlign.left,
+                fontSize: 16.0,
+                fontWeight: FontWeight.w400,
               ),
             ),
-          ).showCursorOnHover;
+          ],
+        ),
+      ),
+    ).showCursorOnHover;
+  }
+
+  Widget eventDigitalLinkField() {
+    return TextFieldContainer(
+      child: TextFormField(
+        initialValue: digitalEventLink,
+        cursorColor: Colors.black,
+        onChanged: (value) {
+          setState(() {
+            digitalEventLink = value.trim();
+          });
+        },
+        inputFormatters: [
+          LengthLimitingTextInputFormatter(75),
+        ],
+        decoration: InputDecoration(
+          hintText: "Event Link",
+          border: InputBorder.none,
+        ),
+      ),
+    );
   }
 
   openCalendar(bool isStartDate) {
@@ -599,6 +592,67 @@ class _CreateEventPageState extends State<CreateEventPage> {
           );
   }
 
+  Widget eventTimezoneField() {
+    return Row(
+      children: <Widget>[
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            fieldHeader("Timezone", true),
+            Row(
+              children: <Widget>[
+                TextFieldContainer(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: 8.0,
+                    ),
+                    child: DropdownButton(
+                        underline: Container(),
+                        value: timezone,
+                        items: Timezones.timezones.map((Map<String, dynamic> timezone) {
+                          return DropdownMenuItem<String>(
+                            value: timezone['abbr'],
+                            child: Container(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  CustomText(
+                                    context: context,
+                                    text: "${timezone['value']}: ${timezone['abbr']}",
+                                    textColor: Colors.black,
+                                    textAlign: TextAlign.left,
+                                    fontSize: 16.0,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  CustomText(
+                                    context: context,
+                                    text: timezone['text'],
+                                    textColor: Colors.black,
+                                    textAlign: TextAlign.left,
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (val) {
+                          print(val);
+                          setState(() {
+                            timezone = val;
+                          });
+                        }).showCursorOnHover,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget eventImgButton() {
     return eventImgByteMemory == null
         ? Row(
@@ -674,10 +728,15 @@ class _CreateEventPageState extends State<CreateEventPage> {
   Widget eventDescriptionField() {
     return TextFieldContainer(
       child: TextFormField(
+        initialValue: eventDesc,
         cursorColor: Colors.black,
         validator: (value) => value.isEmpty ? 'Field Cannot be Empty' : null,
         maxLines: null,
-        onSaved: (value) => eventDesc = value.trim(),
+        onChanged: (value) {
+          setState(() {
+            eventDesc = value.trim();
+          });
+        },
         decoration: InputDecoration(
           hintText: "Be sure to include important information and details to make it easier for people to find this event",
           border: InputBorder.none,
@@ -761,7 +820,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
       child: ListView.builder(
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: eventTickets.length,
+          itemCount: ticketDistro.tickets.length,
           itemBuilder: (BuildContext context, int index) {
             return Container(
               margin: EdgeInsets.symmetric(vertical: 8.0),
@@ -773,7 +832,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     width: screenSize.isMobile ? 150 : screenSize.isTablet ? 200 : 300,
                     child: CustomText(
                       context: context,
-                      text: eventTickets[index]["ticketName"],
+                      text: ticketDistro.tickets[index]["ticketName"],
                       textColor: Colors.black,
                       textAlign: TextAlign.left,
                       fontSize: screenSize.isDesktop ? 16.0 : 14.0,
@@ -784,7 +843,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     width: screenSize.isMobile ? 60 : screenSize.isTablet ? 75 : 100,
                     child: CustomText(
                       context: context,
-                      text: eventTickets[index]["ticketQuantity"],
+                      text: ticketDistro.tickets[index]["ticketQuantity"],
                       textColor: Colors.black,
                       textAlign: TextAlign.left,
                       fontSize: screenSize.isDesktop ? 16.0 : 14.0,
@@ -795,7 +854,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     width: screenSize.isMobile ? 60 : screenSize.isTablet ? 75 : 100,
                     child: CustomText(
                       context: context,
-                      text: eventTickets[index]["ticketPrice"],
+                      text: ticketDistro.tickets[index]["ticketPrice"],
                       textColor: Colors.black,
                       textAlign: TextAlign.left,
                       fontSize: screenSize.isDesktop ? 16.0 : 14.0,
@@ -833,7 +892,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
       child: ListView.builder(
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: eventFees.length,
+          itemCount: ticketDistro.fees.length,
           itemBuilder: (BuildContext context, int index) {
             return Container(
               margin: EdgeInsets.symmetric(vertical: 8.0),
@@ -845,7 +904,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     width: screenSize.isMobile ? 150 : screenSize.isTablet ? 200 : 300,
                     child: CustomText(
                       context: context,
-                      text: eventFees[index]["feeName"],
+                      text: ticketDistro.fees[index]["feeName"],
                       textColor: Colors.black,
                       textAlign: TextAlign.left,
                       fontSize: screenSize.isDesktop ? 16.0 : 14.0,
@@ -856,7 +915,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     width: screenSize.isMobile ? 60 : screenSize.isTablet ? 75 : 100,
                     child: CustomText(
                       context: context,
-                      text: eventFees[index]["feeAmount"],
+                      text: ticketDistro.fees[index]["feeAmount"],
                       textColor: Colors.black,
                       textAlign: TextAlign.left,
                       fontSize: screenSize.isDesktop ? 16.0 : 14.0,
@@ -897,7 +956,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
       child: ListView.builder(
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: discountCodes.length,
+          itemCount: ticketDistro.discountCodes.length,
           itemBuilder: (BuildContext context, int index) {
             return Container(
               margin: EdgeInsets.symmetric(vertical: 8.0),
@@ -909,7 +968,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     width: screenSize.isMobile ? 150 : screenSize.isTablet ? 200 : 300,
                     child: CustomText(
                       context: context,
-                      text: discountCodes[index]["discountCodeName"],
+                      text: ticketDistro.discountCodes[index]["discountCodeName"],
                       textColor: Colors.black,
                       textAlign: TextAlign.left,
                       fontSize: screenSize.isDesktop ? 16.0 : 14.0,
@@ -920,7 +979,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     width: screenSize.isMobile ? 60 : screenSize.isTablet ? 75 : 100,
                     child: CustomText(
                       context: context,
-                      text: discountCodes[index]["discountCodeQuantity"],
+                      text: ticketDistro.discountCodes[index]["discountCodeQuantity"],
                       textColor: Colors.black,
                       textAlign: TextAlign.left,
                       fontSize: screenSize.isDesktop ? 16.0 : 14.0,
@@ -931,7 +990,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                     width: screenSize.isMobile ? 60 : screenSize.isTablet ? 75 : 100,
                     child: CustomText(
                       context: context,
-                      text: discountCodes[index]["discountCodePercentage"],
+                      text: ticketDistro.discountCodes[index]["discountCodePercentage"],
                       textColor: Colors.black,
                       textAlign: TextAlign.left,
                       fontSize: screenSize.isDesktop ? 16.0 : 14.0,
@@ -1118,7 +1177,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
               child: TextFormField(
                 cursorColor: Colors.black,
                 validator: (value) => value.isEmpty ? 'Field Cannot be Empty' : null,
-                onSaved: (value) => discountCodePercentage = value.trim(),
+                onSaved: (value) => discountCodeQuantity = value.trim(),
                 inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
                   hintText: "100",
@@ -1129,7 +1188,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
             TextFieldContainer(
               width: screenSize.isMobile ? 60 : screenSize.isTablet ? 75 : 100,
               child: TextFormField(
-                initialValue: discountCodeQuantity,
+                initialValue: discountCodePercentage,
                 cursorColor: Colors.black,
                 validator: (value) => value.isEmpty ? 'Field Cannot be Empty' : null,
                 onSaved: (value) => discountCodeQuantity = value.trim(),
@@ -1164,32 +1223,32 @@ class _CreateEventPageState extends State<CreateEventPage> {
 
   editAction(String object, int objectIndex) {
     if (object == "ticket") {
-      ticketName = eventTickets[objectIndex]['ticketName'];
-      ticketQuantity = eventTickets[objectIndex]['ticketQuantity'];
-      ticketPrice = eventTickets[objectIndex]['ticketPrice'];
-      eventTickets.removeAt(objectIndex);
+      ticketName = ticketDistro.tickets[objectIndex]['ticketName'];
+      ticketQuantity = ticketDistro.tickets[objectIndex]['ticketQuantity'];
+      ticketPrice = ticketDistro.tickets[objectIndex]['ticketPrice'];
+      ticketDistro.discountCodes.removeAt(objectIndex);
       changeFormStatus("ticketForm");
     } else if (object == "fee") {
-      feeName = eventFees[objectIndex]['feeName'];
-      feeAmount = eventFees[objectIndex]['feeAmount'];
-      eventFees.removeAt(objectIndex);
+      feeName = ticketDistro.fees[objectIndex]['feeName'];
+      feeAmount = ticketDistro.fees[objectIndex]['feeAmount'];
+      ticketDistro.fees.removeAt(objectIndex);
       changeFormStatus("feeForm");
     } else {
-      discountCodeName = discountCodes[objectIndex]['discountCodeName'];
-      discountCodeQuantity = discountCodes[objectIndex]['discountCodeQuantity'];
-      discountCodePercentage = discountCodes[objectIndex]['discountCodePercentage'];
-      discountCodes.removeAt(objectIndex);
+      discountCodeName = ticketDistro.discountCodes[objectIndex]['discountCodeName'];
+      discountCodeQuantity = ticketDistro.discountCodes[objectIndex]['discountCodeQuantity'];
+      discountCodePercentage = ticketDistro.discountCodes[objectIndex]['discountCodePercentage'];
+      ticketDistro.discountCodes.removeAt(objectIndex);
       changeFormStatus("discountCodeForm");
     }
   }
 
   deleteAction(String object, int objectIndex) {
     if (object == "ticket") {
-      eventTickets.removeAt(objectIndex);
+      ticketDistro.tickets.removeAt(objectIndex);
     } else if (object == "fee") {
-      eventFees.removeAt(objectIndex);
+      ticketDistro.fees.removeAt(objectIndex);
     } else {
-      discountCodes.removeAt(objectIndex);
+      ticketDistro.discountCodes.removeAt(objectIndex);
     }
     setState(() {});
   }
@@ -1212,7 +1271,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
             onPressed: () => changeFormStatus("ticketForm"),
           ).showCursorOnHover,
           SizedBox(width: 8.0),
-          eventTickets.length > 0
+          ticketDistro.tickets.length > 0
               ? CustomColorIconButton(
                   iconData: FontAwesomeIcons.dollarSign,
                   iconSize: screenSize.isDesktop ? 16.0 : 12.0,
@@ -1226,7 +1285,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 ).showCursorOnHover
               : Container(),
           SizedBox(width: 8.0),
-          eventTickets.length > 0
+          ticketDistro.tickets.length > 0
               ? CustomColorIconButton(
                   iconData: FontAwesomeIcons.percent,
                   iconSize: screenSize.isDesktop ? 16.0 : 12.0,
@@ -1277,7 +1336,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
         "ticketPrice": ticketPrice,
         "ticketQuantity": ticketQuantity,
       };
-      eventTickets.add(eventTicket);
+      ticketDistro.tickets.add(eventTicket);
       ticketName = null;
       ticketPrice = null;
       ticketQuantity = null;
@@ -1295,7 +1354,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
         "feeName": feeName,
         "feeAmount": feeAmount,
       };
-      eventFees.add(eventFee);
+      ticketDistro.fees.add(eventFee);
       feeName = null;
       feeAmount = null;
       changeFormStatus("feeForm");
@@ -1313,7 +1372,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
         "discountCodeQuantity": discountCodeQuantity,
         "discountCodePercentage": discountCodePercentage,
       };
-      discountCodes.add(discountCode);
+      ticketDistro.discountCodes.add(discountCode);
       discountCodeName = null;
       discountCodeQuantity = null;
       discountCodePercentage = null;
@@ -1323,6 +1382,36 @@ class _CreateEventPageState extends State<CreateEventPage> {
   }
 
   //ADDITIONAL INFO & SOCIAL LINKS
+  Widget eventPrivacyDropdown(SizingInformation screenSize) {
+    return Row(
+      children: <Widget>[
+        TextFieldContainer(
+          height: 45,
+          width: 300,
+          child: Padding(
+              padding: EdgeInsets.symmetric(
+                vertical: 12,
+              ),
+              child: DropdownButton(
+                  isExpanded: true,
+                  underline: Container(),
+                  value: privacy,
+                  items: privacyOptions.map((String val) {
+                    return DropdownMenuItem<String>(
+                      value: val,
+                      child: Text(val),
+                    );
+                  }).toList(),
+                  onChanged: (val) {
+                    setState(() {
+                      privacy = val;
+                    });
+                  }).showCursorOnHover),
+        ),
+      ],
+    );
+  }
+
   Widget eventCategoryDropDown(SizingInformation screenSize) {
     return Row(
       children: <Widget>[
@@ -1403,8 +1492,13 @@ class _CreateEventPageState extends State<CreateEventPage> {
   Widget fbUsernameField() {
     return TextFieldContainer(
       child: TextFormField(
+        initialValue: fbProfileName,
         cursorColor: Colors.black,
-        onSaved: (value) => fbProfileName = value.trim(),
+        onSaved: (value) {
+          setState(() {
+            fbProfileName = value.trim();
+          });
+        },
         decoration: InputDecoration(
           hintText: "FB Profile/Page Username",
           border: InputBorder.none,
@@ -1433,8 +1527,13 @@ class _CreateEventPageState extends State<CreateEventPage> {
   Widget twitterUsernameField() {
     return TextFieldContainer(
       child: TextFormField(
+        initialValue: twitterProfileName,
         cursorColor: Colors.black,
-        onSaved: (value) => twitterProfileName = value.trim(),
+        onSaved: (value) {
+          setState(() {
+            twitterProfileName = value.trim();
+          });
+        },
         decoration: InputDecoration(
           hintText: "Twitter Username",
           border: InputBorder.none,
@@ -1443,163 +1542,286 @@ class _CreateEventPageState extends State<CreateEventPage> {
     );
   }
 
+  //CREATE EVENT
+//  bool setEventAddress() {
+//    bool addressIsValid = true;
+//    if (enterAddressManually) {
+//      if (address1 == null ||
+//          address1.isEmpty ||
+//          city == null ||
+//          city.isEmpty ||
+//          state == null ||
+//          state.isEmpty ||
+//          zipPostalCode == null ||
+//          zipPostalCode.isEmpty) {
+//        addressIsValid = false;
+//      } else {
+//        eventAddress = address2 == null || address2.isEmpty ? "$address1, $city, $state $zipPostalCode" : "$address1 $address2 , $city, $state $zipPostalCode";
+//        print(eventAddress);
+//      }
+//    } else {
+//      addressIsValid = false;
+//      print('CORS ERROR');
+//    }
+//    return addressIsValid;
+//  }
+
+  createEvent() async {
+    DateTime startDateTime = DateTime(
+      selectedStartDate.year,
+      selectedStartDate.day,
+      timeFormatter.parse(startTime).hour,
+      timeFormatter.parse(startTime).minute,
+    );
+    WebblenEvent newEvent = WebblenEvent(
+      id: "",
+      authorID: currentUID,
+      chatID: null,
+      hasTickets: ticketDistro.tickets.isNotEmpty ? true : false,
+      flashEvent: false,
+      title: eventTitle,
+      desc: eventDesc,
+      imageURL: null,
+      isDigitalEvent: isDigitalEvent,
+      digitalEventLink: digitalEventLink,
+      venueName: venueName,
+      streetAddress: eventAddress,
+      nearbyZipcodes: [],
+      lat: lat,
+      lon: lon,
+      sharedComs: [],
+      tags: [],
+      type: eventType,
+      category: eventCategory,
+      clicks: 0,
+      website: null,
+      checkInRadius: 25,
+      estimatedTurnout: 0,
+      actualTurnout: 0,
+      attendees: [],
+      eventPayout: 0.0001,
+      recurrence: 'none',
+      startDateTimeInMilliseconds: startDateTime.millisecondsSinceEpoch,
+      startDate: startDate,
+      startTime: startTime,
+      endDate: endDate,
+      endTime: endTime,
+      timezone: null,
+      privacy: privacy,
+      reported: false,
+    );
+    EventDataService().uploadEvent(newEvent, eventImgFile, ticketDistro).then((error) {
+      if (error == null) {
+        newEvent.navigateToEvent(newEvent.id);
+      } else {
+        print(error);
+      }
+    });
+    //print(newEvent);
+  }
+
+  submitEvent() {
+    FormState formState = formKey.currentState;
+    formState.save();
+    //bool addressIsValid = setEventAddress();
+    if (eventTitle == null || eventTitle.isEmpty) {
+      CustomAlerts().showErrorAlert(context, "Event Title Missing", "Please Give this Event a Title");
+    } else if (eventAddress == null || eventAddress.isEmpty || digitalEventLink == null || digitalEventLink.isEmpty) {
+      if (isDigitalEvent) {
+        CustomAlerts().showErrorAlert(context, "Event URL Link Error", "Please Provide the Link to this Event");
+      } else {
+        CustomAlerts().showErrorAlert(context, "Event Address Error", "Please Set the Location of this Event");
+      }
+    } else if (eventImgByteMemory == null) {
+      CustomAlerts().showErrorAlert(context, "Event Image Missing", "Please Set the Image for this Event");
+    } else if (eventDesc == null || eventDesc.isEmpty) {
+      CustomAlerts().showErrorAlert(context, "Event Description Missing", "Please Set the Description for this Event");
+    } else if (eventCategory == 'Select Event Category') {
+      CustomAlerts().showErrorAlert(context, "Event Category Missing", "Please Set the Category for this Event");
+    } else if (eventType == "Select Event Type") {
+      CustomAlerts().showErrorAlert(context, "Event Type Missing", "Please Select What Type of Event This Is.");
+    } else {
+      createEvent();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    startDate = dateFormatter.format(selectedDateTime);
-    print(selectedDateTime.hour);
-    endDate = dateFormatter.format(selectedDateTime);
-    startTime = timeFormatter.format(selectedDateTime.add(Duration(hours: 1)));
-
-    endTime = selectedDateTime.hour == 23
-        ? "11:30 PM"
-        : timeFormatter.format(selectedDateTime.add(Duration(
-            hours: selectedDateTime.hour <= 19 ? 4 : selectedDateTime.hour == 20 ? 3 : selectedDateTime.hour == 21 ? 2 : selectedDateTime.hour == 22 ? 1 : 0)));
-    setState(() {});
+    FirebaseAuthenticationService().getCurrentUserID().then((res) {
+      if (res != null) {
+        currentUID = res;
+      }
+      startDate = dateFormatter.format(selectedDateTime);
+      endDate = dateFormatter.format(selectedDateTime);
+      startTime = timeFormatter.format(selectedDateTime.add(Duration(hours: 1)));
+      endTime = selectedDateTime.hour == 23
+          ? "11:30 PM"
+          : timeFormatter.format(selectedDateTime.add(Duration(
+              hours:
+                  selectedDateTime.hour <= 19 ? 4 : selectedDateTime.hour == 20 ? 3 : selectedDateTime.hour == 21 ? 2 : selectedDateTime.hour == 22 ? 1 : 0)));
+      isLoading = false;
+      setState(() {});
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return CenteredView(
-      addVerticalPadding: false,
-      child: ResponsiveBuilder(
-        builder: (buildContext, screenSize) => Container(
-          child: Container(
-            margin: EdgeInsets.symmetric(horizontal: screenSize.isDesktop ? 100 : screenSize.isTablet ? 50.0 : 0),
-            child: Form(
-              key: null,
-              child: ListView(
-                shrinkWrap: true,
-                children: <Widget>[
-                  SizedBox(height: 16.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      CustomText(
-                        context: context,
-                        text: eventTitle == null || eventTitle.isEmpty ? "New Event" : eventTitle,
-                        textColor: Colors.black,
-                        textAlign: TextAlign.left,
-                        fontSize: 30.0,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 2.0),
-                        child: CustomColorButton(
-                          text: "Save Event",
-                          textColor: Colors.black,
-                          backgroundColor: Colors.white,
-                          height: 35.0,
-                          width: 150,
-                          onPressed: null,
-                        ).showCursorOnHover,
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 16.0),
-                  sectionHeader("1", "Event Details"),
-                  //EVENT TITLE
-                  fieldHeader("Event Title", true),
-                  eventTitleField(),
-                  SizedBox(height: 16.0),
-                  //EVENT LOCATION
-                  fieldHeader("Location", true),
-                  eventLocationField(screenSize),
-                  SizedBox(height: 4.0),
-                  enterAddressManually
-                      ? GestureDetector(
-                          onTap: () => changeEnterAddressManuallyStatus(),
-                          child: CustomText(
-                            context: context,
-                            text: "Search for Address Automatically",
-                            textColor: Colors.blueAccent,
-                            textAlign: TextAlign.left,
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w400,
-                          )).showCursorOnHover
-                      : GestureDetector(
-                          onTap: () => changeEnterAddressManuallyStatus(),
-                          child: Padding(
-                            padding: EdgeInsets.only(left: 8.0, top: 4.0),
-                            child: CustomText(
-                              context: context,
-                              text: "Enter Address Manually",
-                              textColor: Colors.blueAccent,
-                              textAlign: TextAlign.left,
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ).showCursorOnHover,
-                  SizedBox(height: 32.0),
-                  //EVENT DATE & TIME
-                  eventTimeFields(screenSize),
-                  SizedBox(height: 32.0),
-                  //EVENT IMAGE
-                  fieldHeader("Event Image", true),
-                  SizedBox(height: 8.0),
-                  eventImgButton(),
-                  SizedBox(height: 8.0),
-                  Row(
-                    children: <Widget>[
-                      Container(
-                        width: 300,
-                        child: CustomText(
-                          context: context,
-                          text: "We recommend using at least a 1080x1080px (1:1 ratio) image that's no larger than 5MB.",
-                          textColor: Colors.black,
-                          textAlign: TextAlign.left,
-                          fontSize: 14.0,
-                          fontWeight: FontWeight.w400,
+    return ResponsiveBuilder(
+      builder: (buildContext, screenSize) => Container(
+        child: Container(
+          child: Form(
+            key: formKey,
+            child: ListView(
+              shrinkWrap: true,
+              children: <Widget>[
+                isLoading
+                    ? Container(
+                        constraints: BoxConstraints(
+                          minHeight: MediaQuery.of(context).size.height,
+                        ),
+                        child: Column(
+                          children: <Widget>[
+                            CustomLinearProgress(progressBarColor: CustomColors.webblenRed),
+                          ],
                         ),
                       )
-                    ],
-                  ),
-                  SizedBox(height: 32.0),
-                  //EVENT DESCRIPTION
-                  fieldHeader("Event Description", true),
-                  eventDescriptionField(),
-                  SizedBox(height: 32.0),
-                  sectionHeader("2", "Ticketing"),
-                  SizedBox(height: 16.0),
-                  //Tickets
-                  showTicketForm || eventTickets.length > 0 ? fieldHeader("Tickets", false) : Container(),
-                  showTicketForm || eventTickets.length > 0 ? ticketingFormHeader("ticket", screenSize) : Container(),
-                  eventTickets.length > 0 ? ticketListBuilder(screenSize) : Container(),
-                  showTicketForm ? ticketForm(screenSize) : Container(),
-                  //Fees
-                  showFeeForm || eventFees.length > 0 ? fieldHeader("Fees", false) : Container(),
-                  showFeeForm || eventFees.length > 0 ? ticketingFormHeader("fee", screenSize) : Container(),
-                  eventFees.length > 0 ? feeListBuilder(screenSize) : Container(),
-                  showFeeForm ? feeForm(screenSize) : Container(),
-                  //Discount Codes
-                  showDiscountCodeForm || discountCodes.length > 0 ? fieldHeader("Discount Codes", false) : Container(),
-                  showDiscountCodeForm || discountCodes.length > 0 ? ticketingFormHeader("discountCode", screenSize) : Container(),
-                  discountCodes.length > 0 ? discountListBuilder(screenSize) : Container(),
-                  showDiscountCodeForm ? discountCodeForm(screenSize) : Container(),
-                  SizedBox(height: 16.0),
-                  showTicketForm || showFeeForm || showDiscountCodeForm ? Container() : ticketActions(screenSize),
-                  SizedBox(height: 40.0),
-                  sectionHeader("3", "Additional Info"),
-                  SizedBox(height: 16.0),
-                  fieldHeader("Event Category", true),
-                  eventCategoryDropDown(screenSize),
-                  SizedBox(height: 16.0),
-                  fieldHeader("Event Type", true),
-                  eventTypeDropDown(screenSize),
-                  SizedBox(height: 32.0),
-                  fieldHeader("Social Links (Optional)", false),
-                  SizedBox(height: 8.0),
-                  fbSocialHeader(),
-                  SizedBox(height: 3.0),
-                  fbUsernameField(),
-                  SizedBox(height: 8.0),
-                  twitterSocialHeader(),
-                  SizedBox(height: 3.0),
-                  twitterUsernameField(),
-                  SizedBox(height: 64.0),
-                ],
-              ),
+                    : Container(
+                        margin: EdgeInsets.symmetric(horizontal: screenSize.isDesktop ? 100 : screenSize.isTablet ? 50.0 : 24.0),
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(height: 16.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                CustomText(
+                                  context: context,
+                                  text: eventTitle == null || eventTitle.isEmpty ? "New Event" : eventTitle,
+                                  textColor: Colors.black,
+                                  textAlign: TextAlign.left,
+                                  fontSize: 30.0,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 2.0),
+                                  child: CustomColorButton(
+                                    text: "Create Event",
+                                    textColor: Colors.black,
+                                    backgroundColor: Colors.white,
+                                    height: 35.0,
+                                    width: 150,
+                                    onPressed: () => submitEvent(),
+                                  ).showCursorOnHover,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 16.0),
+                            sectionHeader("1", "Event Details"),
+                            //EVENT TITLE
+                            fieldHeader("Event Title", true),
+                            eventTitleField(),
+                            SizedBox(height: 32.0),
+                            //EVENT LOCATION
+                            isDigitalEvent ? fieldHeader("Event URL Link", true) : fieldHeader("Location", true),
+                            isDigitalEvent ? eventDigitalLinkField() : eventLocationField(screenSize),
+                            isDigitalEvent ? Container() : SizedBox(height: 16.0),
+                            isDigitalEvent ? Container() : fieldHeader("Venue Name (Optional)", false),
+                            isDigitalEvent ? Container() : eventVenueNameField(),
+                            isDigitalEventCheckBox(),
+                            SizedBox(height: 32.0),
+                            //EVENT DATE & TIME
+                            eventTimeFields(screenSize),
+                            SizedBox(height: 16.0),
+                            eventTimezoneField(),
+                            SizedBox(height: 32.0),
+                            //EVENT IMAGE
+                            fieldHeader("Event Image", true),
+                            SizedBox(height: 8.0),
+                            eventImgButton(),
+                            SizedBox(height: 8.0),
+                            Row(
+                              children: <Widget>[
+                                Container(
+                                  width: 300,
+                                  child: CustomText(
+                                    context: context,
+                                    text: "We recommend using at least a 1080x1080px (1:1 ratio) image that's no larger than 5MB.",
+                                    textColor: Colors.black,
+                                    textAlign: TextAlign.left,
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(height: 32.0),
+                            //EVENT DESCRIPTION
+                            fieldHeader("Event Description", true),
+                            eventDescriptionField(),
+                            SizedBox(height: 32.0),
+                            sectionHeader("2", "Ticketing"),
+                            SizedBox(height: 16.0),
+                            //Tickets
+                            showTicketForm || ticketDistro.tickets.length > 0 ? fieldHeader("Tickets", false) : Container(),
+                            showTicketForm || ticketDistro.tickets.length > 0 ? ticketingFormHeader("ticket", screenSize) : Container(),
+                            ticketDistro.tickets.length > 0 ? ticketListBuilder(screenSize) : Container(),
+                            showTicketForm ? ticketForm(screenSize) : Container(),
+                            //Fees
+                            showFeeForm || ticketDistro.fees.length > 0 ? fieldHeader("Fees", false) : Container(),
+                            showFeeForm || ticketDistro.fees.length > 0 ? ticketingFormHeader("fee", screenSize) : Container(),
+                            ticketDistro.fees.length > 0 ? feeListBuilder(screenSize) : Container(),
+                            showFeeForm ? feeForm(screenSize) : Container(),
+                            //Discount Codes
+                            showDiscountCodeForm || ticketDistro.discountCodes.length > 0 ? fieldHeader("Discount Codes", false) : Container(),
+                            showDiscountCodeForm || ticketDistro.discountCodes.length > 0 ? ticketingFormHeader("discountCode", screenSize) : Container(),
+                            ticketDistro.discountCodes.length > 0 ? discountListBuilder(screenSize) : Container(),
+                            showDiscountCodeForm ? discountCodeForm(screenSize) : Container(),
+                            SizedBox(height: 16.0),
+                            showTicketForm || showFeeForm || showDiscountCodeForm ? Container() : ticketActions(screenSize),
+                            SizedBox(height: 40.0),
+                            sectionHeader("3", "Additional Info"),
+                            SizedBox(height: 16.0),
+                            fieldHeader("Event Privacy", true),
+                            eventPrivacyDropdown(screenSize),
+                            SizedBox(height: 16.0),
+                            fieldHeader("Event Category", true),
+                            eventCategoryDropDown(screenSize),
+                            SizedBox(height: 16.0),
+                            fieldHeader("Event Type", true),
+                            eventTypeDropDown(screenSize),
+                            SizedBox(height: 32.0),
+                            fieldHeader("Social Links (Optional)", false),
+                            SizedBox(height: 8.0),
+                            fbSocialHeader(),
+                            SizedBox(height: 3.0),
+                            fbUsernameField(),
+                            SizedBox(height: 8.0),
+                            twitterSocialHeader(),
+                            SizedBox(height: 3.0),
+                            twitterUsernameField(),
+                            SizedBox(height: 32.0),
+                            Row(
+                              mainAxisAlignment: screenSize.isMobile ? MainAxisAlignment.center : MainAxisAlignment.start,
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 2.0),
+                                  child: CustomColorButton(
+                                    text: "Create Event",
+                                    textColor: Colors.black,
+                                    backgroundColor: Colors.white,
+                                    height: 35.0,
+                                    width: 150,
+                                    onPressed: () => submitEvent(),
+                                  ).showCursorOnHover,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 64.0),
+                          ],
+                        ),
+                      ),
+                Footer(),
+              ],
             ),
           ),
         ),
