@@ -28,6 +28,9 @@ class WebblenEvent {
   String category;
   int clicks;
   String website;
+  String fbUsername;
+  String twitterUsername;
+  String instaUsername;
   double checkInRadius;
   int estimatedTurnout;
   int actualTurnout;
@@ -67,6 +70,9 @@ class WebblenEvent {
     this.category,
     this.clicks,
     this.website,
+    this.fbUsername,
+    this.twitterUsername,
+    this.instaUsername,
     this.checkInRadius,
     this.estimatedTurnout,
     this.actualTurnout,
@@ -108,6 +114,9 @@ class WebblenEvent {
           category: data['category'],
           clicks: data['clicks'],
           website: data['website'],
+          fbUsername: data['fbUsername'],
+          twitterUsername: data['twitterUsername'],
+          instaUsername: data['instaUsername'],
           checkInRadius: data['checkInRadius'],
           estimatedTurnout: data['estimatedTurnout'],
           actualTurnout: data['actualTurnout'],
@@ -148,6 +157,9 @@ class WebblenEvent {
         'category': this.category,
         'clicks': this.clicks,
         'website': this.website,
+        'fbUsername': this.fbUsername,
+        'twitterUsername': this.twitterUsername,
+        'instaUsername': this.instaUsername,
         'checkInRadius': this.checkInRadius,
         'estimatedTurnout': this.estimatedTurnout,
         'actualTurnout': this.actualTurnout,

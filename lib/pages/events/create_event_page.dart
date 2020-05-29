@@ -49,7 +49,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
   String address1;
   String address2;
   String city;
-  String state = "AL";
+  String province = "AL";
   String zipPostalCode;
   String digitalEventLink;
   //Date & Time Details
@@ -102,8 +102,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
   List<String> privacyOptions = ['public', 'private'];
   String eventType = 'Select Event Type';
   String eventCategory = 'Select Event Category';
-  String fbProfileName;
-  String twitterProfileName;
+  String fbUsername;
+  String twitterUsername;
+  String instaUsername;
+  String websiteURL;
 
   //Other
   GoogleMapsPlaces _places = GoogleMapsPlaces(
@@ -131,6 +133,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
     PlacesDetailsResponse detail = await _places.getDetailsByPlaceId(p.placeId);
     eventAddress = detail.result.formattedAddress;
     zipPostalCode = detail.result.addressComponents[7].longName;
+    city = detail.result.addressComponents[3].longName;
+    print(city);
+    province = detail.result.addressComponents[5].shortName;
+    print(province);
     lat = detail.result.geometry.location.lat;
     lon = detail.result.geometry.location.lng;
     setState(() {});
@@ -1191,7 +1197,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 initialValue: discountCodePercentage,
                 cursorColor: Colors.black,
                 validator: (value) => value.isEmpty ? 'Field Cannot be Empty' : null,
-                onSaved: (value) => discountCodeQuantity = value.trim(),
+                onSaved: (value) => discountCodePercentage = value.trim(),
                 inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
                   hintText: "100",
@@ -1492,15 +1498,50 @@ class _CreateEventPageState extends State<CreateEventPage> {
   Widget fbUsernameField() {
     return TextFieldContainer(
       child: TextFormField(
-        initialValue: fbProfileName,
+        initialValue: fbUsername,
         cursorColor: Colors.black,
         onSaved: (value) {
           setState(() {
-            fbProfileName = value.trim();
+            fbUsername = value.trim();
           });
         },
         decoration: InputDecoration(
           hintText: "FB Profile/Page Username",
+          border: InputBorder.none,
+        ),
+      ),
+    );
+  }
+
+  Widget instaSocialHeader() {
+    return Row(
+      children: <Widget>[
+        Icon(FontAwesomeIcons.instagram, size: 16.0, color: Colors.black),
+        SizedBox(width: 4.0),
+        CustomText(
+          context: context,
+          text: "instagram.com/",
+          textColor: Colors.black,
+          textAlign: TextAlign.left,
+          fontSize: 16.0,
+          fontWeight: FontWeight.w400,
+        ),
+      ],
+    );
+  }
+
+  Widget instaUsernameField() {
+    return TextFieldContainer(
+      child: TextFormField(
+        initialValue: instaUsername,
+        cursorColor: Colors.black,
+        onSaved: (value) {
+          setState(() {
+            instaUsername = value.trim();
+          });
+        },
+        decoration: InputDecoration(
+          hintText: "Insta Username",
           border: InputBorder.none,
         ),
       ),
@@ -1527,15 +1568,50 @@ class _CreateEventPageState extends State<CreateEventPage> {
   Widget twitterUsernameField() {
     return TextFieldContainer(
       child: TextFormField(
-        initialValue: twitterProfileName,
+        initialValue: twitterUsername,
         cursorColor: Colors.black,
         onSaved: (value) {
           setState(() {
-            twitterProfileName = value.trim();
+            twitterUsername = value.trim();
           });
         },
         decoration: InputDecoration(
           hintText: "Twitter Username",
+          border: InputBorder.none,
+        ),
+      ),
+    );
+  }
+
+  Widget websiteHeader() {
+    return Row(
+      children: <Widget>[
+        Icon(FontAwesomeIcons.link, size: 16.0, color: Colors.black),
+        SizedBox(width: 4.0),
+        CustomText(
+          context: context,
+          text: "Website URL",
+          textColor: Colors.black,
+          textAlign: TextAlign.left,
+          fontSize: 16.0,
+          fontWeight: FontWeight.w400,
+        ),
+      ],
+    );
+  }
+
+  Widget websiteField() {
+    return TextFieldContainer(
+      child: TextFormField(
+        initialValue: websiteURL,
+        cursorColor: Colors.black,
+        onSaved: (value) {
+          setState(() {
+            websiteURL = value.trim();
+          });
+        },
+        decoration: InputDecoration(
+          hintText: "Website URL",
           border: InputBorder.none,
         ),
       ),
@@ -1586,6 +1662,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
       digitalEventLink: digitalEventLink,
       venueName: venueName,
       streetAddress: eventAddress,
+      city: city,
+      province: province,
       nearbyZipcodes: [],
       lat: lat,
       lon: lon,
@@ -1594,7 +1672,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
       type: eventType,
       category: eventCategory,
       clicks: 0,
-      website: null,
+      website: websiteURL,
+      fbUsername: fbUsername,
+      twitterUsername: twitterUsername,
+      instaUsername: instaUsername,
       checkInRadius: 25,
       estimatedTurnout: 0,
       actualTurnout: 0,
@@ -1606,11 +1687,11 @@ class _CreateEventPageState extends State<CreateEventPage> {
       startTime: startTime,
       endDate: endDate,
       endTime: endTime,
-      timezone: null,
+      timezone: timezone,
       privacy: privacy,
       reported: false,
     );
-    EventDataService().uploadEvent(newEvent, eventImgFile, ticketDistro).then((error) {
+    EventDataService().uploadEvent(newEvent, zipPostalCode, eventImgFile, ticketDistro).then((error) {
       if (error == null) {
         newEvent.navigateToEvent(newEvent.id);
       } else {
@@ -1626,12 +1707,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
     //bool addressIsValid = setEventAddress();
     if (eventTitle == null || eventTitle.isEmpty) {
       CustomAlerts().showErrorAlert(context, "Event Title Missing", "Please Give this Event a Title");
-    } else if (eventAddress == null || eventAddress.isEmpty || digitalEventLink == null || digitalEventLink.isEmpty) {
-      if (isDigitalEvent) {
-        CustomAlerts().showErrorAlert(context, "Event URL Link Error", "Please Provide the Link to this Event");
-      } else {
-        CustomAlerts().showErrorAlert(context, "Event Address Error", "Please Set the Location of this Event");
-      }
+    } else if (!isDigitalEvent && (eventAddress == null || eventAddress.isEmpty)) {
+      CustomAlerts().showErrorAlert(context, "Event Address Error", "Please Set the Location of this Event");
+    } else if (isDigitalEvent && (digitalEventLink == null || digitalEventLink.isEmpty)) {
+      CustomAlerts().showErrorAlert(context, "Event URL Link Error", "Please Provide the Link to this Event");
     } else if (eventImgByteMemory == null) {
       CustomAlerts().showErrorAlert(context, "Event Image Missing", "Please Set the Image for this Event");
     } else if (eventDesc == null || eventDesc.isEmpty) {
@@ -1725,7 +1804,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                             isDigitalEvent ? fieldHeader("Event URL Link", true) : fieldHeader("Location", true),
                             isDigitalEvent ? eventDigitalLinkField() : eventLocationField(screenSize),
                             isDigitalEvent ? Container() : SizedBox(height: 16.0),
-                            isDigitalEvent ? Container() : fieldHeader("Venue Name (Optional)", false),
+                            isDigitalEvent ? Container() : fieldHeader("Venue Name/Details (Optional)", false),
                             isDigitalEvent ? Container() : eventVenueNameField(),
                             isDigitalEventCheckBox(),
                             SizedBox(height: 32.0),
@@ -1796,9 +1875,17 @@ class _CreateEventPageState extends State<CreateEventPage> {
                             SizedBox(height: 3.0),
                             fbUsernameField(),
                             SizedBox(height: 8.0),
+                            instaSocialHeader(),
+                            SizedBox(height: 3.0),
+                            instaUsernameField(),
+                            SizedBox(height: 8.0),
                             twitterSocialHeader(),
                             SizedBox(height: 3.0),
                             twitterUsernameField(),
+                            SizedBox(height: 8.0),
+                            websiteHeader(),
+                            SizedBox(height: 3.0),
+                            websiteField(),
                             SizedBox(height: 32.0),
                             Row(
                               mainAxisAlignment: screenSize.isMobile ? MainAxisAlignment.center : MainAxisAlignment.start,

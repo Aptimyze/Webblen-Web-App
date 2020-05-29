@@ -32,8 +32,7 @@ dependencies:
   flutter_google_places: ^0.2.4
   google_places_flutter: ^1.0.5
   timezone: ^0.5.7
-  geoflutterfire: ^2.1.0
-
+  #geoflutterfire: ^2.1.0
 
   #Other Dependencies
   qr_flutter: ^3.2.0

@@ -12,7 +12,6 @@ import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/locater.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/routing/route_names.dart';
-import 'package:webblen_web_app/services/location/location_service.dart';
 import 'package:webblen_web_app/services/navigation/navigation_service.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_color_button.dart';
 import 'package:webblen_web_app/widgets/common/containers/text_field_container.dart';
@@ -332,7 +331,6 @@ class _EventsPageState extends State<EventsPage> {
     // TODO: implement initState
     super.initState();
     queryAndFilterEvents();
-    LocationService().findNearestZipcodes('58102');
   }
 
   @override

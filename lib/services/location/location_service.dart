@@ -1,10 +1,15 @@
 import 'dart:js';
 
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase/firebase.dart' as firebase;
+import 'package:firebase/firestore.dart';
 
 import 'location_services_js.dart';
 
 class LocationService {
+  static final firestore = firebase.firestore();
+  CollectionReference eventsRef = firestore.collection("events");
+
   success(pos) {
     try {
       print(pos.coords.latitude);
@@ -43,10 +48,11 @@ class LocationService {
     ).catchError((e) {
       print(e);
     });
-    if (result.data != null) {
-      zips = result.data;
-      zips.add(zipcode);
-      print(zips);
+    if (result != null) {
+      List areaCodes = result.data['data'];
+      if (areaCodes.isNotEmpty) {
+        zips = areaCodes;
+      }
     }
     return zips;
   }

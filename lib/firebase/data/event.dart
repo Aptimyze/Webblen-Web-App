@@ -2,38 +2,39 @@ import 'dart:html';
 
 import 'package:firebase/firebase.dart' as firebase;
 import 'package:firebase/firestore.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
 import 'package:random_string/random_string.dart';
 import 'package:webblen_web_app/firebase/services/image_upload.dart';
 import 'package:webblen_web_app/models/event_ticket.dart';
 import 'package:webblen_web_app/models/ticket_distro.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
+import 'package:webblen_web_app/services/location/location_service.dart';
 
 class EventDataService {
   static final firestore = firebase.firestore();
   CollectionReference eventsRef = firestore.collection("events");
   CollectionReference ticketsRef = firestore.collection("purchased_tickets");
   CollectionReference ticketDistroRef = firestore.collection("event_ticket_distros");
-  Geoflutterfire geo = Geoflutterfire();
+  //Geoflutterfire geo = Geoflutterfire();
 
   //CREATE
-  Future<String> uploadEvent(WebblenEvent newEvent, File eventImageFile, TicketDistro ticketDistro) async {
+  Future<String> uploadEvent(WebblenEvent newEvent, String zipPostalCode, File eventImageFile, TicketDistro ticketDistro) async {
     String error;
+    List nearbyZipcodes = [];
     String newEventID = randomAlphaNumeric(12);
     String eventImageURL = await ImageUploadService().uploadImageToFirebaseStorage(eventImageFile, EventImgFile, newEventID);
     newEvent.id = newEventID;
     newEvent.imageURL = eventImageURL;
     if (!newEvent.isDigitalEvent) {
-      GeoFirePoint geoFirePoint = geo.point(
-        latitude: newEvent.lat,
-        longitude: newEvent.lon,
-      );
-      await eventsRef.doc(newEventID).set({'d': newEvent.toMap(), 'g': geoFirePoint.hash, 'l': geoFirePoint.geoPoint});
-    } else {
-      await eventsRef.doc(newEventID).set({'d': newEvent.toMap(), 'g': null, 'l': null});
+      List listOfAreaCodes = await LocationService().findNearestZipcodes(zipPostalCode);
+      if (listOfAreaCodes != null) {
+        nearbyZipcodes = listOfAreaCodes;
+      } else {
+        nearbyZipcodes.add(zipPostalCode);
+      }
+      newEvent.nearbyZipcodes = nearbyZipcodes;
     }
+    await eventsRef.doc(newEventID).set({'d': newEvent.toMap(), 'g': null, 'l': null});
     if (ticketDistro.tickets.isNotEmpty) {
-      print('uploading tickets');
       await uploadEventTickets(newEventID, ticketDistro);
     }
     return error;
@@ -52,7 +53,7 @@ class EventDataService {
     List<WebblenEvent> events = [];
     QuerySnapshot querySnapshot = await eventsRef.get();
     querySnapshot.docs.forEach((snapshot) {
-      WebblenEvent event = WebblenEvent.fromMap(snapshot.data());
+      WebblenEvent event = WebblenEvent.fromMap(snapshot.data()['d']);
       events.add(event);
     });
     events.sort((eventA, eventB) => eventA.startDateTimeInMilliseconds.compareTo(eventB.startDateTimeInMilliseconds));
@@ -63,8 +64,7 @@ class EventDataService {
     WebblenEvent event;
     await eventsRef.doc(eventID).get().then((res) {
       if (res.exists) {
-        print(res);
-        event = WebblenEvent.fromMap(res.data());
+        event = WebblenEvent.fromMap(res.data()['d']);
       }
     }).catchError((e) {
       print(e.details);
