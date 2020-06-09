@@ -36,7 +36,7 @@ class _WalletEventTicketsPageState extends State<WalletEventTicketsPage> {
         event = res;
         EventDataService().getEventTicketDistro(widget.eventID).then((res) {
           ticketDistro = res;
-          EventDataService().getPurchasedTickets(uid).then((res) {
+          EventDataService().getPurchasedTicketsFromEvent(uid, widget.eventID).then((res) {
             tickets = res;
             tickets.sort((ticketA, ticketB) => ticketA.ticketName.compareTo(ticketB.ticketName));
             isLoading = false;

@@ -8,11 +8,26 @@ import 'package:webblen_web_app/models/webblen_user.dart';
 class WebblenUserData {
   static final firestore = fb.firestore();
   final CollectionReference userRef = firestore.collection("users");
+  final CollectionReference stripeRef = firestore.collection("stripe");
   final CollectionReference eventRef = firestore.collection("events");
   final CollectionReference notifRef = firestore.collection("user_notifications");
 
   Stream<WebblenUser> streamCurrentUser(String uid) {
     return userRef.doc(uid).onSnapshot.map((snapshot) => WebblenUser.fromMap(Map<String, dynamic>.from(snapshot.data())));
+  }
+
+  Stream<Map<String, dynamic>> streamStripeAccount(String uid) {
+    return stripeRef.doc(uid).onSnapshot.map((snapshot) => snapshot.data());
+  }
+
+  Future<String> getStripeUID(String uid) async {
+    String stripeUID;
+    DocumentSnapshot documentSnapshot = await stripeRef.doc(uid).get();
+    if (documentSnapshot.exists) {
+      Map<String, dynamic> docData = documentSnapshot.data();
+      stripeUID = docData['stripeUID'];
+    }
+    return stripeUID;
   }
 
   Future<bool> userAccountIsSetup(String uid) async {

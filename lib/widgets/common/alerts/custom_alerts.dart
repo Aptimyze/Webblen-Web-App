@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/widgets/common/state/progress_indicator.dart';
 
 class CustomAlerts {
@@ -15,9 +16,9 @@ class CustomAlerts {
           child: Text(
             "Dismiss",
             style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
+          ).showCursorOnHover,
           onPressed: () => Navigator.pop(context),
-          width: 120,
+          width: 200,
         )
       ],
     ).show();
@@ -35,9 +36,32 @@ class CustomAlerts {
           child: Text(
             "Ok",
             style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
+          ).showCursorOnHover,
           onPressed: () => Navigator.pop(context),
-          width: 120,
+          width: 200,
+        )
+      ],
+    ).show();
+  }
+
+  showActionRequiredDialog(BuildContext context, String title, String desc, String actionText, VoidCallback action) {
+    Alert(
+      context: context,
+      type: AlertType.info,
+      title: title,
+      desc: desc,
+      buttons: [
+        DialogButton(
+          color: Colors.black,
+          child: Text(
+            actionText,
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ).showCursorOnHover,
+          onPressed: () {
+            Navigator.pop(context);
+            action;
+          },
+          width: 200,
         )
       ],
     ).show();
@@ -55,12 +79,12 @@ class CustomAlerts {
           child: Text(
             actionText,
             style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
+          ).showCursorOnHover,
           onPressed: () {
             Navigator.pop(context);
             action;
           },
-          width: 120,
+          width: 200,
         )
       ],
     ).show();
@@ -78,15 +102,15 @@ class CustomAlerts {
           child: Text(
             "Dismiss",
             style: TextStyle(color: Colors.white, fontSize: 20),
-          ),
+          ).showCursorOnHover,
           onPressed: () => Navigator.pop(context),
-          width: 120,
+          width: 200,
         )
       ],
     ).show();
   }
 
-  ShowLoadingAlert(BuildContext context, String alertDescription) {
+  showLoadingAlert(BuildContext context, String alertDescription) {
     var alertStyle = AlertStyle(
       animationType: AnimationType.grow,
       isCloseButton: false,
@@ -110,6 +134,41 @@ class CustomAlerts {
         child: CustomCircleProgress(50, 50, 50, 50, Colors.red),
       ),
       buttons: [],
+    ).show();
+  }
+
+  showCheckExampleDialog(BuildContext context) {
+    Alert(
+      context: context,
+      type: AlertType.none,
+      title: "Banking Info",
+      desc: "You Can Find Your Routing & Account Number on a Bank Check",
+      content: Container(
+        height: 200.0,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              height: 150,
+              child: Image.asset(
+                "assets/images/check_example.png",
+                fit: BoxFit.contain,
+              ),
+            ),
+          ],
+        ),
+      ),
+      buttons: [
+        DialogButton(
+          color: Colors.black,
+          child: Text(
+            "Dismiss",
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ).showCursorOnHover,
+          onPressed: () => Navigator.pop(context),
+          width: 200,
+        ),
+      ],
     ).show();
   }
 }

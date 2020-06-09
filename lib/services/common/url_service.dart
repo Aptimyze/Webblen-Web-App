@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webblen_web_app/widgets/common/alerts/custom_alerts.dart';
 
 class URLService {
   openURL(BuildContext context, String url) async {
@@ -11,11 +12,7 @@ class URLService {
         //statusBarBrightness: Brightness.light,
       );
     } else {
-//      ShowAlertDialogService().showFailureDialog(
-//        context,
-//        "URL Error",
-//        "There was an issue launching this url",
-//      );
+      CustomAlerts().showErrorAlert(context, "URL Error", "There was an issue opening this url");
     }
   }
 }

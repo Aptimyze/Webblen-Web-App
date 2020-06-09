@@ -11,8 +11,13 @@ import 'package:webblen_web_app/pages/events/events_page.dart';
 import 'package:webblen_web_app/pages/home/home_page.dart';
 import 'package:webblen_web_app/pages/tickets/purchase_tickets_page.dart';
 import 'package:webblen_web_app/pages/tickets/ticket_selection_page.dart';
+import 'package:webblen_web_app/pages/wallet/wallet_earnings_guide_page.dart';
 import 'package:webblen_web_app/pages/wallet/wallet_event_tickets_page.dart';
 import 'package:webblen_web_app/pages/wallet/wallet_page.dart';
+import 'package:webblen_web_app/pages/wallet/wallet_payment_history_page.dart';
+import 'package:webblen_web_app/pages/wallet/wallet_payout_methods_page.dart';
+import 'package:webblen_web_app/pages/wallet/wallet_setup_direct_deposit_page.dart';
+import 'package:webblen_web_app/pages/wallet/wallet_setup_instant_deposit_page.dart';
 
 import 'route_names.dart';
 
@@ -50,6 +55,16 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case WalletEventTicketsRoute:
       var eventID = routingData['id'];
       return _getPageRoute(WalletEventTicketsPage(eventID: eventID), settings);
+    case WalletEarningsGuideRoute:
+      return _getPageRoute(WalletEarningsGuidePage(), settings);
+    case WalletPaymentsHistoryRoute:
+      return _getPageRoute(WalletPaymentHistoryPage(), settings);
+    case WalletPayoutMethodsRoute:
+      return _getPageRoute(WalletPayoutMethodsPage(), settings);
+    case WalletDirectDepositSetupRoute:
+      return _getPageRoute(WalletSetupDirectDepositPage(), settings);
+    case WalletInstantDepositSetupRoute:
+      return _getPageRoute(WalletSetupInstantDepositPage(), settings);
     default:
       return _getPageRoute(HomePage(), settings);
   }

@@ -72,6 +72,17 @@ class EventDataService {
     return event;
   }
 
+  Future<List<WebblenEvent>> getTrendingEvents() async {
+    List<WebblenEvent> events = [];
+    QuerySnapshot querySnapshot = await eventsRef.orderBy('d.clicks').limit(3).get();
+    querySnapshot.docs.forEach((snapshot) {
+      WebblenEvent event = WebblenEvent.fromMap(snapshot.data()['d']);
+      events.add(event);
+    });
+    events.sort((eventA, eventB) => eventA.startDateTimeInMilliseconds.compareTo(eventB.startDateTimeInMilliseconds));
+    return events;
+  }
+
   Future<TicketDistro> getEventTicketDistro(String eventID) async {
     TicketDistro ticketDistro;
     DocumentSnapshot snapshot = await ticketDistroRef.doc(eventID).get();

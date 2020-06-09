@@ -30,7 +30,7 @@ class _AccountPageState extends State<AccountPage> {
   Uint8List newUserImgByteMemory;
 
   logOut() async {
-    CustomAlerts().ShowLoadingAlert(context, "Logging Out...");
+    CustomAlerts().showLoadingAlert(context, "Logging Out...");
     FirebaseAuthenticationService().signOut().then((error) {
       Navigator.pop(context);
       if (error != null) {
@@ -119,8 +119,6 @@ class _AccountPageState extends State<AccountPage> {
                             textSize: 18.0,
                             height: 40.0,
                             width: 200.0,
-                            hPadding: 8.0,
-                            vPadding: 8.0,
                           ).showCursorOnHover,
                           SizedBox(height: 8.0),
                           CustomColorButton(
@@ -131,8 +129,6 @@ class _AccountPageState extends State<AccountPage> {
                             textSize: 18.0,
                             height: 40.0,
                             width: 200.0,
-                            hPadding: 8.0,
-                            vPadding: 8.0,
                           ).showCursorOnHover,
                           SizedBox(height: 8.0),
                           CustomColorButton(
@@ -143,8 +139,6 @@ class _AccountPageState extends State<AccountPage> {
                             textSize: 18.0,
                             height: 40.0,
                             width: 200.0,
-                            hPadding: 8.0,
-                            vPadding: 8.0,
                           ).showCursorOnHover,
                         ],
                       ),

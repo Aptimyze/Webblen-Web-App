@@ -258,8 +258,6 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
               textSize: 18.0,
               height: 40.0,
               width: 300.0,
-              hPadding: 8.0,
-              vPadding: 8.0,
             ).showCursorOnHover,
             SizedBox(height: 8.0),
             Container(

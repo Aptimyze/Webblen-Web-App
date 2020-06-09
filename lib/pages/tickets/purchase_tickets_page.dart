@@ -18,7 +18,7 @@ import 'package:webblen_web_app/firebase/services/authentication.dart';
 import 'package:webblen_web_app/models/ticket_distro.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
-import 'package:webblen_web_app/services/payments/stripe_payment.dart';
+import 'package:webblen_web_app/services/stripe/stripe_payment.dart';
 import 'package:webblen_web_app/widgets/common/alerts/custom_alerts.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_color_button.dart';
 import 'package:webblen_web_app/widgets/common/containers/text_field_container.dart';
@@ -132,7 +132,7 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
       }
     }
     setState(() {});
-    CustomAlerts().ShowLoadingAlert(context, 'Applying Code...');
+    CustomAlerts().showLoadingAlert(context, 'Applying Code...');
     await Future.delayed(Duration(seconds: 2));
     Navigator.of(context).pop();
     //showTicketPurchaseInfoDialog();
@@ -616,7 +616,7 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
     }
     setState(() {});
     if (paymentFormError == null) {
-      CustomAlerts().ShowLoadingAlert(context, 'Processing...');
+      CustomAlerts().showLoadingAlert(context, 'Processing...');
       if (isLoggedIn) {
         submitPayment();
         await Future.delayed(Duration(seconds: 2));

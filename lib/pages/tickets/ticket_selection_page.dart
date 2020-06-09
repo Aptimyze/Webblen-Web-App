@@ -139,7 +139,7 @@ class _TicketSelectionPageState extends State<TicketSelectionPage> {
     }
     setState(() {});
     Navigator.pop(context);
-    CustomAlerts().ShowLoadingAlert(context, 'Applying Code...');
+    CustomAlerts().showLoadingAlert(context, 'Applying Code...');
     await Future.delayed(Duration(seconds: 2));
     Navigator.of(context).pop();
     showTicketPurchaseInfoDialog();
@@ -729,7 +729,7 @@ class _TicketSelectionPageState extends State<TicketSelectionPage> {
 
   //Card Transaction
   validateAndSubmitPayment() {
-    CustomAlerts().ShowLoadingAlert(context, "Processing...");
+    CustomAlerts().showLoadingAlert(context, "Processing...");
     ticketPaymentFormKey.currentState.save();
     cardNumber = cardNumber.replaceAll(" ", "");
     if (firstName == null || firstName.isEmpty) {

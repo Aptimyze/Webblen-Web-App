@@ -42,7 +42,8 @@ class CustomColors {
   static final transparent = Color(0x00000000);
 
   //WEBBLEN COLOR SWATCH
-  static final webblenRed = Color.fromRGBO(255, 87, 87, 1.0);
+
+  static final webblenRed = Color.fromRGBO(253, 36, 61, 1.0);
   static final webblenMatteBlue = Color.fromRGBO(63, 61, 86, 1.0);
   static final webblenLightGray = Color.fromRGBO(63, 61, 86, 1.0);
   static final webblenMidGray = Color.fromRGBO(182, 182, 189, 1.0);

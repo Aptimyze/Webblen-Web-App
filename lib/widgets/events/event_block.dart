@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
@@ -21,6 +22,7 @@ class EventBlock extends StatelessWidget {
     return GestureDetector(
       onTap: viewEventTickets == null ? viewEventDetails : viewEventTickets,
       child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 8.0),
         width: eventImgSize,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(
@@ -35,7 +37,6 @@ class EventBlock extends StatelessWidget {
             ),
           ],
         ),
-
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -150,125 +151,106 @@ class EventBlock extends StatelessWidget {
             )
           ],
         ),
-//        margin: EdgeInsets.only(
-//          left: 8.0,
-//          bottom: 8.0,
-//          right: 8.0,
-//        ),
-//        height: MediaQuery.of(context).size.width - 16,
-//        decoration: BoxDecoration(
-//          border: Border.all(color: Colors.black12, width: 1.0),
-//          image: DecorationImage(
-//            image: NetworkImage(event.imageURL),
-//            fit: BoxFit.cover,
-//          ),
-//          borderRadius: BorderRadius.circular(8.0),
-//        ),
-//        child: Column(
-//          crossAxisAlignment: CrossAxisAlignment.stretch,
-//          children: <Widget>[
-//            SizedBox(
-//              height: 8.0,
-//            ),
-//            Row(
-//              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//              children: <Widget>[
-//                GestureDetector(
-//                  onTap: shareEvent,
-//                  child: Container(
-//                    margin: EdgeInsets.only(
-//                      right: 16.0,
-//                    ),
-//                    height: 30,
-//                    width: 30,
-//                    decoration: BoxDecoration(
-//                      color: Colors.black38,
-//                      borderRadius: BorderRadius.all(
-//                        Radius.circular(25),
-//                      ),
-//                    ),
-//                    child: Icon(
-//                      FontAwesomeIcons.share,
-//                      color: Colors.white,
-//                      size: 14.0,
-//                    ),
-//                  ),
-//                ),
-//              ],
-//            ),
-//            Spacer(),
-//            Container(
-//              padding: EdgeInsets.only(
-//                top: 8.0,
-//              ),
-//              decoration: BoxDecoration(
-////                border: Border(
-////                  top: BorderSide(
-////                    color: CustomColors.darkGray,
-////                    width: 1.0,
-////                  ),
-////                ),
-//                color: CustomColors.textFieldGray,
-//                borderRadius: BorderRadius.only(
-//                  bottomLeft: Radius.circular(8.0),
-//                  bottomRight: Radius.circular(8.0),
-//                ),
-//              ),
-//              child: Column(
-//                crossAxisAlignment: CrossAxisAlignment.start,
-//                children: <Widget>[
-//                  Padding(
-//                    padding: EdgeInsets.symmetric(
-//                      horizontal: 16.0,
-//                      vertical: 4.0,
-//                    ),
-//                    child: FittedBox(
-//                      fit: BoxFit.scaleDown,
-//                      child: CustomText(
-//                        context: context,
-//                        text: event.title,
-//                        textColor: Colors.black,
-//                        textAlign: TextAlign.left,
-//                        fontSize: 26.0,
-//                        fontWeight: FontWeight.w700,
-//                      ),
-//                    ),
-//                  ),
-//                  Row(
-//                    children: [
-//                      SizedBox(
-//                        width: 16.0,
-//                      ),
-//                      CustomText(
-//                        context: context,
-//                        text: "${event.startDate}",
-//                        textColor: Colors.black,
-//                        textAlign: TextAlign.left,
-//                        fontSize: 16.0,
-//                        fontWeight: FontWeight.w500,
-//                      ),
-//                      Spacer(),
-//                      CustomText(
-//                        context: context,
-//                        text: "${event.startTime}",
-//                        textColor: Colors.black,
-//                        textAlign: TextAlign.left,
-//                        fontSize: 16.0,
-//                        fontWeight: FontWeight.w500,
-//                      ),
-//                      SizedBox(
-//                        width: 16.0,
-//                      ),
-//                    ],
-//                  ),
-//                  SizedBox(
-//                    height: 16.0,
-//                  ),
-//                ],
-//              ),
-//            ),
-//          ],
-//        ),
+      ),
+    ).showCursorOnHover;
+  }
+}
+
+class FeaturedEventBlock extends StatelessWidget {
+  final SizingInformation screenSize;
+  final WebblenEvent event;
+  final VoidCallback viewEventDetails;
+
+  FeaturedEventBlock({this.screenSize, this.event, this.viewEventDetails});
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: viewEventDetails,
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+        height: screenSize.isDesktop ? 200 : 220,
+        width: screenSize.isDesktop ? 250 : 180,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(8.0)),
+          image: DecorationImage(
+            fit: BoxFit.fill,
+            image: NetworkImage(event.imageURL),
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: 8.0,
+            vertical: 8.0,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.black45,
+            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                height: 16.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: screenSize.isDesktop ? 220 : 150,
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: Text(
+                        event.title,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: <Widget>[
+                          Icon(
+                            FontAwesomeIcons.mapMarkerAlt,
+                            size: 14.0,
+                            color: Colors.white,
+                          ),
+                          SizedBox(width: 4.0),
+                          CustomText(
+                            context: context,
+                            text: "${event.city}, ${event.province}",
+                            textColor: Colors.white,
+                            textAlign: TextAlign.left,
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ],
+                      ),
+                      CustomText(
+                        context: context,
+                        text: "${event.startDate} | ${event.startTime}",
+                        textColor: Colors.white,
+                        textAlign: TextAlign.left,
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     ).showCursorOnHover;
   }

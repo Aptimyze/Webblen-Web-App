@@ -14,7 +14,7 @@ dependencies:
   responsive_builder: ^0.1.5
   get_it: ^4.0.0
   http: ^0.12.0+2
-  url_launcher: ^5.4.2
+  url_launcher: ^5.4.10
   js: ^0.6.0
 
 
@@ -35,6 +35,7 @@ dependencies:
   #geoflutterfire: ^2.1.0
 
   #Other Dependencies
+  stripe_sdk: ^2.8.2
   qr_flutter: ^3.2.0
   algolia: ^0.1.7
   font_awesome_flutter: 8.5.0

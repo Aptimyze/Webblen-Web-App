@@ -19,4 +19,11 @@ class PlatformDataService {
     taxRate = snapshot.data()['taxRate'];
     return taxRate;
   }
+
+  Future<String> getStripePubKey() async {
+    String pubKey;
+    DocumentSnapshot snapshot = await appReleaseRef.doc('stripe').get();
+    pubKey = snapshot.data()['pubKey'];
+    return pubKey;
+  }
 }

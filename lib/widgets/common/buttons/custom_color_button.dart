@@ -8,8 +8,6 @@ class CustomColorButton extends StatelessWidget {
   final VoidCallback onPressed;
   final Color backgroundColor;
   final Color textColor;
-  final double hPadding;
-  final double vPadding;
 
   CustomColorButton({
     this.text,
@@ -19,8 +17,6 @@ class CustomColorButton extends StatelessWidget {
     this.onPressed,
     this.backgroundColor,
     this.textColor,
-    this.hPadding,
-    this.vPadding,
   });
 
   @override
