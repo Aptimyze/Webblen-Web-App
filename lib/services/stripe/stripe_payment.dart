@@ -235,13 +235,4 @@ class StripePaymentService {
     }
     return status;
   }
-
-//  Stream<List<DocumentSnapshot>> streamPaymentHistory(String uid, DocumentSnapshot lastDocumentSnapshot) {
-//    var pagePaymentsQuery = stripeActivityRef.where("uid", "==", uid).orderBy("timePosted").limit(5);
-//    if (lastDocumentSnapshot != null){
-//      pagePaymentsQuery.startAfter(snapshot: lastDocumentSnapshot)
-//    }
-//    return pagePaymentsQuery.onSnapshot.map((querySnapshot) => List<DocumentSnapshot>.from(querySnapshot.docs));
-//  }
-
 }

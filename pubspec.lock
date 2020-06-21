@@ -160,6 +160,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.4.11"
+  flutter_facebook_login:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "v1.3.0-web"
+      resolved-ref: "9d2c84ad40c252ab3cbfece163259899479985a3"
+      url: "git://github.com/romulojjunior/flutter_facebook_login.git"
+    source: git
+    version: "3.0.0"
   flutter_google_places:
     dependency: "direct main"
     description:
@@ -226,6 +235,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.5"
+  google_sign_in:
+    dependency: "direct main"
+    description:
+      name: google_sign_in
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.5.1"
+  google_sign_in_platform_interface:
+    dependency: transitive
+    description:
+      name: google_sign_in_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.2"
+  google_sign_in_web:
+    dependency: transitive
+    description:
+      name: google_sign_in_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.1+1"
   http:
     dependency: "direct main"
     description:
@@ -345,6 +375,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.5"
+  responsive_grid:
+    dependency: "direct main"
+    description:
+      name: responsive_grid
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.1"
   rflutter_alert:
     dependency: "direct main"
     description:

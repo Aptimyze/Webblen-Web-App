@@ -29,7 +29,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case EventsRoute:
       return _getPageRoute(EventsPage(), settings);
     case CreateEventRoute:
-      return _getPageRoute(CreateEventPage(), settings);
+      var eventID = routingData['id'];
+      return _getPageRoute(CreateEventPage(eventID: eventID), settings);
     case EventsDetailsRoute:
       var eventID = routingData['id'];
       return _getPageRoute(EventDetailsPage(eventID: eventID), settings);
@@ -71,5 +72,30 @@ Route<dynamic> generateRoute(RouteSettings settings) {
 }
 
 PageRoute _getPageRoute(Widget child, RouteSettings settings) {
-  return MaterialPageRoute(builder: (context) => child, settings: RouteSettings(name: settings.name));
+  return _FadeRoute(child: child, routeName: settings.name);
+}
+
+class _FadeRoute extends PageRouteBuilder {
+  final Widget child;
+  final String routeName;
+  _FadeRoute({this.child, this.routeName})
+      : super(
+          settings: RouteSettings(name: routeName),
+          pageBuilder: (
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+          ) =>
+              child,
+          transitionsBuilder: (
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+            Widget child,
+          ) =>
+              FadeTransition(
+            opacity: animation,
+            child: child,
+          ),
+        );
 }

@@ -28,6 +28,9 @@ import 'package:webblen_web_app/widgets/common/state/progress_indicator.dart';
 import 'package:webblen_web_app/widgets/common/text/custom_text.dart';
 
 class CreateEventPage extends StatefulWidget {
+  final String eventID;
+  CreateEventPage({this.eventID});
+
   @override
   _CreateEventPageState createState() => _CreateEventPageState();
 }
@@ -40,6 +43,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
   //Event Details
   String eventTitle;
   String eventDesc;
+  String eventImgURL;
   //Location Details
   bool isDigitalEvent = false;
   String venueName;
@@ -52,6 +56,11 @@ class _CreateEventPageState extends State<CreateEventPage> {
   String province = "AL";
   String zipPostalCode;
   String digitalEventLink;
+  List nearbyZipcodes = [];
+  List sharedComs = [];
+  List tags = [];
+  int eventClicks = 0;
+
   //Date & Time Details
   DateTime selectedDateTime = DateTime(
     DateTime.now().year,
@@ -497,12 +506,11 @@ class _CreateEventPageState extends State<CreateEventPage> {
             children: <Widget>[
               fieldHeader("Starts", true),
               Row(
-                mainAxisAlignment: screenSize.isMobile ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
                 children: <Widget>[
                   GestureDetector(
                     onTap: () => openCalendar(true),
                     child: TextFieldContainer(
-                      width: 300,
+                      width: 200,
                       child: Padding(
                         padding: EdgeInsets.only(top: 16.0, right: 8.0, bottom: 16.0),
                         child: CustomText(
@@ -544,12 +552,11 @@ class _CreateEventPageState extends State<CreateEventPage> {
               SizedBox(height: 8.0),
               fieldHeader("Ends", true),
               Row(
-                mainAxisAlignment: screenSize.isMobile ? MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
                 children: <Widget>[
                   GestureDetector(
                     onTap: () => openCalendar(false),
                     child: TextFieldContainer(
-                      width: 300,
+                      width: 200,
                       child: Padding(
                         padding: EdgeInsets.only(top: 16.0, right: 8.0, bottom: 16.0),
                         child: CustomText(
@@ -613,6 +620,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                       top: 8.0,
                     ),
                     child: DropdownButton(
+                        icon: Container(),
                         underline: Container(),
                         value: timezone,
                         items: Timezones.timezones.map((Map<String, dynamic> timezone) {
@@ -660,7 +668,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
   }
 
   Widget eventImgButton() {
-    return eventImgByteMemory == null
+    return eventImgByteMemory == null && eventImgURL == null
         ? Row(
             children: <Widget>[
               GestureDetector(
@@ -691,18 +699,31 @@ class _CreateEventPageState extends State<CreateEventPage> {
               ).showCursorOnHover,
             ],
           )
-        : Row(
-            children: <Widget>[
-              GestureDetector(
-                onTap: () => uploadImage(),
-                child: Container(
-                  height: 250,
-                  width: 250,
-                  child: Image.memory(eventImgByteMemory),
-                ),
-              ).showCursorOnHover
-            ],
-          );
+        : eventImgByteMemory != null
+            ? Row(
+                children: <Widget>[
+                  GestureDetector(
+                    onTap: () => uploadImage(),
+                    child: Container(
+                      height: 250,
+                      width: 250,
+                      child: Image.memory(eventImgByteMemory),
+                    ),
+                  ).showCursorOnHover
+                ],
+              )
+            : Row(
+                children: <Widget>[
+                  GestureDetector(
+                    onTap: () => uploadImage(),
+                    child: Container(
+                      height: 250,
+                      width: 250,
+                      child: Image.network(eventImgURL),
+                    ),
+                  ).showCursorOnHover
+                ],
+              );
   }
 
   uploadImage() async {
@@ -1197,8 +1218,18 @@ class _CreateEventPageState extends State<CreateEventPage> {
                 initialValue: discountCodePercentage,
                 cursorColor: Colors.black,
                 validator: (value) => value.isEmpty ? 'Field Cannot be Empty' : null,
-                onSaved: (value) => discountCodePercentage = value.trim(),
-                inputFormatters: [WhitelistingTextInputFormatter.digitsOnly],
+                onSaved: (value) {
+                  int x = int.parse(value);
+                  if (x > 100) {
+                    discountCodePercentage = "100";
+                  } else {
+                    discountCodePercentage = value.trim();
+                  }
+                },
+                inputFormatters: [
+                  WhitelistingTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(3),
+                ],
                 decoration: InputDecoration(
                   hintText: "100",
                   border: InputBorder.none,
@@ -1650,28 +1681,28 @@ class _CreateEventPageState extends State<CreateEventPage> {
       timeFormatter.parse(startTime).minute,
     );
     WebblenEvent newEvent = WebblenEvent(
-      id: "",
+      id: widget.eventID == null ? "" : widget.eventID,
       authorID: currentUID,
       chatID: null,
       hasTickets: ticketDistro.tickets.isNotEmpty ? true : false,
       flashEvent: false,
       title: eventTitle,
       desc: eventDesc,
-      imageURL: null,
+      imageURL: eventImgURL == null ? null : eventImgURL,
       isDigitalEvent: isDigitalEvent,
       digitalEventLink: digitalEventLink,
       venueName: venueName,
       streetAddress: eventAddress,
       city: city,
       province: province,
-      nearbyZipcodes: [],
+      nearbyZipcodes: nearbyZipcodes,
       lat: lat,
       lon: lon,
-      sharedComs: [],
-      tags: [],
+      sharedComs: sharedComs,
+      tags: tags,
       type: eventType,
       category: eventCategory,
-      clicks: 0,
+      clicks: eventClicks,
       website: websiteURL,
       fbUsername: fbUsername,
       twitterUsername: twitterUsername,
@@ -1711,7 +1742,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
       CustomAlerts().showErrorAlert(context, "Event Address Error", "Please Set the Location of this Event");
     } else if (isDigitalEvent && (digitalEventLink == null || digitalEventLink.isEmpty)) {
       CustomAlerts().showErrorAlert(context, "Event URL Link Error", "Please Provide the Link to this Event");
-    } else if (eventImgByteMemory == null) {
+    } else if (eventImgByteMemory == null && eventImgURL == null) {
       CustomAlerts().showErrorAlert(context, "Event Image Missing", "Please Set the Image for this Event");
     } else if (eventDesc == null || eventDesc.isEmpty) {
       CustomAlerts().showErrorAlert(context, "Event Description Missing", "Please Set the Description for this Event");
@@ -1739,8 +1770,53 @@ class _CreateEventPageState extends State<CreateEventPage> {
           : timeFormatter.format(selectedDateTime.add(Duration(
               hours:
                   selectedDateTime.hour <= 19 ? 4 : selectedDateTime.hour == 20 ? 3 : selectedDateTime.hour == 21 ? 2 : selectedDateTime.hour == 22 ? 1 : 0)));
-      isLoading = false;
-      setState(() {});
+      if (widget.eventID != null) {
+        EventDataService().getEvent(widget.eventID).then((res) {
+          if (res != null) {
+            eventTitle = res.title;
+            eventDesc = res.desc;
+            eventImgURL = res.imageURL;
+            isDigitalEvent = res.isDigitalEvent;
+            digitalEventLink = res.digitalEventLink;
+            venueName = res.venueName;
+            eventAddress = res.streetAddress;
+            city = res.city;
+            province = res.province;
+            nearbyZipcodes = res.nearbyZipcodes;
+            lat = res.lat;
+            lon = res.lon;
+            sharedComs = res.sharedComs;
+            tags = res.tags;
+            eventType = res.type;
+            eventCategory = res.category;
+            eventClicks = res.clicks;
+            websiteURL = res.website;
+            fbUsername = res.fbUsername;
+            twitterUsername = res.twitterUsername;
+            instaUsername = res.instaUsername;
+            startDateTimeInMilliseconds = res.startDateTimeInMilliseconds;
+            startDate = res.startDate;
+            startTime = res.startTime;
+            endDate = res.endDate;
+            endTime = res.endTime;
+            timezone = res.timezone;
+            privacy = res.privacy;
+            if (res.hasTickets) {
+              EventDataService().getEventTicketDistro(res.id).then((res) {
+                ticketDistro = res;
+                isLoading = false;
+                setState(() {});
+              });
+            } else {
+              isLoading = false;
+              setState(() {});
+            }
+          }
+        });
+      } else {
+        isLoading = false;
+        setState(() {});
+      }
     });
   }
 
@@ -1784,7 +1860,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                                 Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 2.0),
                                   child: CustomColorButton(
-                                    text: "Create Event",
+                                    text: widget.eventID == null ? "Create Event" : "Update Event",
                                     textColor: Colors.black,
                                     backgroundColor: Colors.white,
                                     height: 35.0,
@@ -1893,7 +1969,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
                                 Padding(
                                   padding: EdgeInsets.symmetric(horizontal: 2.0),
                                   child: CustomColorButton(
-                                    text: "Create Event",
+                                    text: widget.eventID == null ? "Create Event" : "Update Event",
                                     textColor: Colors.black,
                                     backgroundColor: Colors.white,
                                     height: 35.0,

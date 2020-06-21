@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:html';
 import 'dart:typed_data';
 
@@ -39,6 +40,40 @@ class _AccountPageState extends State<AccountPage> {
     });
   }
 
+  uploadImage(String uid) async {
+    File file;
+    FileReader fileReader = FileReader();
+    InputElement uploadInput = FileUploadInputElement();
+    uploadInput.click();
+    uploadInput.onChange.listen((event) {
+      file = uploadInput.files.first;
+      fileReader.readAsDataUrl(file);
+      fileReader.onLoadEnd.listen((event) {
+        print(file.size);
+        if (file.size > 5000000) {
+          CustomAlerts().showErrorAlert(context, "File Size Error", "File Size Cannot Exceed 5MB");
+        } else if (file.type == "image/jpg" || file.type == "image/jpeg" || file.type == "image/png") {
+          String base64FileString = fileReader.result.toString().split(',')[1];
+          CustomAlerts().showLoadingAlert(context, "Uploading Image...");
+          //COMPRESS FILE HERE
+          WebblenUserData().updateUserImg(file, uid).then((error) {
+            Navigator.pop(context);
+            if (error.isNotEmpty) {
+              CustomAlerts().showErrorAlert(context, "Image Upload Error", error);
+            } else {
+              setState(() {
+                newUserImg = file;
+                newUserImgByteMemory = base64Decode(base64FileString);
+              });
+            }
+          });
+        } else {
+          CustomAlerts().showErrorAlert(context, "Image Upload Error", "Please Upload a Valid Image");
+        }
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     FirebaseUser user = Provider.of<FirebaseUser>(context);
@@ -72,13 +107,13 @@ class _AccountPageState extends State<AccountPage> {
                             height: 32.0,
                           ),
                           GestureDetector(
-                            onTap: null,
+                            onTap: () => uploadImage(user.uid),
                             child: Stack(
                               children: <Widget>[
                                 newUserImgByteMemory == null
                                     ? RoundPic(
                                         isUserPic: true,
-                                        picURL: currentUser.profilePicURL,
+                                        picURL: currentUser.profile_pic,
                                         size: 200.0,
                                       )
                                     : CircleAvatar(
@@ -122,7 +157,7 @@ class _AccountPageState extends State<AccountPage> {
                           ).showCursorOnHover,
                           SizedBox(height: 8.0),
                           CustomColorButton(
-                            onPressed: null,
+                            onPressed: () => locator<NavigationService>().navigateTo(WalletRoute),
                             text: "Earnings",
                             textColor: Colors.black,
                             backgroundColor: Colors.white,

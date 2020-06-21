@@ -2,12 +2,12 @@ class WebblenUser {
   String messageToken;
   String username;
   String uid;
-  String profilePicURL;
+  String profile_pic;
   List savedEvents;
   List tags;
   List friends;
   List blockedUsers;
-  double webblen;
+  double eventPoints;
   double ap;
   int apLvl;
   int eventsToLvlUp;
@@ -21,12 +21,12 @@ class WebblenUser {
     this.messageToken,
     this.username,
     this.uid,
-    this.profilePicURL,
+    this.profile_pic,
     this.savedEvents,
     this.tags,
     this.friends,
     this.blockedUsers,
-    this.webblen,
+    this.eventPoints,
     this.ap,
     this.apLvl,
     this.eventsToLvlUp,
@@ -42,12 +42,12 @@ class WebblenUser {
           messageToken: data['messageToken'],
           username: data['username'],
           uid: data['uid'],
-          profilePicURL: data['profilePicURL'],
+          profile_pic: data['profile_pic'],
           savedEvents: data['savedEvents'],
           tags: data['tags'],
           friends: data['friends'],
           blockedUsers: data['blockedUsers'],
-          webblen: data['webblen'],
+          eventPoints: data['eventPoints'],
           ap: data['ap'],
           apLvl: data['apLvl'],
           eventsToLvlUp: data['eventsToLvlUp'],
@@ -62,12 +62,12 @@ class WebblenUser {
         'messageToken': this.messageToken,
         'username': this.username,
         'uid': this.uid,
-        'profilePicURL': this.profilePicURL,
+        'profile_pic': this.profile_pic,
         'savedEvents': this.savedEvents,
         'tags': this.tags,
         'friends': this.friends,
         'blockedUsers': this.blockedUsers,
-        'webblen': this.webblen,
+        'eventPoints': this.eventPoints,
         'ap': this.ap,
         'apLvl': this.apLvl,
         'eventsToLvlUp': this.eventsToLvlUp,

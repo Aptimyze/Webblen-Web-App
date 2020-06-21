@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_maps_webservice/places.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:responsive_grid/responsive_grid.dart';
 import 'package:webblen_web_app/algolia/algolia_search.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
 import 'package:webblen_web_app/constants/strings.dart';
@@ -18,7 +19,7 @@ import 'package:webblen_web_app/widgets/common/containers/text_field_container.d
 import 'package:webblen_web_app/widgets/common/navigation/footer.dart';
 import 'package:webblen_web_app/widgets/common/state/progress_indicator.dart';
 import 'package:webblen_web_app/widgets/common/text/custom_text.dart';
-import 'package:webblen_web_app/widgets/events/event_grid.dart';
+import 'package:webblen_web_app/widgets/events/event_block.dart';
 
 class EventsPage extends StatefulWidget {
   @override
@@ -123,28 +124,31 @@ class _EventsPageState extends State<EventsPage> {
           );
   }
 
-  Widget DesktopTableEventGrid(SizingInformation screenSize) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(8.0)),
-        boxShadow: [
-          BoxShadow(color: Colors.black12, offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 2.0),
-        ],
-      ),
-      child: EventGrid(screenSize: screenSize, events: events, ticsPerEvent: null),
+  Widget eventGrid() {
+    return ResponsiveGridList(
+      scroll: false,
+      desiredItemWidth: 260,
+      minSpacing: 10,
+      children: events
+          .map((e) => EventBlock(
+                eventImgSize: 260,
+                eventDescHeight: 120,
+                event: e,
+                shareEvent: null,
+                numOfTicsForEvent: null,
+                viewEventDetails: () => e.navigateToEvent(e.id),
+                viewEventTickets: null,
+              ))
+          .toList(),
     );
   }
 
   Widget desktopView(SizingInformation screenSize, bool isLoggedIn) {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: 24.0,
-        vertical: 24.0,
-      ),
-      child: Column(
-        children: <Widget>[
-          Row(
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(left: 24.0, top: 24.0, right: 24.0),
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Container(
@@ -202,8 +206,11 @@ class _EventsPageState extends State<EventsPage> {
               ),
             ],
           ),
-          SizedBox(height: 16.0),
-          Row(
+        ),
+        SizedBox(height: 16.0),
+        Padding(
+          padding: EdgeInsets.only(left: 24.0, top: 8.0),
+          child: Row(
             children: <Widget>[
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,16 +293,17 @@ class _EventsPageState extends State<EventsPage> {
               ),
             ],
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 16.0),
-            child: DesktopTableEventGrid(screenSize),
-          ),
-        ],
-      ),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(vertical: 16.0),
+          child: eventGrid(),
+        ),
+        SizedBox(height: 32.0),
+      ],
     );
   }
 
-  Widget tabletView(bool isLoggedIn) {
+  Widget tabletView(SizingInformation screenSize, bool isLoggedIn) {
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: 24.0,
@@ -412,174 +420,185 @@ class _EventsPageState extends State<EventsPage> {
               ),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              isLoggedIn
-                  ? CustomColorButton(
-                      text: "My Events",
-                      textColor: Colors.black,
-                      backgroundColor: Colors.white,
-                      height: 35.0,
-                      width: 150,
-                      onPressed: () => locator<NavigationService>().navigateTo(CreateEventRoute),
-                    ).showCursorOnHover
-                  : Container(),
-              isLoggedIn
-                  ? CustomColorButton(
-                      text: "Create Event",
-                      textColor: Colors.black,
-                      backgroundColor: Colors.white,
-                      height: 35.0,
-                      width: 150,
-                      onPressed: () => locator<NavigationService>().navigateTo(CreateEventRoute),
-                    ).showCursorOnHover
-                  : Container(),
-            ],
+          isLoggedIn
+              ? Padding(
+                  padding: EdgeInsets.only(top: 12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CustomColorButton(
+                        text: "My Events",
+                        textColor: Colors.black,
+                        backgroundColor: Colors.white,
+                        height: 35.0,
+                        width: 200,
+                        onPressed: () => locator<NavigationService>().navigateTo(CreateEventRoute),
+                      ).showCursorOnHover,
+                      SizedBox(width: 16.0),
+                      CustomColorButton(
+                        text: "Create Event",
+                        textColor: Colors.black,
+                        backgroundColor: Colors.white,
+                        height: 35.0,
+                        width: 200,
+                        onPressed: () => locator<NavigationService>().navigateTo(CreateEventRoute),
+                      ).showCursorOnHover
+                    ],
+                  ),
+                )
+              : Container(),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.0),
+            child: eventGrid(),
           ),
         ],
       ),
     );
   }
 
-  Widget mobileEventGrid() {
-    return Container();
-  }
-
-  Widget MobileView(bool isLoggedIn) {
-    return Column(
-      children: <Widget>[
-        SizedBox(height: 16.0),
-        CustomText(
-          context: context,
-          text: "Find Events In ",
-          textColor: Colors.black,
-          textAlign: TextAlign.center,
-          fontSize: 30.0,
-          fontWeight: FontWeight.w700,
-        ),
-        GestureDetector(
-          onTap: openGoogleAutoComplete,
-          child: CustomText(
+  Widget MobileView(SizingInformation screenSize, bool isLoggedIn) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.0),
+      child: Column(
+        children: <Widget>[
+          SizedBox(height: 16.0),
+          CustomText(
             context: context,
-            text: cityFilter,
-            textColor: CustomColors.webblenRed,
-            textAlign: TextAlign.left,
+            text: "Find Events In ",
+            textColor: Colors.black,
+            textAlign: TextAlign.center,
             fontSize: 30.0,
             fontWeight: FontWeight.w700,
-          ).showCursorOnHover,
-        ),
-        SizedBox(height: 16.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                CustomText(
-                  context: context,
-                  text: "Category:",
-                  textColor: Colors.black,
-                  textAlign: TextAlign.left,
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w700,
-                ),
-                SizedBox(height: 8.0),
-                TextFieldContainer(
-                  height: 35,
-                  width: 200,
-                  child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 6,
-                      ),
-                      child: DropdownButton(
-                          style: TextStyle(fontSize: 12.0, color: Colors.black),
-                          isExpanded: true,
-                          underline: Container(),
-                          value: eventCategoryFilter,
-                          items: Strings.eventCategoryFilters.map((String val) {
-                            return DropdownMenuItem<String>(
-                              value: val,
-                              child: Text(val),
-                            );
-                          }).toList(),
-                          onChanged: (val) {
-                            setState(() {
-                              eventCategoryFilter = val;
-                            });
-                            queryAndFilterEvents();
-                          }).showCursorOnHover),
-                ),
-              ],
-            ),
-            SizedBox(width: 16.0),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                CustomText(
-                  context: context,
-                  text: "Type:",
-                  textColor: Colors.black,
-                  textAlign: TextAlign.left,
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w700,
-                ),
-                SizedBox(height: 8.0),
-                TextFieldContainer(
-                  height: 35,
-                  width: 200,
-                  child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        vertical: 6,
-                      ),
-                      child: DropdownButton(
-                          style: TextStyle(fontSize: 12.0, color: Colors.black),
-                          isExpanded: true,
-                          underline: Container(),
-                          value: eventTypeFilter,
-                          items: Strings.eventTypeFilters.map((String val) {
-                            return DropdownMenuItem<String>(
-                              value: val,
-                              child: Text(val),
-                            );
-                          }).toList(),
-                          onChanged: (val) {
-                            setState(() {
-                              eventTypeFilter = val;
-                            });
-                            queryAndFilterEvents();
-                          }).showCursorOnHover),
-                ),
-              ],
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            isLoggedIn
-                ? CustomColorButton(
-                    text: "My Events",
+          ),
+          GestureDetector(
+            onTap: openGoogleAutoComplete,
+            child: CustomText(
+              context: context,
+              text: cityFilter,
+              textColor: CustomColors.webblenRed,
+              textAlign: TextAlign.left,
+              fontSize: 30.0,
+              fontWeight: FontWeight.w700,
+            ).showCursorOnHover,
+          ),
+          SizedBox(height: 16.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  CustomText(
+                    context: context,
+                    text: "Category:",
                     textColor: Colors.black,
-                    backgroundColor: Colors.white,
-                    height: 35.0,
-                    width: 150,
-                    onPressed: () => locator<NavigationService>().navigateTo(CreateEventRoute),
-                  ).showCursorOnHover
-                : Container(),
-            isLoggedIn
-                ? CustomColorButton(
-                    text: "Create Event",
+                    textAlign: TextAlign.left,
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  SizedBox(height: 8.0),
+                  TextFieldContainer(
+                    height: 35,
+                    width: 175,
+                    child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 6,
+                        ),
+                        child: DropdownButton(
+                            style: TextStyle(fontSize: 12.0, color: Colors.black),
+                            isExpanded: true,
+                            underline: Container(),
+                            value: eventCategoryFilter,
+                            items: Strings.eventCategoryFilters.map((String val) {
+                              return DropdownMenuItem<String>(
+                                value: val,
+                                child: Text(val),
+                              );
+                            }).toList(),
+                            onChanged: (val) {
+                              setState(() {
+                                eventCategoryFilter = val;
+                              });
+                              queryAndFilterEvents();
+                            }).showCursorOnHover),
+                  ),
+                ],
+              ),
+              SizedBox(width: 16.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  CustomText(
+                    context: context,
+                    text: "Type:",
                     textColor: Colors.black,
-                    backgroundColor: Colors.white,
-                    height: 35.0,
-                    width: 150,
-                    onPressed: () => locator<NavigationService>().navigateTo(CreateEventRoute),
-                  ).showCursorOnHover
-                : Container(),
-          ],
-        ),
-      ],
+                    textAlign: TextAlign.left,
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  SizedBox(height: 8.0),
+                  TextFieldContainer(
+                    height: 35,
+                    width: 175,
+                    child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 6,
+                        ),
+                        child: DropdownButton(
+                            style: TextStyle(fontSize: 12.0, color: Colors.black),
+                            isExpanded: true,
+                            underline: Container(),
+                            value: eventTypeFilter,
+                            items: Strings.eventTypeFilters.map((String val) {
+                              return DropdownMenuItem<String>(
+                                value: val,
+                                child: Text(val),
+                              );
+                            }).toList(),
+                            onChanged: (val) {
+                              setState(() {
+                                eventTypeFilter = val;
+                              });
+                              queryAndFilterEvents();
+                            }).showCursorOnHover),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          isLoggedIn
+              ? Padding(
+                  padding: EdgeInsets.only(top: 12.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CustomColorButton(
+                        text: "My Events",
+                        textColor: Colors.black,
+                        backgroundColor: Colors.white,
+                        height: 35.0,
+                        width: 175,
+                        onPressed: () => locator<NavigationService>().navigateTo(CreateEventRoute),
+                      ).showCursorOnHover,
+                      SizedBox(width: 16.0),
+                      CustomColorButton(
+                        text: "Create Event",
+                        textColor: Colors.black,
+                        backgroundColor: Colors.white,
+                        height: 35.0,
+                        width: 175,
+                        onPressed: () => locator<NavigationService>().navigateTo(CreateEventRoute),
+                      ).showCursorOnHover
+                    ],
+                  ),
+                )
+              : Container(),
+          Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.0),
+            child: eventGrid(),
+          ),
+        ],
+      ),
     );
   }
 
@@ -619,11 +638,15 @@ class _EventsPageState extends State<EventsPage> {
             children: <Widget>[
               user == null || user.isAnonymous ? isLoading ? Container() : notLoggedInNotice() : Container(),
               isLoading ? CustomLinearProgress(progressBarColor: CustomColors.webblenRed) : Container(),
-              screenSize.isDesktop
-                  ? desktopView(screenSize, user == null || user.isAnonymous ? false : true)
-                  : screenSize.isTablet
-                      ? tabletView(user == null || user.isAnonymous ? false : true)
-                      : MobileView(user == null || user.isAnonymous ? false : true),
+              isLoading
+                  ? Container(
+                      constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+                    )
+                  : screenSize.isDesktop
+                      ? desktopView(screenSize, user == null || user.isAnonymous ? false : true)
+                      : screenSize.isTablet
+                          ? tabletView(screenSize, user == null || user.isAnonymous ? false : true)
+                          : MobileView(screenSize, user == null || user.isAnonymous ? false : true),
               Footer(),
             ],
           ),

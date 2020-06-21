@@ -95,7 +95,7 @@ class EventBlock extends StatelessWidget {
                   SizedBox(height: 4.0),
                   CustomText(
                     context: context,
-                    text: "${event.startDate} | ${event.startTime}",
+                    text: "${event.startDate} | ${event.startTime} ${event.timezone}",
                     textColor: Colors.black45,
                     textAlign: TextAlign.left,
                     fontSize: 14.0,
@@ -176,6 +176,7 @@ class FeaturedEventBlock extends StatelessWidget {
           image: DecorationImage(
             fit: BoxFit.fill,
             image: NetworkImage(event.imageURL),
+            //NetworkImage(event.imageURL),
           ),
         ),
         child: Container(
@@ -236,12 +237,13 @@ class FeaturedEventBlock extends StatelessWidget {
                           ),
                         ],
                       ),
+                      SizedBox(height: 4.0),
                       CustomText(
                         context: context,
-                        text: "${event.startDate} | ${event.startTime}",
+                        text: "${event.startDate} | ${event.startTime} ${event.timezone}",
                         textColor: Colors.white,
                         textAlign: TextAlign.left,
-                        fontSize: 14.0,
+                        fontSize: 12.0,
                         fontWeight: FontWeight.w500,
                       ),
                     ],

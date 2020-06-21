@@ -1,11 +1,16 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
@@ -35,6 +40,12 @@ class PurchaseTicketsPage extends StatefulWidget {
 }
 
 class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
+  static final FacebookLogin facebookSignIn = FacebookLogin();
+  GoogleSignIn googleSignIn = GoogleSignIn(
+    scopes: <String>[
+      'email',
+    ],
+  );
   bool isLoading = false;
   bool hasAccount = false;
   bool isLoggedIn = false;
@@ -138,6 +149,74 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
     //showTicketPurchaseInfoDialog();
 //    Navigator.of(context).pop();
 //    showPurchaseDialog();
+  }
+
+  void loginWithFacebook() async {
+    setState(() {
+      isLoading = true;
+    });
+    final FacebookLoginResult result = await facebookSignIn.logIn(['email']);
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        final AuthCredential credential = FacebookAuthProvider.getCredential(accessToken: result.accessToken.token);
+        FirebaseAuth.instance.signInWithCredential(credential).then((user) {
+          if (user != null) {
+            setState(() {
+              isLoggedIn = true;
+              isLoading = false;
+            });
+          } else {
+            setState(() {
+              isLoading = false;
+            });
+            CustomAlerts().showErrorAlert(context, "Oops!", 'There was an issue signing in with Facebook. Please Try Again.');
+          }
+        });
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        CustomAlerts().showErrorAlert(context, "Login Cancelled", 'Cancelled Facebook Login');
+        setState(() {
+          isLoading = false;
+        });
+        break;
+      case FacebookLoginStatus.error:
+        CustomAlerts().showErrorAlert(context, "Oops!", 'There was an issue signing in with Facebook. Please Try Again.');
+        setState(() {
+          isLoading = false;
+        });
+        break;
+    }
+  }
+
+  void loginWithGoogle() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    GoogleSignInAccount googleAccount = await googleSignIn.signIn();
+    if (googleAccount == null) {
+      CustomAlerts().showErrorAlert(context, "Login Cancelled", 'Cancelled Google Login');
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+    GoogleSignInAuthentication googleAuth = await googleAccount.authentication;
+
+    AuthCredential credential = GoogleAuthProvider.getCredential(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
+    FirebaseAuth.instance.signInWithCredential(credential).then((user) {
+      if (user != null) {
+        setState(() {
+          isLoggedIn = true;
+          isLoading = false;
+        });
+      } else {
+        CustomAlerts().showErrorAlert(context, "Oops!", 'There was an issue signing in with Google. Please Try Again.');
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
   }
 
   Widget ticketChargeList() {
@@ -695,11 +774,6 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
     });
   }
 
-  purchaseTickets() {
-    FormState formState = ticketPaymentFormKey.currentState;
-    formState.save();
-  }
-
   Widget accountLoginForm() {
     return Form(
       key: authFormKey,
@@ -851,12 +925,12 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
               children: <Widget>[
                 SignInButton(
                   Buttons.Facebook,
-                  onPressed: () {},
+                  onPressed: () => loginWithFacebook(),
                 ).showCursorOnHover,
                 SizedBox(width: 16.0),
                 SignInButton(
                   Buttons.Google,
-                  onPressed: () {},
+                  onPressed: () => loginWithGoogle(),
                 ).showCursorOnHover,
               ],
             ),

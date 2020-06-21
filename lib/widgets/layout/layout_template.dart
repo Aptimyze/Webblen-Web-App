@@ -27,6 +27,41 @@ class _LayoutTemplateState extends State<LayoutTemplate> {
     FirebaseAuthenticationService().userIsSignedIn();
   }
 
+  navigateToHomePage() {
+    if (scaffoldKey.currentState.isDrawerOpen) {
+      scaffoldKey.currentState.openEndDrawer();
+    }
+    locator<NavigationService>().navigateTo(HomeRoute);
+  }
+
+  navigateToLoginPage() {
+    if (scaffoldKey.currentState.isDrawerOpen) {
+      scaffoldKey.currentState.openEndDrawer();
+    }
+    locator<NavigationService>().navigateTo(AccountLoginRoute);
+  }
+
+  navigateToEventsPage() {
+    if (scaffoldKey.currentState.isDrawerOpen) {
+      scaffoldKey.currentState.openEndDrawer();
+    }
+    locator<NavigationService>().navigateTo(EventsRoute);
+  }
+
+  navigateToWalletPage() {
+    if (scaffoldKey.currentState.isDrawerOpen) {
+      scaffoldKey.currentState.openEndDrawer();
+    }
+    locator<NavigationService>().navigateTo(WalletRoute);
+  }
+
+  navigateToAccountPage() {
+    if (scaffoldKey.currentState.isDrawerOpen) {
+      scaffoldKey.currentState.openEndDrawer();
+    }
+    locator<NavigationService>().navigateTo(AccountRoute);
+  }
+
   @override
   Widget build(BuildContext context) {
     FirebaseUser user = Provider.of<FirebaseUser>(context);
@@ -38,13 +73,14 @@ class _LayoutTemplateState extends State<LayoutTemplate> {
       value: user == null || user.isAnonymous ? null : WebblenUserData().streamCurrentUser(user.uid),
       child: ResponsiveBuilder(
         builder: (builderContext, sizingInfo) => Scaffold(
+          key: scaffoldKey,
           drawer: sizingInfo.deviceScreenType == DeviceScreenType.Mobile
               ? NavDrawer(
                   authStatus: user == null ? "unknown" : user.isAnonymous ? "anonymous" : "loggedIn",
-                  navigateToAccountLoginPage: () => locator<NavigationService>().navigateTo(AccountLoginRoute),
-                  navigateToEventsPage: () => locator<NavigationService>().navigateTo(EventsRoute),
-                  navigateToWalletPage: () => locator<NavigationService>().navigateTo(WalletRoute),
-                  navigateToAccountPage: () => locator<NavigationService>().navigateTo(AccountRoute),
+                  navigateToAccountLoginPage: () => navigateToLoginPage(),
+                  navigateToEventsPage: () => navigateToEventsPage(),
+                  navigateToWalletPage: () => navigateToWalletPage(),
+                  navigateToAccountPage: () => navigateToAccountPage(),
                 )
               : null,
           backgroundColor: Colors.transparent,
@@ -55,11 +91,12 @@ class _LayoutTemplateState extends State<LayoutTemplate> {
               children: <Widget>[
                 NavigationBar(
                   authStatus: user == null ? "unknown" : user.isAnonymous ? "anonymous" : "loggedIn",
-                  navigateToAccountLoginPage: () => locator<NavigationService>().navigateTo(AccountLoginRoute),
-                  navigateToHomePage: () => locator<NavigationService>().navigateTo(HomeRoute),
-                  navigateToEventsPage: () => locator<NavigationService>().navigateTo(EventsRoute),
-                  navigateToWalletPage: () => locator<NavigationService>().navigateTo(WalletRoute),
-                  navigateToAccountPage: () => locator<NavigationService>().navigateTo(AccountRoute),
+                  openNavDrawer: () => scaffoldKey.currentState.openDrawer(),
+                  navigateToHomePage: () => navigateToHomePage(),
+                  navigateToAccountLoginPage: () => navigateToLoginPage(),
+                  navigateToEventsPage: () => navigateToEventsPage(),
+                  navigateToWalletPage: () => navigateToWalletPage(),
+                  navigateToAccountPage: () => navigateToAccountPage(),
                 ),
                 Container(
                   constraints: BoxConstraints(

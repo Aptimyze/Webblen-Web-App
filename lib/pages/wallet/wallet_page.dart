@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
+import 'package:responsive_grid/responsive_grid.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/firebase/data/event.dart';
@@ -22,7 +23,7 @@ import 'package:webblen_web_app/widgets/common/alerts/custom_alerts.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_color_button.dart';
 import 'package:webblen_web_app/widgets/common/navigation/footer.dart';
 import 'package:webblen_web_app/widgets/common/text/custom_text.dart';
-import 'package:webblen_web_app/widgets/events/event_grid.dart';
+import 'package:webblen_web_app/widgets/events/event_block.dart';
 
 class WalletPage extends StatefulWidget {
   @override
@@ -57,6 +58,25 @@ class _WalletPageState extends State<WalletPage> {
         ticsPerEvent[ticket.eventID] += 1;
       }
     });
+  }
+
+  Widget ticketEventGrid() {
+    return ResponsiveGridList(
+      scroll: false,
+      desiredItemWidth: 260,
+      minSpacing: 10,
+      children: events
+          .map((e) => EventBlock(
+                eventImgSize: 260,
+                eventDescHeight: 120,
+                event: e,
+                shareEvent: null,
+                numOfTicsForEvent: ticsPerEvent[e.id],
+                viewEventDetails: () => e.navigateToEvent(e.id),
+                viewEventTickets: () => e.navigateToWalletTickets(e.id),
+              ))
+          .toList(),
+    );
   }
 
   Widget createEarningsAccountNotice() {
@@ -182,15 +202,32 @@ class _WalletPageState extends State<WalletPage> {
     });
   }
 
-  Widget stripeActionButton(String verificationStatus) {
+  void performInstantPayout(double availableBalance) {
+    CustomAlerts().showLoadingAlert(context, "Initiating Payout...");
+    if (availableBalance == null || availableBalance < 10) {
+      Navigator.of(context).pop();
+      CustomAlerts().showErrorAlert(context, "Instant Payout Unavailbe", "You Need At Least \$10.00 USD in Your Account to Perform an Instant Payout.");
+    } else {
+      StripePaymentService().performInstantStripePayout(currentUID, stripeUID).then((res) {
+        Navigator.of(context).pop();
+        if (res == "passed") {
+          CustomAlerts().showSuccessAlert(context, "Payout Success!", "Funds will Be Available on Your Account within 30 minutes to 1 hourr");
+        } else {
+          CustomAlerts().showErrorAlert(context, "Instant Payout Failed", "There was a problem issuing your payout. Please Try Again Later.");
+        }
+      });
+    }
+  }
+
+  Widget stripeActionButton(String verificationStatus, double availableBalance) {
     return verificationStatus == "verified"
         ? CustomColorButton(
-            onPressed: null, //() => validateAndSubmitForm(),
+            onPressed: () => performInstantPayout(availableBalance),
             text: "Instant Payout",
             textColor: Colors.white,
             backgroundColor: CustomColors.darkMountainGreen,
             textSize: 14.0,
-            height: 20,
+            height: 35,
             width: 120,
           ).showCursorOnHover
         : CustomColorButton(
@@ -199,52 +236,95 @@ class _WalletPageState extends State<WalletPage> {
             textColor: Colors.black,
             backgroundColor: Colors.white,
             textSize: 14.0,
-            height: 20,
+            height: 35,
             width: 120,
           ).showCursorOnHover;
   }
 
-  Widget stripeAccountMenu(String verificationStatus) {
-    return Container(
-      height: 30,
-      child: ListView(
-        shrinkWrap: true,
-        scrollDirection: Axis.horizontal,
-        children: [
-          stripeActionButton(verificationStatus),
-          SizedBox(width: 8.0),
-          CustomColorButton(
-            onPressed: () => locator<NavigationService>().navigateTo(WalletPaymentsHistoryRoute),
-            text: "Payment History",
-            textColor: Colors.black,
-            backgroundColor: Colors.white,
-            textSize: 14.0,
-            height: 20,
-            width: 120,
-          ).showCursorOnHover,
-          SizedBox(width: 8.0),
-          CustomColorButton(
-            onPressed: () => locator<NavigationService>().navigateTo(WalletPayoutMethodsRoute), //() => validateAndSubmitForm(),
-            text: "Payout Methods",
-            textColor: Colors.black,
-            backgroundColor: Colors.white,
-            textSize: 14.0,
-            height: 20,
-            width: 120,
-          ).showCursorOnHover,
-          SizedBox(width: 12.0),
-          CustomColorButton(
-            onPressed: () => locator<NavigationService>().navigateTo(WalletEarningsGuideRoute), //() => validateAndSubmitForm(),
-            text: "How Do Earnings Work?",
-            textColor: Colors.black,
-            backgroundColor: Colors.white,
-            textSize: 14.0,
-            height: 20,
-            width: 150,
-          ).showCursorOnHover,
-        ],
-      ),
-    );
+  Widget stripeAccountMenu(String verificationStatus, SizingInformation screenSize, double availableBalance) {
+    return screenSize.isDesktop
+        ? Container(
+            child: Row(
+              children: [
+                stripeActionButton(verificationStatus, availableBalance),
+                SizedBox(width: 8.0),
+                CustomColorButton(
+                  onPressed: () => locator<NavigationService>().navigateTo(WalletPaymentsHistoryRoute),
+                  text: "Payment History",
+                  textColor: Colors.black,
+                  backgroundColor: Colors.white,
+                  textSize: 14.0,
+                  height: 35,
+                  width: 120,
+                ).showCursorOnHover,
+                SizedBox(width: 8.0),
+                CustomColorButton(
+                  onPressed: () => locator<NavigationService>().navigateTo(WalletPayoutMethodsRoute), //() => validateAndSubmitForm(),
+                  text: "Payout Methods",
+                  textColor: Colors.black,
+                  backgroundColor: Colors.white,
+                  textSize: 14.0,
+                  height: 35,
+                  width: 120,
+                ).showCursorOnHover,
+                SizedBox(width: 12.0),
+                CustomColorButton(
+                  onPressed: () => locator<NavigationService>().navigateTo(WalletEarningsGuideRoute), //() => validateAndSubmitForm(),
+                  text: "How Do Earnings Work?",
+                  textColor: Colors.black,
+                  backgroundColor: Colors.white,
+                  textSize: 14.0,
+                  height: 35,
+                  width: 150,
+                ).showCursorOnHover,
+              ],
+            ),
+          )
+        : Container(
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    stripeActionButton(verificationStatus, availableBalance),
+                    SizedBox(width: 8.0),
+                    CustomColorButton(
+                      onPressed: () => locator<NavigationService>().navigateTo(WalletPaymentsHistoryRoute),
+                      text: "Payment History",
+                      textColor: Colors.black,
+                      backgroundColor: Colors.white,
+                      textSize: 14.0,
+                      height: 35,
+                      width: 120,
+                    ).showCursorOnHover,
+                  ],
+                ),
+                SizedBox(height: 8.0),
+                Row(
+                  children: [
+                    CustomColorButton(
+                      onPressed: () => locator<NavigationService>().navigateTo(WalletPayoutMethodsRoute), //() => validateAndSubmitForm(),
+                      text: "Payout Methods",
+                      textColor: Colors.black,
+                      backgroundColor: Colors.white,
+                      textSize: 14.0,
+                      height: 35,
+                      width: 120,
+                    ).showCursorOnHover,
+                    SizedBox(width: 12.0),
+                    CustomColorButton(
+                      onPressed: () => locator<NavigationService>().navigateTo(WalletEarningsGuideRoute), //() => validateAndSubmitForm(),
+                      text: "How Do Earnings Work?",
+                      textColor: Colors.black,
+                      backgroundColor: Colors.white,
+                      textSize: 35.0,
+                      height: 35,
+                      width: 150,
+                    ).showCursorOnHover,
+                  ],
+                ),
+              ],
+            ),
+          );
   }
 
   @override
@@ -364,7 +444,7 @@ class _WalletPageState extends State<WalletPage> {
                               fontWeight: FontWeight.w600,
                             ),
                             SizedBox(height: 12.0),
-                            stripeAccountMenu(verificationStatus),
+                            stripeAccountMenu(verificationStatus, screenSize, availableBalance),
                           ],
                         );
                       },
@@ -387,7 +467,7 @@ class _WalletPageState extends State<WalletPage> {
                                 SizedBox(height: 32.0),
                                 CustomText(
                                   context: context,
-                                  text: '${currentUser.webblen.toStringAsFixed(2)}',
+                                  text: '${currentUser.eventPoints.toStringAsFixed(2)}',
                                   textColor: Colors.black,
                                   textAlign: TextAlign.left,
                                   fontSize: 40.0,
@@ -452,14 +532,14 @@ class _WalletPageState extends State<WalletPage> {
                                               fontWeight: FontWeight.w500,
                                             ),
                                           )
-                                        : EventGrid(screenSize: screenSize, events: events, ticsPerEvent: ticsPerEvent),
+                                        : ticketEventGrid(),
                               ],
                             ),
                           );
                         }),
                   ),
             SizedBox(height: 32.0),
-            isLoading ? Container() : Footer(),
+            Footer(),
           ],
         ),
       ),

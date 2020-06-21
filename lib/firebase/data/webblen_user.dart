@@ -7,13 +7,13 @@ import 'package:webblen_web_app/models/webblen_user.dart';
 
 class WebblenUserData {
   static final firestore = fb.firestore();
-  final CollectionReference userRef = firestore.collection("users");
+  final CollectionReference userRef = firestore.collection("webblen_user");
   final CollectionReference stripeRef = firestore.collection("stripe");
   final CollectionReference eventRef = firestore.collection("events");
   final CollectionReference notifRef = firestore.collection("user_notifications");
 
   Stream<WebblenUser> streamCurrentUser(String uid) {
-    return userRef.doc(uid).onSnapshot.map((snapshot) => WebblenUser.fromMap(Map<String, dynamic>.from(snapshot.data())));
+    return userRef.doc(uid).onSnapshot.map((snapshot) => WebblenUser.fromMap(Map<String, dynamic>.from(snapshot.data()['d'])));
   }
 
   Stream<Map<String, dynamic>> streamStripeAccount(String uid) {
@@ -41,17 +41,29 @@ class WebblenUserData {
 
   Future<bool> checkIfUsernameExists(String username) async {
     bool usernameExists = false;
-    QuerySnapshot snapshot = await userRef.where("username", "==", username).get();
+    QuerySnapshot snapshot = await userRef.where("d.username", "==", username).get();
     if (!snapshot.empty) {
       usernameExists = true;
     }
     return usernameExists;
   }
 
+  Future<String> updateUserImg(File userImgFile, String uid) async {
+    String error = "";
+    String userImgURL = await ImageUploadService().uploadImageToFirebaseStorage(userImgFile, UserImgFile, uid);
+    if (userImgFile != null) {
+      await userRef.doc(uid).update(data: {'d.profile_pic': userImgURL}).whenComplete(() {}).catchError((e) {
+            error = e.toString();
+          });
+    } else {
+      error = "There was an Issue Uploading Your Image, Please Try Again.";
+    }
+    return error;
+  }
+
   Future<String> completeAccountSetup(File userImgFile, String uid, String username) async {
     String error = "";
     bool usernameExists = await checkIfUsernameExists(username.toLowerCase());
-    print(usernameExists);
     if (!usernameExists) {
       String userImgURL = await ImageUploadService().uploadImageToFirebaseStorage(userImgFile, UserImgFile, uid);
       print(userImgURL);
@@ -60,12 +72,12 @@ class WebblenUserData {
           uid: uid,
           username: username.toLowerCase(),
           messageToken: "",
-          profilePicURL: userImgURL,
+          profile_pic: userImgURL,
           savedEvents: [],
           tags: [],
           friends: [],
           blockedUsers: [],
-          webblen: 0.001,
+          eventPoints: 0.001,
           ap: 1.01,
           apLvl: 1,
           eventsToLvlUp: 20,
@@ -75,9 +87,9 @@ class WebblenUserData {
           canMakeAds: false,
           isAdmin: false,
         );
-        await userRef.doc(uid).set(newUser.toMap()).whenComplete(() {}).catchError((e) {
-          error = e.toString();
-        });
+        await userRef.doc(uid).set({'d': newUser.toMap(), 'g': null, 'l': null}).whenComplete(() {}).catchError((e) {
+              error = e.toString();
+            });
       } else {
         error = "There was an Issue Setting Up Your Account. Please Try Again.";
       }

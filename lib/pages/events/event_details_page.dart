@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
@@ -26,25 +28,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   WebblenEvent event;
   TicketDistro ticketDistro;
 
-  @override
-  void initState() {
-    super.initState();
-    if (widget.eventID != null) {
-      EventDataService().getEvent(widget.eventID).then((res) {
-        if (res != null) {
-          event = res;
-          eventFound = true;
-        }
-        isLoading = false;
-        setState(() {});
-      });
-    } else {
-      isLoading = false;
-      setState(() {});
-    }
-  }
-
-  Widget eventDetailsWidget() {
+  Widget eventDetailsWidget(SizingInformation screenSize, FirebaseUser user) {
     return Container(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -53,12 +37,18 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
             borderRadius: BorderRadius.circular(8.0),
             child: Image.network(
               event.imageURL,
-              height: MediaQuery.of(context).size.width * 0.4,
-              width: MediaQuery.of(context).size.width * 0.4,
+              height: screenSize.isDesktop
+                  ? MediaQuery.of(context).size.width * 0.5
+                  : screenSize.isTablet ? MediaQuery.of(context).size.width * 0.7 : MediaQuery.of(context).size.width * 0.9,
+              width: screenSize.isDesktop
+                  ? MediaQuery.of(context).size.width * 0.5
+                  : screenSize.isTablet ? MediaQuery.of(context).size.width * 0.7 : MediaQuery.of(context).size.width * 0.9,
             ),
           ),
           Container(
-            width: MediaQuery.of(context).size.width * 0.4,
+            width: screenSize.isDesktop
+                ? MediaQuery.of(context).size.width * 0.5
+                : screenSize.isTablet ? MediaQuery.of(context).size.width * 0.7 : MediaQuery.of(context).size.width * 0.9,
             padding: EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,13 +96,23 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                       fontSize: 18.0,
                       fontWeight: FontWeight.w500,
                     ),
+                    event.authorID == user.uid
+                        ? CustomColorButton(
+                            text: "Edit Event",
+                            textColor: Colors.black,
+                            backgroundColor: Colors.white,
+                            onPressed: () => event.navigateToEditEvent(event.id),
+                            width: 150.0,
+                            height: 30.0,
+                          ).showCursorOnHover
+                        : Container(),
                     event.hasTickets
                         ? CustomColorButton(
                             text: "Purchase Tickets",
                             textColor: Colors.white,
                             backgroundColor: CustomColors.darkMountainGreen,
                             onPressed: () => event.navigateToEventTickets(event.id),
-                            width: 200.0,
+                            width: 150.0,
                             height: 30.0,
                           ).showCursorOnHover
                         : CustomText(
@@ -206,7 +206,26 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.eventID != null) {
+      EventDataService().getEvent(widget.eventID).then((res) {
+        if (res != null) {
+          event = res;
+          eventFound = true;
+        }
+        isLoading = false;
+        setState(() {});
+      });
+    } else {
+      isLoading = false;
+      setState(() {});
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    FirebaseUser user = Provider.of<FirebaseUser>(context);
     return ResponsiveBuilder(
       builder: (buildContext, screenSize) => Container(
         child: Container(
@@ -215,7 +234,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
             children: <Widget>[
               isLoading ? CustomLinearProgress(progressBarColor: CustomColors.webblenRed) : Container(),
               SizedBox(height: 32.0),
-              !isLoading && eventFound ? eventDetailsWidget() : !isLoading && !eventFound ? eventNotFoundWidget() : Container(),
+              !isLoading && eventFound && user != null ? eventDetailsWidget(screenSize, user) : !isLoading && !eventFound ? eventNotFoundWidget() : Container(),
               SizedBox(height: 32.0),
               isLoading ? Container() : Footer(),
             ],

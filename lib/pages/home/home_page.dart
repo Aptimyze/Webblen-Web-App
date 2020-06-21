@@ -6,6 +6,7 @@ import 'package:webblen_web_app/firebase/data/event.dart';
 import 'package:webblen_web_app/locater.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/routing/route_names.dart';
+import 'package:webblen_web_app/services/common/url_service.dart';
 import 'package:webblen_web_app/services/navigation/navigation_service.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_color_button.dart';
 import 'package:webblen_web_app/widgets/common/navigation/footer.dart';
@@ -95,45 +96,14 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           child: Column(
-            children: [
-              SizedBox(height: 45.0),
-              CustomText(
-                context: context,
-                text: "Trending Online Events",
-                textColor: Colors.white,
-                textAlign: TextAlign.left,
-                fontSize: 40.0,
-                fontWeight: FontWeight.w700,
-              ),
-              SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-//                  isLoading
-//                      ? Padding(
-//                          padding: EdgeInsets.only(top: 64.0),
-//                          child: CustomCircleProgress(30, 30, 30, 30, Colors.white),
-//                        )
-//                      : Container(),
-                  trendingEventsListBuilder(screenSize),
-                ],
-              ),
-              SizedBox(height: 50.0),
-            ],
-          ),
-        ),
-        Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.symmetric(horizontal: 50.0),
-          child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 45.0),
               CustomText(
                 context: context,
                 text: "Get the Most Out of Webblen",
-                textColor: Colors.black,
-                textAlign: TextAlign.left,
+                textColor: Colors.white,
+                textAlign: TextAlign.center,
                 fontSize: 40.0,
                 fontWeight: FontWeight.w700,
               ),
@@ -144,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                     CustomText(
                       context: context,
                       text: "Download the App",
-                      textColor: Colors.black,
+                      textColor: Colors.white,
                       textAlign: TextAlign.center,
                       fontSize: 20.0,
                       fontWeight: FontWeight.w700,
@@ -154,9 +124,9 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         GestureDetector(
-                          onTap: null,
+                          onTap: () => URLService().openURL(context, 'https://apps.apple.com/us/app/webblen/id1196159158'),
                           child: Container(
-                            width: 200,
+                            width: 150,
                             child: Image.asset(
                               "assets/images/app_store_badge.png",
                               fit: BoxFit.contain,
@@ -166,9 +136,9 @@ class _HomePageState extends State<HomePage> {
                         ).showCursorOnHover,
                         SizedBox(width: 16.0),
                         GestureDetector(
-                          onTap: null,
+                          onTap: () => URLService().openURL(context, 'https://play.google.com/store/apps/details?id=com.webblen.events.webblen&hl=en_US'),
                           child: Container(
-                            width: 200,
+                            width: 150,
                             child: Image.asset(
                               "assets/images/google_play_badge.png",
                               fit: BoxFit.contain,
@@ -252,44 +222,13 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           child: Column(
-            children: [
-              SizedBox(height: 45.0),
-              CustomText(
-                context: context,
-                text: "Trending Online Events",
-                textColor: Colors.white,
-                textAlign: TextAlign.left,
-                fontSize: 40.0,
-                fontWeight: FontWeight.w700,
-              ),
-              SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-//                  isLoading
-//                      ? Padding(
-//                          padding: EdgeInsets.only(top: 64.0),
-//                          child: CustomCircleProgress(30, 30, 30, 30, Colors.white),
-//                        )
-//                      : Container(),
-                  trendingEventsListBuilder(screenSize),
-                ],
-              ),
-              SizedBox(height: 50.0),
-            ],
-          ),
-        ),
-        Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.symmetric(horizontal: 50.0),
-          child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 45.0),
               CustomText(
                 context: context,
                 text: "Get the Most Out of Webblen",
-                textColor: Colors.black,
+                textColor: Colors.white,
                 textAlign: TextAlign.center,
                 fontSize: 40.0,
                 fontWeight: FontWeight.w700,
@@ -301,7 +240,7 @@ class _HomePageState extends State<HomePage> {
                     CustomText(
                       context: context,
                       text: "Download the App",
-                      textColor: Colors.black,
+                      textColor: Colors.white,
                       textAlign: TextAlign.center,
                       fontSize: 20.0,
                       fontWeight: FontWeight.w700,
@@ -311,9 +250,9 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         GestureDetector(
-                          onTap: null,
+                          onTap: () => URLService().openURL(context, 'https://apps.apple.com/us/app/webblen/id1196159158'),
                           child: Container(
-                            width: 200,
+                            width: 150,
                             child: Image.asset(
                               "assets/images/app_store_badge.png",
                               fit: BoxFit.contain,
@@ -323,9 +262,9 @@ class _HomePageState extends State<HomePage> {
                         ).showCursorOnHover,
                         SizedBox(width: 16.0),
                         GestureDetector(
-                          onTap: null,
+                          onTap: () => URLService().openURL(context, 'https://play.google.com/store/apps/details?id=com.webblen.events.webblen&hl=en_US'),
                           child: Container(
-                            width: 200,
+                            width: 150,
                             child: Image.asset(
                               "assets/images/google_play_badge.png",
                               fit: BoxFit.contain,
@@ -411,30 +350,62 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 45.0),
               CustomText(
                 context: context,
-                text: "Trending Online Events",
+                text: "Get the Most Out of Webblen",
                 textColor: Colors.white,
-                textAlign: TextAlign.left,
+                textAlign: TextAlign.center,
                 fontSize: 40.0,
                 fontWeight: FontWeight.w700,
               ),
-              SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-//                  isLoading
-//                      ? Padding(
-//                          padding: EdgeInsets.only(top: 64.0),
-//                          child: CustomCircleProgress(30, 30, 30, 30, Colors.white),
-//                        )
-//                      : Container(),
-                  trendingEventsListBuilder(screenSize),
-                ],
+              SizedBox(height: 20.0),
+              Container(
+                child: Column(
+                  children: [
+                    CustomText(
+                      context: context,
+                      text: "Download the App",
+                      textColor: Colors.white,
+                      textAlign: TextAlign.center,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    SizedBox(height: 8.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () => URLService().openURL(context, 'https://apps.apple.com/us/app/webblen/id1196159158'),
+                          child: Container(
+                            width: 150,
+                            child: Image.asset(
+                              "assets/images/app_store_badge.png",
+                              fit: BoxFit.contain,
+                              scale: 1,
+                            ),
+                          ),
+                        ).showCursorOnHover,
+                        SizedBox(width: 16.0),
+                        GestureDetector(
+                          onTap: () => URLService().openURL(context, 'https://play.google.com/store/apps/details?id=com.webblen.events.webblen&hl=en_US'),
+                          child: Container(
+                            width: 150,
+                            child: Image.asset(
+                              "assets/images/google_play_badge.png",
+                              fit: BoxFit.contain,
+                              scale: 1,
+                            ),
+                          ),
+                        ).showCursorOnHover,
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(height: 50.0),
+              SizedBox(height: 32.0),
             ],
           ),
         ),
@@ -487,7 +458,6 @@ class _HomePageState extends State<HomePage> {
           children: <Widget>[
             SizedBox(height: 16.0),
             screenSize.isDesktop ? desktopView(context, screenSize) : screenSize.isTablet ? tabletView(context, screenSize) : mobileView(context, screenSize),
-            SizedBox(height: 32.0),
             Footer(),
           ],
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:webblen_web_app/widgets/common/text/custom_text.dart';
 
 class NavDrawerItem extends StatelessWidget {
   final String title;
@@ -10,20 +11,20 @@ class NavDrawerItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 30.0, top: 60.0),
+      padding: EdgeInsets.only(left: 30.0, top: 20.0),
       child: GestureDetector(
         onTap: onTap,
         child: Row(
           children: <Widget>[
-            Icon(iconData),
+            Icon(iconData, size: 16),
             SizedBox(width: 16.0),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
+            CustomText(
+              context: context,
+              text: title,
+              textColor: Colors.black,
+              textAlign: TextAlign.left,
+              fontSize: 20.0,
+              fontWeight: FontWeight.w600,
             ),
           ],
         ),

@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
 import 'package:webblen_web_app/constants/strings.dart';
@@ -14,9 +17,9 @@ import 'package:webblen_web_app/services/navigation/navigation_service.dart';
 import 'package:webblen_web_app/widgets/common/alerts/custom_alerts.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_color_button.dart';
 import 'package:webblen_web_app/widgets/common/containers/text_field_container.dart';
+import 'package:webblen_web_app/widgets/common/navigation/footer.dart';
 import 'package:webblen_web_app/widgets/common/state/progress_indicator.dart';
 import 'package:webblen_web_app/widgets/common/text/custom_text.dart';
-import 'package:webblen_web_app/widgets/layout/centered_view.dart';
 
 class AccountRegistrationPage extends StatefulWidget {
   @override
@@ -24,9 +27,15 @@ class AccountRegistrationPage extends StatefulWidget {
 }
 
 class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
+  static final FacebookLogin facebookSignIn = FacebookLogin();
+  GoogleSignIn googleSignIn = GoogleSignIn(
+    scopes: <String>[
+      'email',
+    ],
+  );
   GlobalKey formKey = GlobalKey<FormState>();
   bool isLoading = false;
-  bool isRegisteringWithPhone = true;
+  bool isRegisteringWithPhone = false;
   bool showEmailConfirmationSent = false;
 
   //Email Registration
@@ -166,19 +175,87 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
     CustomAlerts().showErrorAlert(context, title, desc);
   }
 
-  Widget buildRegistrationForm() {
+  void loginWithFacebook() async {
+    setState(() {
+      isLoading = true;
+    });
+    final FacebookLoginResult result = await facebookSignIn.logIn(['email']);
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        final AuthCredential credential = FacebookAuthProvider.getCredential(accessToken: result.accessToken.token);
+        FirebaseAuth.instance.signInWithCredential(credential).then((user) {
+          if (user != null) {
+            setState(() {
+              isLoading = false;
+            });
+            locator<NavigationService>().navigateTo(HomeRoute);
+          } else {
+            setState(() {
+              isLoading = false;
+            });
+            showErrorAlert("Oops!", 'There was an issue signing in with Facebook. Please Try Again.');
+          }
+        });
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        showErrorAlert("Login Cancelled", 'Cancelled Facebook Login');
+        setState(() {
+          isLoading = false;
+        });
+        break;
+      case FacebookLoginStatus.error:
+        showErrorAlert("Oops!", 'There was an issue signing in with Facebook. Please Try Again.');
+        setState(() {
+          isLoading = false;
+        });
+        break;
+    }
+  }
+
+  void loginWithGoogle() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    GoogleSignInAccount googleAccount = await googleSignIn.signIn();
+    if (googleAccount == null) {
+      showErrorAlert("Login Cancelled", 'Cancelled Google Login');
+      setState(() {
+        isLoading = false;
+      });
+      return;
+    }
+    GoogleSignInAuthentication googleAuth = await googleAccount.authentication;
+
+    AuthCredential credential = GoogleAuthProvider.getCredential(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
+    FirebaseAuth.instance.signInWithCredential(credential).then((user) {
+      if (user != null) {
+        locator<NavigationService>().navigateTo(HomeRoute);
+      } else {
+        showErrorAlert("Oops!", 'There was an issue signing in with Google. Please Try Again.');
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
+  }
+
+  Widget buildRegistrationForm(SizingInformation screenSize) {
     return Container(
-      constraints: BoxConstraints(maxWidth: 500),
+      constraints: BoxConstraints(
+        minHeight: MediaQuery.of(context).size.height,
+      ),
       child: Form(
         key: formKey,
         child: Column(
           children: <Widget>[
+            SizedBox(height: 32.0),
             CustomText(
               context: context,
               text: "Register",
               textColor: Colors.black,
               textAlign: TextAlign.left,
-              fontSize: 18.0,
+              fontSize: 40.0,
               fontWeight: FontWeight.w700,
             ),
             SizedBox(height: 16.0),
@@ -197,6 +274,7 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
                 : Container(),
             isRegisteringWithPhone
                 ? TextFieldContainer(
+                    width: screenSize.isMobile ? 400 : 500,
                     child: TextFormField(
                       cursorColor: Colors.black,
                       controller: phoneMaskController,
@@ -209,6 +287,7 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
                     ),
                   )
                 : TextFieldContainer(
+                    width: screenSize.isMobile ? 400 : 500,
                     child: TextFormField(
                       cursorColor: Colors.black,
                       validator: (value) => value.isEmpty ? 'Field Cannot be Empty' : null,
@@ -223,6 +302,7 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
             isRegisteringWithPhone
                 ? Container()
                 : TextFieldContainer(
+                    width: screenSize.isMobile ? 400 : 500,
                     child: TextFormField(
                       cursorColor: Colors.black,
                       obscureText: true,
@@ -238,6 +318,7 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
             isRegisteringWithPhone
                 ? Container()
                 : TextFieldContainer(
+                    width: screenSize.isMobile ? 400 : 500,
                     child: TextFormField(
                       cursorColor: Colors.black,
                       obscureText: true,
@@ -259,33 +340,33 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
               height: 40.0,
               width: 300.0,
             ).showCursorOnHover,
-            SizedBox(height: 8.0),
+            SizedBox(height: 16.0),
             Container(
               height: 1,
               width: 300,
               color: Colors.black38,
             ),
-            SizedBox(height: 16.0),
-            GestureDetector(
-              onTap: () => changePhoneEmailRegistrationStatus(),
-              child: CustomText(
-                context: context,
-                text: isRegisteringWithPhone ? "Register with Email" : "Register with Phone Number",
-                textColor: Colors.blueAccent,
-                textAlign: TextAlign.left,
-                fontSize: 18.0,
-                fontWeight: FontWeight.w500,
-              ),
-            ).showCursorOnHover,
+//            SizedBox(height: 16.0),
+//            GestureDetector(
+//              onTap: () => changePhoneEmailRegistrationStatus(),
+//              child: CustomText(
+//                context: context,
+//                text: isRegisteringWithPhone ? "Register with Email" : "Register with Phone Number",
+//                textColor: Colors.blueAccent,
+//                textAlign: TextAlign.left,
+//                fontSize: 18.0,
+//                fontWeight: FontWeight.w500,
+//              ),
+//            ).showCursorOnHover,
             SizedBox(height: 12.0),
             SignInButton(
               Buttons.Facebook,
-              onPressed: () {},
+              onPressed: () => loginWithFacebook(),
             ).showCursorOnHover,
             //SizedBox(height: 8.0),
             SignInButton(
               Buttons.Google,
-              onPressed: () {},
+              onPressed: () => loginWithGoogle(),
             ).showCursorOnHover,
             SizedBox(height: 16.0),
             Container(
@@ -326,15 +407,19 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
     FirebaseUser user = Provider.of<FirebaseUser>(context);
 //    print(user.uid);
 //    print(user.isAnonymous);
-    return CenteredView(
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(bottom: 16.0),
-            child: isLoading ? CustomLinearProgress(progressBarColor: Colors.red) : Container(),
+    return ResponsiveBuilder(
+      builder: (buildContext, screenSize) => Container(
+        child: Container(
+          child: ListView(
+            shrinkWrap: true,
+            children: <Widget>[
+              //user == null || user.isAnonymous ? isLoading ? Container() : notLoggedInNotice() : Container(),
+              isLoading ? CustomLinearProgress(progressBarColor: CustomColors.webblenRed) : Container(),
+              buildRegistrationForm(screenSize),
+              Footer(),
+            ],
           ),
-          buildRegistrationForm(),
-        ],
+        ),
       ),
     );
   }

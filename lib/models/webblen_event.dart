@@ -181,6 +181,10 @@ class WebblenEvent {
     _navigationService.navigateTo(EventsDetailsRoute, queryParams: {'id': eventID});
   }
 
+  void navigateToEditEvent(String eventID) {
+    _navigationService.navigateTo(CreateEventRoute, queryParams: {'id': eventID});
+  }
+
   void navigateToEventTickets(String eventID) {
     _navigationService.navigateTo(EventTicketsSelectionRoute, queryParams: {'id': eventID});
   }
