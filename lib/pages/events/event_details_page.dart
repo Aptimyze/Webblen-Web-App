@@ -5,9 +5,11 @@ import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
+import 'package:webblen_web_app/extensions/string_extensions.dart';
 import 'package:webblen_web_app/firebase/data/event.dart';
 import 'package:webblen_web_app/models/ticket_distro.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
+import 'package:webblen_web_app/widgets/common/alerts/custom_alerts.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_color_button.dart';
 import 'package:webblen_web_app/widgets/common/containers/round_container.dart';
 import 'package:webblen_web_app/widgets/common/containers/tag_container.dart';
@@ -96,16 +98,6 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                       fontSize: 18.0,
                       fontWeight: FontWeight.w500,
                     ),
-                    event.authorID == user.uid
-                        ? CustomColorButton(
-                            text: "Edit Event",
-                            textColor: Colors.black,
-                            backgroundColor: Colors.white,
-                            onPressed: () => event.navigateToEditEvent(event.id),
-                            width: 150.0,
-                            height: 30.0,
-                          ).showCursorOnHover
-                        : Container(),
                     event.hasTickets
                         ? CustomColorButton(
                             text: "Purchase Tickets",
@@ -144,7 +136,15 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   children: <Widget>[
                     TagContainer(tag: event.type),
                     GestureDetector(
-                      onTap: null,
+                      onTap: () {
+                        copyText("https://app.webblen.io/#/event?id=${event.id}");
+                        CustomAlerts().showEventShareLink(
+                          context,
+                          event.title,
+                          "https://app.webblen.io/#/event?id=${event.id}",
+                          () {},
+                        );
+                      },
                       child: RoundContainer(
                         child: Icon(
                           Icons.share,
@@ -175,6 +175,36 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   fontSize: 16.0,
                   fontWeight: FontWeight.w500,
                 ),
+                SizedBox(height: 32.0),
+                user.uid == event.authorID
+                    ? Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => event.navigateToEditEvent(event.id),
+                            child: CustomText(
+                              context: context,
+                              text: "Edit Event",
+                              textColor: Colors.blue,
+                              textAlign: TextAlign.left,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ).showCursorOnHover,
+                          SizedBox(width: 18.0),
+//                    GestureDetector(
+//                      onTap: () => event.navigateToEditEvent(event.id),
+//                      child: CustomText(
+//                        context: context,
+//                        text: "Delete Event",
+//                        textColor: Colors.red,
+//                        textAlign: TextAlign.left,
+//                        fontSize: 14.0,
+//                        fontWeight: FontWeight.w400,
+//                      ),
+//                    ).showCursorOnHover,
+                        ],
+                      )
+                    : Container(),
               ],
             ),
           ),

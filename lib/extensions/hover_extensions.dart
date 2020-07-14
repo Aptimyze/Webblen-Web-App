@@ -12,4 +12,12 @@ extension HoverExtensions on Widget {
       onExit: (event) => appContainer.style.cursor = "default",
     );
   }
+
+  Widget get showTextSelectorOnHover {
+    return MouseRegion(
+      child: this,
+      onHover: (event) => appContainer.style.cursor = "text",
+      onExit: (event) => appContainer.style.cursor = "default",
+    );
+  }
 }

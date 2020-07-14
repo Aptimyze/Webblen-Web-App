@@ -20,9 +20,12 @@ import 'package:webblen_web_app/firebase/data/event.dart';
 import 'package:webblen_web_app/firebase/data/platform.dart';
 import 'package:webblen_web_app/firebase/data/webblen_user.dart';
 import 'package:webblen_web_app/firebase/services/authentication.dart';
+import 'package:webblen_web_app/locater.dart';
 import 'package:webblen_web_app/models/ticket_distro.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
+import 'package:webblen_web_app/routing/route_names.dart';
+import 'package:webblen_web_app/services/navigation/navigation_service.dart';
 import 'package:webblen_web_app/services/stripe/stripe_payment.dart';
 import 'package:webblen_web_app/widgets/common/alerts/custom_alerts.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_color_button.dart';
@@ -46,10 +49,10 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
       'email',
     ],
   );
-  bool isLoading = false;
+  bool isLoading = true;
   bool hasAccount = false;
   bool isLoggedIn = false;
-  bool acceptedTermsAndConditions = false;
+  bool acceptedTermsAndConditions = true;
   List ticketsToPurchase;
   GlobalKey authFormKey = GlobalKey<FormState>();
   GlobalKey ticketPaymentFormKey = GlobalKey<FormState>();
@@ -453,7 +456,7 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
           border: InputBorder.none,
         ),
         onChanged: (val) {
-          emailAddress = val;
+          emailAddress = val.trim();
           setState(() {});
         },
         style: TextStyle(
@@ -751,15 +754,15 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
 
   submitPayment() async {
     String uid = await FirebaseAuthenticationService().getCurrentUserID();
-    print(uid);
     StripePaymentService()
         .purchaseTickets(event.title, uid, event.authorID, "username", chargeAmount, ticketCharge, numOfTicketsToPurchase, cardNumber, expMonth, expYear,
             cvcNumber, cardHolderName, emailAddress)
         .then((res) {
       if (res == 'passed') {
-        print('payment success...');
+        StripePaymentService().sendEmailConfirmation(emailAddress, event.title);
         StripePaymentService().completeTicketPurchase(uid, ticketsToPurchase, event).then((err) {
-          Navigator.of(context).pop();
+          Navigator.pop(context);
+          locator<NavigationService>().navigateTo(EventTicketPurchaseConfirmationRoute);
         });
       } else if (res == "Payment Method Error") {
         Navigator.of(context).pop();
@@ -774,7 +777,7 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
     });
   }
 
-  Widget accountLoginForm() {
+  Widget accountLoginForm(SizingInformation screenSize) {
     return Form(
       key: authFormKey,
       child: Container(
@@ -868,43 +871,82 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
                     ),
                   ),
             SizedBox(height: 8.0),
-            Row(
-              children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    if (hasAccount) {
-                      hasAccount = false;
-                    } else {
-                      hasAccount = true;
-                    }
-                    setState(() {});
-                  },
-                  child: CustomText(
-                    context: context,
-                    text: "Already Have an Account?",
-                    textColor: Colors.blue,
-                    textAlign: TextAlign.left,
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w600,
-                    underline: true,
+            screenSize.isMobile
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          if (hasAccount) {
+                            hasAccount = false;
+                          } else {
+                            hasAccount = true;
+                          }
+                          setState(() {});
+                        },
+                        child: CustomText(
+                          context: context,
+                          text: "Already Have an Account?",
+                          textColor: Colors.blue,
+                          textAlign: TextAlign.left,
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.w600,
+                          underline: true,
+                        ),
+                      ).showCursorOnHover,
+                      SizedBox(width: 16.0),
+                      GestureDetector(
+                        onTap: () => CustomAlerts().showInfoAlert(context, "Why Do I Need To Login to Purchase a Ticket?",
+                            "Logging in Allows You To: \n -Save Your Ticket to Access Later \n -Earn Rewards For Attending this Event \n -Receive Important Info Regarding Changes, Rescheduling, or Cancellation of this Event"),
+                        child: CustomText(
+                          context: context,
+                          text: "Why Do I Have to Login?",
+                          textColor: Colors.blue,
+                          textAlign: TextAlign.left,
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.w600,
+                          underline: true,
+                        ),
+                      ).showCursorOnHover,
+                    ],
+                  )
+                : Row(
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          if (hasAccount) {
+                            hasAccount = false;
+                          } else {
+                            hasAccount = true;
+                          }
+                          setState(() {});
+                        },
+                        child: CustomText(
+                          context: context,
+                          text: "Already Have an Account?",
+                          textColor: Colors.blue,
+                          textAlign: TextAlign.left,
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.w600,
+                          underline: true,
+                        ),
+                      ).showCursorOnHover,
+                      SizedBox(width: 16.0),
+                      GestureDetector(
+                        onTap: () => CustomAlerts().showInfoAlert(context, "Why Do I Need To Login to Purchase a Ticket?",
+                            "Logging in Allows You To: \n -Save Your Ticket to Access Later \n -Earn Rewards For Attending this Event \n -Receive Important Info Regarding Changes, Rescheduling, or Cancellation of this Event"),
+                        child: CustomText(
+                          context: context,
+                          text: "Why Do I Have to Login?",
+                          textColor: Colors.blue,
+                          textAlign: TextAlign.left,
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.w600,
+                          underline: true,
+                        ),
+                      ).showCursorOnHover,
+                    ],
                   ),
-                ).showCursorOnHover,
-                SizedBox(width: 16.0),
-                GestureDetector(
-                  onTap: () => CustomAlerts().showInfoAlert(context, "Why Do I Need To Login to Purchase a Ticket?",
-                      "Logging in Allows You To: \n -Save Your Ticket to Access Later \n -Earn Rewards For Attending this Event \n -Receive Important Info Regarding Changes, Rescheduling, or Cancellation of this Event"),
-                  child: CustomText(
-                    context: context,
-                    text: "Why Do I Have to Login?",
-                    textColor: Colors.blue,
-                    textAlign: TextAlign.left,
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w600,
-                    underline: true,
-                  ),
-                ).showCursorOnHover,
-              ],
-            ),
             SizedBox(height: 8.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -920,20 +962,35 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
               ],
             ),
             SizedBox(height: 8.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SignInButton(
-                  Buttons.Facebook,
-                  onPressed: () => loginWithFacebook(),
-                ).showCursorOnHover,
-                SizedBox(width: 16.0),
-                SignInButton(
-                  Buttons.Google,
-                  onPressed: () => loginWithGoogle(),
-                ).showCursorOnHover,
-              ],
-            ),
+            screenSize.isMobile
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      SignInButton(
+                        Buttons.Facebook,
+                        onPressed: () => loginWithFacebook(),
+                      ).showCursorOnHover,
+                      SizedBox(width: 16.0),
+                      SignInButton(
+                        Buttons.Google,
+                        onPressed: () => loginWithGoogle(),
+                      ).showCursorOnHover,
+                    ],
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      SignInButton(
+                        Buttons.Facebook,
+                        onPressed: () => loginWithFacebook(),
+                      ).showCursorOnHover,
+                      SizedBox(width: 16.0),
+                      SignInButton(
+                        Buttons.Google,
+                        onPressed: () => loginWithGoogle(),
+                      ).showCursorOnHover,
+                    ],
+                  ),
             SizedBox(height: 16.0),
           ],
         ),
@@ -1052,10 +1109,10 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
     );
   }
 
-  Widget purchaseInfo() {
+  Widget purchaseInfo(SizingInformation screenSize) {
     return Container(
       padding: EdgeInsets.all(16.0),
-      width: MediaQuery.of(context).size.width * 0.75,
+      width: screenSize.isMobile ? MediaQuery.of(context).size.width * 0.95 : MediaQuery.of(context).size.width * 0.80,
       color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1083,7 +1140,7 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
                 onTap: null,
                 child: CustomText(
                   context: context,
-                  text: "@username",
+                  text: "@${eventHost.username}",
                   textColor: CustomColors.webblenRed,
                   textAlign: TextAlign.left,
                   fontSize: 18.0,
@@ -1172,43 +1229,35 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
           SizedBox(height: 8.0),
           discountCodeRow(),
           paymentForm(),
-          isLoggedIn ? Container() : accountLoginForm(),
-          Row(
-            children: <Widget>[
-              Checkbox(
-                onChanged: (val) => acceptTermsAndConditions(val),
-                value: acceptedTermsAndConditions,
-              ).showCursorOnHover,
-              GestureDetector(
-                onTap: () => acceptTermsAndConditions(null),
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'By purchasing, I understand & agree to the ',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: 'Terms and Conditions ',
-                        style: TextStyle(color: Colors.blue),
-                        recognizer: TapGestureRecognizer()..onTap = () {},
-                      ),
-                      TextSpan(
-                        text: 'and that my information will be used as described on this page and in the ',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: 'Privacy Policy. ',
-                        style: TextStyle(color: Colors.blue),
-                        recognizer: TapGestureRecognizer()..onTap = () {},
-                      ),
-                    ],
+          isLoggedIn ? Container() : accountLoginForm(screenSize),
+          SizedBox(height: 16.0),
+          Container(
+            child: RichText(
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'By purchasing, I understand & agree to the ',
+                    style: TextStyle(color: Colors.black),
                   ),
-                ),
-              ).showCursorOnHover,
-            ],
+                  TextSpan(
+                    text: 'Terms and Conditions ',
+                    style: TextStyle(color: Colors.blue),
+                    recognizer: TapGestureRecognizer()..onTap = () {},
+                  ),
+                  TextSpan(
+                    text: 'and ',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  TextSpan(
+                    text: 'Privacy Policy. ',
+                    style: TextStyle(color: Colors.blue),
+                    recognizer: TapGestureRecognizer()..onTap = () {},
+                  ),
+                ],
+              ),
+            ),
           ),
-          SizedBox(height: 8.0),
+          SizedBox(height: 16.0),
           CustomColorButton(
             text: "Purchase Tickets",
             textColor: Colors.white,
@@ -1232,15 +1281,18 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
       isLoggedIn = res;
       EventDataService().getEvent(widget.eventID).then((res) {
         event = res;
-        EventDataService().getEventTicketDistro(widget.eventID).then((res) {
-          ticketDistro = res;
-          PlatformDataService().getEventTicketFee().then((res) {
-            ticketRate = res;
-            PlatformDataService().getTaxRate().then((res) {
-              taxRate = res;
-              calculateChargeTotals();
-              isLoading = false;
-              setState(() {});
+        WebblenUserData().getUser(event.authorID).then((res) {
+          eventHost = res;
+          EventDataService().getEventTicketDistro(widget.eventID).then((res) {
+            ticketDistro = res;
+            PlatformDataService().getEventTicketFee().then((res) {
+              ticketRate = res;
+              PlatformDataService().getTaxRate().then((res) {
+                taxRate = res;
+                calculateChargeTotals();
+                isLoading = false;
+                setState(() {});
+              });
             });
           });
         });
@@ -1250,8 +1302,6 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
 
   @override
   Widget build(BuildContext context) {
-//    FirebaseUser user = Provider.of<FirebaseUser>(context);
-//    print(user.uid);
     return ResponsiveBuilder(
       builder: (buildContext, screenSize) => Container(
         child: Container(
@@ -1260,14 +1310,16 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
             children: <Widget>[
               isLoading ? CustomLinearProgress(progressBarColor: CustomColors.webblenRed) : Container(),
               SizedBox(height: 32.0),
-              Container(
-                width: 600,
-                child: Column(
-                  children: <Widget>[
-                    purchaseInfo(),
-                  ],
-                ),
-              ),
+              isLoading
+                  ? Container()
+                  : Container(
+                      width: 600,
+                      child: Column(
+                        children: <Widget>[
+                          purchaseInfo(screenSize),
+                        ],
+                      ),
+                    ),
               SizedBox(height: 32.0),
               isLoading ? Container() : Footer(),
             ],

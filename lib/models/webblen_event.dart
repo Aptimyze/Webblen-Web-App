@@ -177,6 +177,7 @@ class WebblenEvent {
       };
 
   final NavigationService _navigationService = locator<NavigationService>();
+
   void navigateToEvent(String eventID) {
     _navigationService.navigateTo(EventsDetailsRoute, queryParams: {'id': eventID});
   }

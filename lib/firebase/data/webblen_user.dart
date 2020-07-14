@@ -30,6 +30,15 @@ class WebblenUserData {
     return stripeUID;
   }
 
+  Future<WebblenUser> getUser(String uid) async {
+    WebblenUser user;
+    DocumentSnapshot snapshot = await userRef.doc(uid).get();
+    if (snapshot.exists) {
+      user = WebblenUser.fromMap(Map<String, dynamic>.from(snapshot.data()['d']));
+    }
+    return user;
+  }
+
   Future<bool> userAccountIsSetup(String uid) async {
     bool accountIsSetup = false;
     DocumentSnapshot snapshot = await userRef.doc(uid).get();

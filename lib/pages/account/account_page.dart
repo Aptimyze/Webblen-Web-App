@@ -147,7 +147,7 @@ class _AccountPageState extends State<AccountPage> {
                           ),
                           SizedBox(height: 16.0),
                           CustomColorButton(
-                            onPressed: null,
+                            onPressed: () => locator<NavigationService>().navigateTo(MyEventsRoute),
                             text: "My Events",
                             textColor: Colors.black,
                             backgroundColor: Colors.white,
@@ -157,8 +157,8 @@ class _AccountPageState extends State<AccountPage> {
                           ).showCursorOnHover,
                           SizedBox(height: 8.0),
                           CustomColorButton(
-                            onPressed: () => locator<NavigationService>().navigateTo(WalletRoute),
-                            text: "Earnings",
+                            onPressed: () => locator<NavigationService>().navigateTo(WalletSetupEarningsRoute),
+                            text: "Setup Earnings Account",
                             textColor: Colors.black,
                             backgroundColor: Colors.white,
                             textSize: 18.0,

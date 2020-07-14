@@ -8,8 +8,10 @@ import 'package:webblen_web_app/pages/account/account_setup_page.dart';
 import 'package:webblen_web_app/pages/events/create_event_page.dart';
 import 'package:webblen_web_app/pages/events/event_details_page.dart';
 import 'package:webblen_web_app/pages/events/events_page.dart';
+import 'package:webblen_web_app/pages/events/my_events_page.dart';
 import 'package:webblen_web_app/pages/home/home_page.dart';
 import 'package:webblen_web_app/pages/tickets/purchase_tickets_page.dart';
+import 'package:webblen_web_app/pages/tickets/ticket_purchase_success_page.dart';
 import 'package:webblen_web_app/pages/tickets/ticket_selection_page.dart';
 import 'package:webblen_web_app/pages/wallet/wallet_earnings_guide_page.dart';
 import 'package:webblen_web_app/pages/wallet/wallet_event_tickets_page.dart';
@@ -17,6 +19,7 @@ import 'package:webblen_web_app/pages/wallet/wallet_page.dart';
 import 'package:webblen_web_app/pages/wallet/wallet_payment_history_page.dart';
 import 'package:webblen_web_app/pages/wallet/wallet_payout_methods_page.dart';
 import 'package:webblen_web_app/pages/wallet/wallet_setup_direct_deposit_page.dart';
+import 'package:webblen_web_app/pages/wallet/wallet_setup_earnings.dart';
 import 'package:webblen_web_app/pages/wallet/wallet_setup_instant_deposit_page.dart';
 
 import 'route_names.dart';
@@ -28,6 +31,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(HomePage(), settings);
     case EventsRoute:
       return _getPageRoute(EventsPage(), settings);
+    case MyEventsRoute:
+      return _getPageRoute(MyEventsPage(), settings);
     case CreateEventRoute:
       var eventID = routingData['id'];
       return _getPageRoute(CreateEventPage(eventID: eventID), settings);
@@ -39,6 +44,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case EventTicketsSelectionRoute:
       var eventID = routingData['id'];
       return _getPageRoute(TicketSelectionPage(eventID: eventID), settings);
+    case EventTicketPurchaseConfirmationRoute:
+      return _getPageRoute(TicketPurchaseSuccessPage(), settings);
     case EventTicketsPurchaseRoute:
       var eventID = routingData['id'];
       var ticketsToPurchase = routingData['ticketsToPurchase'];
@@ -46,7 +53,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case AccountLoginRoute:
       return _getPageRoute(AccountLoginPage(), settings);
     case AccountRegistrationRoute:
-      return _getPageRoute(AccountRegistrationPage(), settings);
+      var referral = routingData['referral'];
+      return _getPageRoute(AccountRegistrationPage(referral: referral), settings);
     case AccountSetupRoute:
       return _getPageRoute(AccountSetupPage(), settings);
     case AccountRoute:
@@ -66,6 +74,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(WalletSetupDirectDepositPage(), settings);
     case WalletInstantDepositSetupRoute:
       return _getPageRoute(WalletSetupInstantDepositPage(), settings);
+    case WalletSetupEarningsRoute:
+      return _getPageRoute(WalletSetupEarningsPage(), settings);
     default:
       return _getPageRoute(HomePage(), settings);
   }

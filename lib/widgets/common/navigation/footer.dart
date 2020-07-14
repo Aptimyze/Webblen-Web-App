@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
+import 'package:webblen_web_app/services/common/url_service.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_icon_button.dart';
 import 'package:webblen_web_app/widgets/common/images/webblen_logo.dart';
 import 'package:webblen_web_app/widgets/common/text/custom_text.dart';
@@ -69,7 +70,7 @@ class LargeFooterContent extends StatelessWidget {
                   ),
                   SizedBox(height: 16.0),
                   GestureDetector(
-                    onTap: null,
+                    onTap: () => URLService().openURL(context, "https://www.webblen.io/"),
                     child: Text(
                       "About",
                       style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
@@ -78,31 +79,31 @@ class LargeFooterContent extends StatelessWidget {
                   ).showCursorOnHover,
                   SizedBox(height: 12.0),
                   GestureDetector(
-                    onTap: null,
+                    onTap: () => URLService().openURL(context, "https://www.webblen.io/team"),
                     child: Text(
                       "Team",
                       style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
                       textAlign: TextAlign.left,
                     ),
                   ).showCursorOnHover,
-                  SizedBox(height: 12.0),
-                  GestureDetector(
-                    onTap: null,
-                    child: Text(
-                      "Our Mission",
-                      style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
-                      textAlign: TextAlign.left,
-                    ),
-                  ).showCursorOnHover,
-                  SizedBox(height: 12.0),
-                  GestureDetector(
-                    onTap: null,
-                    child: Text(
-                      "Investors",
-                      style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
-                      textAlign: TextAlign.left,
-                    ),
-                  ).showCursorOnHover,
+//                  SizedBox(height: 12.0),
+//                  GestureDetector(
+//                    onTap: () => URLService().openURL(context, "https://www.webblen.io/faq"),
+//                    child: Text(
+//                      "Our Mission",
+//                      style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
+//                      textAlign: TextAlign.left,
+//                    ),
+//                  ).showCursorOnHover,
+//                  SizedBox(height: 12.0),
+//                  GestureDetector(
+//                    onTap: () => URLService().openURL(context, "https://www.webblen.io/faq"),
+//                    child: Text(
+//                      "Investors",
+//                      style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
+//                      textAlign: TextAlign.left,
+//                    ),
+//                  ).showCursorOnHover,
                 ],
               ),
             ),
@@ -127,7 +128,7 @@ class LargeFooterContent extends StatelessWidget {
                   ),
                   SizedBox(height: 16.0),
                   GestureDetector(
-                    onTap: null,
+                    onTap: () => URLService().openURL(context, "https://www.webblen.io/"),
                     child: Text(
                       "Events",
                       style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
@@ -136,7 +137,7 @@ class LargeFooterContent extends StatelessWidget {
                   ).showCursorOnHover,
                   SizedBox(height: 12.0),
                   GestureDetector(
-                    onTap: null,
+                    onTap: () => URLService().openURL(context, "https://www.webblen.io/"),
                     child: Text(
                       "Communities",
                       style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
@@ -145,7 +146,7 @@ class LargeFooterContent extends StatelessWidget {
                   ).showCursorOnHover,
                   SizedBox(height: 12.0),
                   GestureDetector(
-                    onTap: null,
+                    onTap: () => URLService().openURL(context, "https://www.webblen.io/"),
                     child: Text(
                       "Advertising",
                       style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
@@ -176,7 +177,7 @@ class LargeFooterContent extends StatelessWidget {
                   ),
                   SizedBox(height: 16.0),
                   GestureDetector(
-                    onTap: null,
+                    onTap: () => URLService().openURL(context, "https://www.webblen.io/whitepaper"),
                     child: Text(
                       "Whitepaper",
                       style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
@@ -185,7 +186,7 @@ class LargeFooterContent extends StatelessWidget {
                   ).showCursorOnHover,
                   SizedBox(height: 12.0),
                   GestureDetector(
-                    onTap: null,
+                    onTap: () => URLService().openURL(context, "https://www.webblen.io/blog"),
                     child: Text(
                       "News & Blog",
                       style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
@@ -194,7 +195,7 @@ class LargeFooterContent extends StatelessWidget {
                   ).showCursorOnHover,
                   SizedBox(height: 12.0),
                   GestureDetector(
-                    onTap: null,
+                    onTap: () => URLService().openURL(context, "https://www.webblen.io/faq"),
                     child: Text(
                       "Help/FAQ",
                       style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
@@ -215,7 +216,7 @@ class LargeFooterContent extends StatelessWidget {
                   Row(
                     children: <Widget>[
                       CustomIconButton(
-                        onTap: null,
+                        onTap: () => URLService().openURL(context, "https://www.facebook.com/WebblenINC/"),
                         icon: Icon(
                           FontAwesomeIcons.facebookF,
                           color: Colors.white,
@@ -223,10 +224,10 @@ class LargeFooterContent extends StatelessWidget {
                         ),
                         size: 40.0,
                         color: Colors.black54,
-                      ),
+                      ).showCursorOnHover,
                       SizedBox(width: 8.0),
                       CustomIconButton(
-                        onTap: null,
+                        onTap: () => URLService().openURL(context, "https://twitter.com/Webbleninc"),
                         icon: Icon(
                           FontAwesomeIcons.twitter,
                           color: Colors.white,
@@ -234,10 +235,10 @@ class LargeFooterContent extends StatelessWidget {
                         ),
                         size: 40.0,
                         color: Colors.black54,
-                      ),
+                      ).showCursorOnHover,
                       SizedBox(width: 8.0),
                       CustomIconButton(
-                        onTap: null,
+                        onTap: () => URLService().openURL(context, "https://www.youtube.com/channel/UCq-j_ehFRGBcW4xV25iS7cw"),
                         icon: Icon(
                           FontAwesomeIcons.youtube,
                           color: Colors.white,
@@ -245,14 +246,14 @@ class LargeFooterContent extends StatelessWidget {
                         ),
                         size: 40.0,
                         color: Colors.black54,
-                      ),
+                      ).showCursorOnHover,
                     ],
                   ),
                   SizedBox(height: 16.0),
                   Row(
                     children: <Widget>[
                       CustomIconButton(
-                        onTap: null,
+                        onTap: () => URLService().openURL(context, "https://www.instagram.com/official_webblen/"),
                         icon: Icon(
                           FontAwesomeIcons.instagram,
                           color: Colors.white,
@@ -260,10 +261,10 @@ class LargeFooterContent extends StatelessWidget {
                         ),
                         size: 40.0,
                         color: Colors.black54,
-                      ),
+                      ).showCursorOnHover,
                       SizedBox(width: 8.0),
                       CustomIconButton(
-                        onTap: null,
+                        onTap: () => URLService().openURL(context, "https://discord.com/invite/5cxGQmt"),
                         icon: Icon(
                           FontAwesomeIcons.discord,
                           color: Colors.white,
@@ -271,10 +272,10 @@ class LargeFooterContent extends StatelessWidget {
                         ),
                         size: 40.0,
                         color: Colors.black54,
-                      ),
+                      ).showCursorOnHover,
                       SizedBox(width: 8.0),
                       CustomIconButton(
-                        onTap: null,
+                        onTap: () => URLService().openURL(context, "https://www.producthunt.com/posts/webblen"),
                         icon: Icon(
                           FontAwesomeIcons.productHunt,
                           color: Colors.white,
@@ -282,7 +283,7 @@ class LargeFooterContent extends StatelessWidget {
                         ),
                         size: 40.0,
                         color: Colors.black54,
-                      ),
+                      ).showCursorOnHover,
                     ],
                   ),
                 ],
@@ -334,28 +335,34 @@ class MobileFooterContent extends StatelessWidget {
           ),
           SizedBox(height: 8.0),
           GestureDetector(
-            onTap: null,
-            child: CustomText(
-              context: context,
-              text: "About",
-              textColor: Colors.black,
+            onTap: () => URLService().openURL(context, "https://www.webblen.io/"),
+            child: Text(
+              "About",
+              style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
               textAlign: TextAlign.left,
-              fontSize: 16.0,
-              fontWeight: FontWeight.w600,
+            ),
+          ).showCursorOnHover,
+          SizedBox(height: 12.0),
+          GestureDetector(
+            onTap: () => URLService().openURL(context, "https://www.webblen.io/team"),
+            child: Text(
+              "Team",
+              style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
+              textAlign: TextAlign.left,
             ),
           ).showCursorOnHover,
           SizedBox(height: 8.0),
-          GestureDetector(
-            onTap: null,
-            child: CustomText(
-              context: context,
-              text: "Our Mission",
-              textColor: Colors.black,
-              textAlign: TextAlign.left,
-              fontSize: 16.0,
-              fontWeight: FontWeight.w600,
-            ),
-          ).showCursorOnHover,
+//          GestureDetector(
+//            onTap: null,
+//            child: CustomText(
+//              context: context,
+//              text: "Our Mission",
+//              textColor: Colors.black,
+//              textAlign: TextAlign.left,
+//              fontSize: 16.0,
+//              fontWeight: FontWeight.w600,
+//            ),
+//          ).showCursorOnHover,
           SizedBox(height: 32.0),
           CustomText(
             context: context,
@@ -367,38 +374,29 @@ class MobileFooterContent extends StatelessWidget {
           ),
           SizedBox(height: 8.0),
           GestureDetector(
-            onTap: null,
-            child: CustomText(
-              context: context,
-              text: "Events",
-              textColor: Colors.black,
+            onTap: () => URLService().openURL(context, "https://www.webblen.io/"),
+            child: Text(
+              "Events",
+              style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
               textAlign: TextAlign.left,
-              fontSize: 16.0,
-              fontWeight: FontWeight.w600,
             ),
           ).showCursorOnHover,
-          SizedBox(height: 8.0),
+          SizedBox(height: 12.0),
           GestureDetector(
-            onTap: null,
-            child: CustomText(
-              context: context,
-              text: "Communities",
-              textColor: Colors.black,
+            onTap: () => URLService().openURL(context, "https://www.webblen.io/"),
+            child: Text(
+              "Communities",
+              style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
               textAlign: TextAlign.left,
-              fontSize: 16.0,
-              fontWeight: FontWeight.w600,
             ),
           ).showCursorOnHover,
-          SizedBox(height: 8.0),
+          SizedBox(height: 12.0),
           GestureDetector(
-            onTap: null,
-            child: CustomText(
-              context: context,
-              text: "Advertising",
-              textColor: Colors.black,
+            onTap: () => URLService().openURL(context, "https://www.webblen.io/"),
+            child: Text(
+              "Advertising",
+              style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
               textAlign: TextAlign.left,
-              fontSize: 16.0,
-              fontWeight: FontWeight.w600,
             ),
           ).showCursorOnHover,
           SizedBox(height: 32.0),
@@ -412,38 +410,29 @@ class MobileFooterContent extends StatelessWidget {
           ),
           SizedBox(height: 8.0),
           GestureDetector(
-            onTap: null,
-            child: CustomText(
-              context: context,
-              text: "Whitepaper",
-              textColor: Colors.black,
+            onTap: () => URLService().openURL(context, "https://www.webblen.io/whitepaper"),
+            child: Text(
+              "Whitepaper",
+              style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
               textAlign: TextAlign.left,
-              fontSize: 16.0,
-              fontWeight: FontWeight.w600,
             ),
           ).showCursorOnHover,
           SizedBox(height: 8.0),
           GestureDetector(
-            onTap: null,
-            child: CustomText(
-              context: context,
-              text: "News & Blog",
-              textColor: Colors.black,
+            onTap: () => URLService().openURL(context, "https://www.webblen.io/blog"),
+            child: Text(
+              "News & Blog",
+              style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
               textAlign: TextAlign.left,
-              fontSize: 16.0,
-              fontWeight: FontWeight.w600,
             ),
           ).showCursorOnHover,
           SizedBox(height: 8.0),
           GestureDetector(
-            onTap: null,
-            child: CustomText(
-              context: context,
-              text: "Help/FAQ",
-              textColor: Colors.black,
+            onTap: () => URLService().openURL(context, "https://www.webblen.io/faq"),
+            child: Text(
+              "Help/FAQ",
+              style: TextStyle(color: Colors.black, fontSize: 16.0, fontWeight: FontWeight.w600),
               textAlign: TextAlign.left,
-              fontSize: 16.0,
-              fontWeight: FontWeight.w600,
             ),
           ).showCursorOnHover,
           Container(
@@ -457,7 +446,7 @@ class MobileFooterContent extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     CustomIconButton(
-                      onTap: null,
+                      onTap: () => URLService().openURL(context, "https://www.facebook.com/WebblenINC/"),
                       icon: Icon(
                         FontAwesomeIcons.facebookF,
                         color: Colors.white,
@@ -468,7 +457,7 @@ class MobileFooterContent extends StatelessWidget {
                     ).showCursorOnHover,
                     SizedBox(width: 8.0),
                     CustomIconButton(
-                      onTap: null,
+                      onTap: () => URLService().openURL(context, "https://twitter.com/Webbleninc"),
                       icon: Icon(
                         FontAwesomeIcons.twitter,
                         color: Colors.white,
@@ -479,7 +468,7 @@ class MobileFooterContent extends StatelessWidget {
                     ).showCursorOnHover,
                     SizedBox(width: 8.0),
                     CustomIconButton(
-                      onTap: null,
+                      onTap: () => URLService().openURL(context, "https://www.youtube.com/channel/UCq-j_ehFRGBcW4xV25iS7cw"),
                       icon: Icon(
                         FontAwesomeIcons.youtube,
                         color: Colors.white,
@@ -494,7 +483,7 @@ class MobileFooterContent extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     CustomIconButton(
-                      onTap: null,
+                      onTap: () => URLService().openURL(context, "https://www.instagram.com/official_webblen/"),
                       icon: Icon(
                         FontAwesomeIcons.instagram,
                         color: Colors.white,
@@ -505,7 +494,7 @@ class MobileFooterContent extends StatelessWidget {
                     ).showCursorOnHover,
                     SizedBox(width: 8.0),
                     CustomIconButton(
-                      onTap: null,
+                      onTap: () => URLService().openURL(context, "https://discord.com/invite/5cxGQmt"),
                       icon: Icon(
                         FontAwesomeIcons.discord,
                         color: Colors.white,
@@ -516,7 +505,7 @@ class MobileFooterContent extends StatelessWidget {
                     ).showCursorOnHover,
                     SizedBox(width: 8.0),
                     CustomIconButton(
-                      onTap: null,
+                      onTap: () => URLService().openURL(context, "https://www.producthunt.com/posts/webblen"),
                       icon: Icon(
                         FontAwesomeIcons.productHunt,
                         color: Colors.white,

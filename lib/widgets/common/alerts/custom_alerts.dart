@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
+import 'package:webblen_web_app/extensions/string_extensions.dart';
+import 'package:webblen_web_app/widgets/common/containers/text_field_container.dart';
 import 'package:webblen_web_app/widgets/common/state/progress_indicator.dart';
+import 'package:webblen_web_app/widgets/common/text/custom_text.dart';
 
 class CustomAlerts {
   showInfoAlert(BuildContext context, String title, String desc) {
@@ -134,6 +137,48 @@ class CustomAlerts {
         child: CustomCircleProgress(50, 50, 50, 50, Colors.red),
       ),
       buttons: [],
+    ).show();
+  }
+
+  showEventShareLink(BuildContext context, String eventTitle, String eventLink, VoidCallback copyLinkAction) {
+    Alert(
+      context: context,
+      type: AlertType.none,
+      title: "Event Copied To Clipboard!",
+      content: Column(
+        children: [
+          CustomText(
+            context: context,
+            text: "The event link below has been copied to your clipboard. \n Share it anywhere you'd like!",
+            textColor: Colors.black,
+            textAlign: TextAlign.center,
+            fontSize: 16.0,
+            fontWeight: FontWeight.w400,
+          ),
+          SizedBox(height: 8.0),
+          TextFieldContainer(
+            child: CustomText(
+              context: context,
+              text: eventLink,
+              textColor: Colors.black,
+              textAlign: TextAlign.center,
+              fontSize: 16.0,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
+      ),
+      buttons: [
+        DialogButton(
+          color: Colors.black,
+          child: Text(
+            'Copy Link',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ).showCursorOnHover,
+          onPressed: () => copyText(eventLink),
+          width: 200,
+        ),
+      ],
     ).show();
   }
 

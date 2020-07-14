@@ -13,6 +13,7 @@ import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/locater.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/routing/route_names.dart';
+import 'package:webblen_web_app/services/location/location_service.dart';
 import 'package:webblen_web_app/services/navigation/navigation_service.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_color_button.dart';
 import 'package:webblen_web_app/widgets/common/containers/text_field_container.dart';
@@ -30,6 +31,7 @@ class _EventsPageState extends State<EventsPage> {
   bool isLoading = true;
   bool dismissedNotice = false;
   String cityFilter = "Fargo, ND";
+  String zipPostalCode = "58102";
   String eventTypeFilter = "None";
   String eventCategoryFilter = "None";
   List<WebblenEvent> events = [];
@@ -59,9 +61,13 @@ class _EventsPageState extends State<EventsPage> {
     PlacesDetailsResponse detail = await _places.getDetailsByPlaceId(p.placeId);
     String cityName = detail.result.addressComponents[0].longName;
     String stateAbbr = detail.result.addressComponents[2].shortName;
-    setState(() {
-      cityFilter = "$cityName, $stateAbbr";
-    });
+    double lat = detail.result.geometry.location.lat;
+    double lon = detail.result.geometry.location.lng;
+    cityFilter = "$cityName, $stateAbbr";
+    isLoading = true;
+    setState(() {});
+    zipPostalCode = await LocationService().getZipFromLatLon(lat, lon);
+    queryAndFilterEvents();
   }
 
   Widget notLoggedInNotice() {
@@ -156,7 +162,7 @@ class _EventsPageState extends State<EventsPage> {
                   children: <Widget>[
                     CustomText(
                       context: context,
-                      text: "Find Events In ",
+                      text: "Find Events Near ",
                       textColor: Colors.black,
                       textAlign: TextAlign.left,
                       fontSize: 30.0,
@@ -188,7 +194,7 @@ class _EventsPageState extends State<EventsPage> {
                             backgroundColor: Colors.white,
                             height: 35.0,
                             width: 150,
-                            onPressed: () => locator<NavigationService>().navigateTo(CreateEventRoute),
+                            onPressed: () => locator<NavigationService>().navigateTo(MyEventsRoute),
                           ).showCursorOnHover
                         : Container(),
                     isLoggedIn
@@ -296,7 +302,21 @@ class _EventsPageState extends State<EventsPage> {
         ),
         Padding(
           padding: EdgeInsets.symmetric(vertical: 16.0),
-          child: eventGrid(),
+          child: events.isEmpty
+              ? Container(
+                  height: MediaQuery.of(context).size.height * 0.50,
+                  child: Center(
+                    child: CustomText(
+                      context: context,
+                      text: "No Events Could Be Found According Your Your Preferences",
+                      textColor: Colors.black,
+                      textAlign: TextAlign.center,
+                      fontSize: 19.0,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                )
+              : eventGrid(),
         ),
         SizedBox(height: 32.0),
       ],
@@ -432,7 +452,7 @@ class _EventsPageState extends State<EventsPage> {
                         backgroundColor: Colors.white,
                         height: 35.0,
                         width: 200,
-                        onPressed: () => locator<NavigationService>().navigateTo(CreateEventRoute),
+                        onPressed: () => locator<NavigationService>().navigateTo(MyEventsRoute),
                       ).showCursorOnHover,
                       SizedBox(width: 16.0),
                       CustomColorButton(
@@ -449,7 +469,21 @@ class _EventsPageState extends State<EventsPage> {
               : Container(),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
-            child: eventGrid(),
+            child: events.isEmpty
+                ? Container(
+                    height: MediaQuery.of(context).size.height * 0.50,
+                    child: Center(
+                      child: CustomText(
+                        context: context,
+                        text: "No Events Could Be Found According Your Your Preferences",
+                        textColor: Colors.black,
+                        textAlign: TextAlign.center,
+                        fontSize: 19.0,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  )
+                : eventGrid(),
           ),
         ],
       ),
@@ -578,7 +612,7 @@ class _EventsPageState extends State<EventsPage> {
                         backgroundColor: Colors.white,
                         height: 35.0,
                         width: 175,
-                        onPressed: () => locator<NavigationService>().navigateTo(CreateEventRoute),
+                        onPressed: () => locator<NavigationService>().navigateTo(MyEventsRoute),
                       ).showCursorOnHover,
                       SizedBox(width: 16.0),
                       CustomColorButton(
@@ -595,7 +629,21 @@ class _EventsPageState extends State<EventsPage> {
               : Container(),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 16.0),
-            child: eventGrid(),
+            child: events.isEmpty
+                ? Container(
+                    height: MediaQuery.of(context).size.height * 0.50,
+                    child: Center(
+                      child: CustomText(
+                        context: context,
+                        text: "No Events Could Be Found According Your Your Preferences",
+                        textColor: Colors.black,
+                        textAlign: TextAlign.center,
+                        fontSize: 19.0,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  )
+                : eventGrid(),
           ),
         ],
       ),
@@ -605,7 +653,7 @@ class _EventsPageState extends State<EventsPage> {
   queryAndFilterEvents() {
     isLoading = true;
     setState(() {});
-    AlgoliaSearch().queryEvents(cityFilter).then((res) {
+    AlgoliaSearch().queryEvents(zipPostalCode).then((res) {
       if (eventCategoryFilter != "None") {
         events = res.where((event) => event.category == eventCategoryFilter).toList(growable: true);
       }

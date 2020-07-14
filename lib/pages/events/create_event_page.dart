@@ -431,9 +431,13 @@ class _CreateEventPageState extends State<CreateEventPage> {
                                 );
                               }).toList(),
                               onChanged: (val) {
-                                setState(() {
-                                  startTime = val;
-                                });
+                                startTime = val;
+                                DateTime formattedStartTime = timeFormatter.parse(startTime);
+                                DateTime formattedEndTime = timeFormatter.parse(endTime);
+                                if (formattedStartTime.isAfter(formattedEndTime)) {
+                                  endTime = startTime;
+                                }
+                                setState(() {});
                               }).showCursorOnHover,
                         ),
                       ),
@@ -1263,7 +1267,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
       ticketName = ticketDistro.tickets[objectIndex]['ticketName'];
       ticketQuantity = ticketDistro.tickets[objectIndex]['ticketQuantity'];
       ticketPrice = ticketDistro.tickets[objectIndex]['ticketPrice'];
-      ticketDistro.discountCodes.removeAt(objectIndex);
+      ticketDistro.tickets.removeAt(objectIndex);
       changeFormStatus("ticketForm");
     } else if (object == "fee") {
       feeName = ticketDistro.fees[objectIndex]['feeName'];

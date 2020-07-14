@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
-import 'package:webblen_web_app/firebase/data/event.dart';
 import 'package:webblen_web_app/locater.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/routing/route_names.dart';
@@ -11,7 +10,6 @@ import 'package:webblen_web_app/services/navigation/navigation_service.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_color_button.dart';
 import 'package:webblen_web_app/widgets/common/navigation/footer.dart';
 import 'package:webblen_web_app/widgets/common/text/custom_text.dart';
-import 'package:webblen_web_app/widgets/events/event_block.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -413,40 +411,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget trendingEventsListBuilder(SizingInformation screenSize) {
-    return Container(
-      height: 200,
-      width: MediaQuery.of(context).size.width,
-      child: Center(
-        child: ListView.builder(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            itemCount: trendingEvents.length,
-            itemBuilder: (BuildContext context, int index) {
-              return FeaturedEventBlock(
-                screenSize: screenSize,
-                event: trendingEvents[index],
-                viewEventDetails: () => trendingEvents[index].navigateToEvent(trendingEvents[index].id),
-              );
-            }),
-      ),
-    );
-  }
-
-  initialize() async {
-    await Future.delayed(Duration(seconds: 2));
-    EventDataService().getTrendingEvents().then((res) {
-      trendingEvents = res;
-      isLoading = false;
-      setState(() {});
-    });
-  }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    initialize();
   }
 
   @override

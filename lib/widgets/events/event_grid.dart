@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
+import 'package:webblen_web_app/widgets/common/alerts/custom_alerts.dart';
 import 'package:webblen_web_app/widgets/events/event_block.dart';
 
 class EventGrid extends StatelessWidget {
@@ -30,7 +31,12 @@ class EventGrid extends StatelessWidget {
                     eventImgSize: 260,
                     eventDescHeight: 120,
                     event: events[index],
-                    shareEvent: null,
+                    shareEvent: () => CustomAlerts().showEventShareLink(
+                      context,
+                      events[index].title,
+                      "https://www.app.webblen.io/#/event?id=${events[index].id}",
+                      () {},
+                    ),
                     numOfTicsForEvent: ticsPerEvent == null ? null : ticsPerEvent[events[index].id],
                     viewEventDetails: () => events[index].navigateToEvent(events[index].id),
                     viewEventTickets: ticsPerEvent == null ? null : () => events[index].navigateToWalletTickets(events[index].id),

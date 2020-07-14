@@ -22,6 +22,7 @@ import 'package:webblen_web_app/services/stripe/stripe_payment.dart';
 import 'package:webblen_web_app/widgets/common/alerts/custom_alerts.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_color_button.dart';
 import 'package:webblen_web_app/widgets/common/navigation/footer.dart';
+import 'package:webblen_web_app/widgets/common/state/zero_state_view.dart';
 import 'package:webblen_web_app/widgets/common/text/custom_text.dart';
 import 'package:webblen_web_app/widgets/events/event_block.dart';
 
@@ -211,7 +212,7 @@ class _WalletPageState extends State<WalletPage> {
       StripePaymentService().performInstantStripePayout(currentUID, stripeUID).then((res) {
         Navigator.of(context).pop();
         if (res == "passed") {
-          CustomAlerts().showSuccessAlert(context, "Payout Success!", "Funds will Be Available on Your Account within 30 minutes to 1 hourr");
+          CustomAlerts().showSuccessAlert(context, "Payout Success!", "Funds will Be Available on Your Account within 30 minutes to 1 hour");
         } else {
           CustomAlerts().showErrorAlert(context, "Instant Payout Failed", "There was a problem issuing your payout. Please Try Again Later.");
         }
@@ -363,94 +364,103 @@ class _WalletPageState extends State<WalletPage> {
         color: Colors.white,
         child: ListView(
           children: <Widget>[
-            isLoading ? Container() : stripeAccountIsSetup ? Container() : createEarningsAccountNotice(),
+            isLoading || user == null || user.isAnonymous ? Container() : stripeAccountIsSetup ? Container() : createEarningsAccountNotice(),
             //isLoading ? CustomLinearProgress(progressBarColor: CustomColors.webblenRed) : Container(),
-            Container(
-              margin: EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0),
-              child: MediaQuery(
-                data: MediaQuery.of(context).copyWith(
-                  textScaleFactor: 1.0,
-                ),
-                child: CustomText(
-                  context: context,
-                  text: "Wallet",
-                  textColor: Colors.black,
-                  textAlign: TextAlign.left,
-                  fontSize: 40.0,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-            user == null
-                ? Container(height: MediaQuery.of(context).size.height)
+            isLoading || user == null || user.isAnonymous
+                ? Container()
                 : Container(
-                    margin: EdgeInsets.symmetric(horizontal: 24.0),
-                    child: StreamBuilder(
-                      stream: WebblenUserData().streamStripeAccount(user.uid),
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) return Container();
-                        var userData = snapshot;
-                        double availableBalance = 0.001;
-                        double pendingBalance = 0.001;
-                        String verificationStatus = "pending";
-                        if (userData.data != null) {
-                          availableBalance = userData.data['availableBalance'] * 1.000001;
-                          pendingBalance = userData.data['pendingBalance'] * 1.000001;
-                          verificationStatus = userData.data['verified'];
-                        }
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            SizedBox(height: 8.0),
-                            CustomText(
-                              context: context,
-                              text: '\$' + availableBalance.toStringAsFixed(2),
-                              textColor: Colors.black,
-                              textAlign: TextAlign.left,
-                              fontSize: 40.0,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            CustomText(
-                              context: context,
-                              text: 'USD Balance',
-                              textColor: Colors.black,
-                              textAlign: TextAlign.left,
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            CustomText(
-                              context: context,
-                              text: "Money you've earned through Webblen via ticketing",
-                              textColor: Colors.black,
-                              textAlign: TextAlign.left,
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            SizedBox(height: 12.0),
-                            CustomText(
-                              context: context,
-                              text: '\$' + pendingBalance.toStringAsFixed(2),
-                              textColor: Colors.black38,
-                              textAlign: TextAlign.left,
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            CustomText(
-                              context: context,
-                              text: 'Pending Balance',
-                              textColor: Colors.black38,
-                              textAlign: TextAlign.left,
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            SizedBox(height: 12.0),
-                            stripeAccountMenu(verificationStatus, screenSize, availableBalance),
-                          ],
-                        );
-                      },
+                    margin: EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0),
+                    child: MediaQuery(
+                      data: MediaQuery.of(context).copyWith(
+                        textScaleFactor: 1.0,
+                      ),
+                      child: CustomText(
+                        context: context,
+                        text: "Wallet",
+                        textColor: Colors.black,
+                        textAlign: TextAlign.left,
+                        fontSize: 40.0,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
             user == null
+                ? Container(height: MediaQuery.of(context).size.height)
+                : user.isAnonymous
+                    ? ZeroStateView(
+                        title: "You Are Not Logged In",
+                        desc: "Please Login to View Your Wallet",
+                        buttonTitle: "Login",
+                        buttonAction: () => locator<NavigationService>().navigateTo(AccountLoginRoute),
+                      )
+                    : Container(
+                        margin: EdgeInsets.symmetric(horizontal: 24.0),
+                        child: StreamBuilder(
+                          stream: WebblenUserData().streamStripeAccount(user.uid),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) return Container();
+                            var userData = snapshot;
+                            double availableBalance = 0.001;
+                            double pendingBalance = 0.001;
+                            String verificationStatus = "pending";
+                            if (userData.data != null) {
+                              availableBalance = userData.data['availableBalance'] * 1.000001;
+                              pendingBalance = userData.data['pendingBalance'] * 1.000001;
+                              verificationStatus = userData.data['verified'];
+                            }
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                SizedBox(height: 8.0),
+                                CustomText(
+                                  context: context,
+                                  text: '\$' + availableBalance.toStringAsFixed(2),
+                                  textColor: Colors.black,
+                                  textAlign: TextAlign.left,
+                                  fontSize: 40.0,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                CustomText(
+                                  context: context,
+                                  text: 'USD Balance',
+                                  textColor: Colors.black,
+                                  textAlign: TextAlign.left,
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                CustomText(
+                                  context: context,
+                                  text: "Money you've earned through Webblen via ticketing",
+                                  textColor: Colors.black,
+                                  textAlign: TextAlign.left,
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                SizedBox(height: 12.0),
+                                CustomText(
+                                  context: context,
+                                  text: '\$' + pendingBalance.toStringAsFixed(2),
+                                  textColor: Colors.black38,
+                                  textAlign: TextAlign.left,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                CustomText(
+                                  context: context,
+                                  text: 'Pending Balance',
+                                  textColor: Colors.black38,
+                                  textAlign: TextAlign.left,
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                SizedBox(height: 12.0),
+                                stripeAccountMenu(verificationStatus, screenSize, availableBalance),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+            user == null || user.isAnonymous
                 ? Container(height: MediaQuery.of(context).size.height)
                 : Container(
                     margin: EdgeInsets.symmetric(horizontal: 24.0),

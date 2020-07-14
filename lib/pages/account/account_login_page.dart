@@ -226,14 +226,14 @@ class _AccountLoginPageState extends State<AccountLoginPage> {
   Widget buildLoginForm(SizingInformation screenSize) {
     return Container(
       constraints: BoxConstraints(
-        minHeight: MediaQuery.of(context).size.height,
+        minHeight: MediaQuery.of(context).size.height * 0.90,
       ),
       child: Form(
         key: formKey,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           //crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: 32.0),
             CustomText(
               context: context,
               text: "Login",
@@ -249,6 +249,7 @@ class _AccountLoginPageState extends State<AccountLoginPage> {
                 cursorColor: Colors.black,
                 validator: (value) => value.isEmpty ? 'Field Cannot be Empty' : null,
                 onSaved: (value) => emailVal = value,
+                onFieldSubmitted: (val) => validateAndSubmitForm(),
                 decoration: InputDecoration(
                   hintText: "Email",
                   border: InputBorder.none,
@@ -263,6 +264,7 @@ class _AccountLoginPageState extends State<AccountLoginPage> {
                 cursorColor: Colors.black,
                 validator: (value) => value.isEmpty ? 'Field Cannot be Empty' : null,
                 onSaved: (value) => passwordVal = value,
+                onFieldSubmitted: (val) => validateAndSubmitForm(),
                 decoration: InputDecoration(
                   hintText: "Password",
                   border: InputBorder.none,

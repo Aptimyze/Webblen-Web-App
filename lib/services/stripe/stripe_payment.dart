@@ -235,4 +235,28 @@ class StripePaymentService {
     }
     return status;
   }
+
+  Future<String> sendEmailConfirmation(
+    String emailAddress,
+    String eventTitle,
+  ) async {
+    String status;
+    print('sending email to: $emailAddress');
+    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
+      functionName: 'sendEmailConfirmation',
+    );
+    final HttpsCallableResult result = await callable.call(
+      <String, dynamic>{
+        'emailAddress': emailAddress,
+        'eventTitle': eventTitle,
+      },
+    ).catchError((e) {
+      print(e);
+    });
+    if (result.data != null) {
+      //status = result.data['status'];
+      print(result.data);
+    }
+    return status;
+  }
 }

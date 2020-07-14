@@ -22,6 +22,8 @@ import 'package:webblen_web_app/widgets/common/state/progress_indicator.dart';
 import 'package:webblen_web_app/widgets/common/text/custom_text.dart';
 
 class AccountRegistrationPage extends StatefulWidget {
+  final String referral;
+  AccountRegistrationPage({this.referral});
   @override
   _AccountRegistrationPageState createState() => _AccountRegistrationPageState();
 }
@@ -48,6 +50,9 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
   String phoneNo;
   String smsCode;
   String verificationId;
+
+  //Routing
+  String referralRoute;
 
   changePhoneEmailRegistrationStatus() {
     if (isRegisteringWithPhone) {
@@ -141,6 +146,11 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
             if (error == null) {
               if (this.mounted) {
                 showEmailConfirmationSent = true;
+                if (referralRoute == "earningsSetup") {
+                  locator<NavigationService>().navigateTo(WalletSetupEarningsRoute);
+                } else {
+                  locator<NavigationService>().navigateTo(AccountSetupRoute);
+                }
               }
             } else {
               showErrorAlert("There was an issue", error);
@@ -188,7 +198,11 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
             setState(() {
               isLoading = false;
             });
-            locator<NavigationService>().navigateTo(HomeRoute);
+            if (referralRoute == "earningsSetup") {
+              locator<NavigationService>().navigateTo(WalletSetupEarningsRoute);
+            } else {
+              locator<NavigationService>().navigateTo(HomeRoute);
+            }
           } else {
             setState(() {
               isLoading = false;
@@ -230,7 +244,11 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
     AuthCredential credential = GoogleAuthProvider.getCredential(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
     FirebaseAuth.instance.signInWithCredential(credential).then((user) {
       if (user != null) {
-        locator<NavigationService>().navigateTo(HomeRoute);
+        if (referralRoute == "earningsSetup") {
+          locator<NavigationService>().navigateTo(WalletSetupEarningsRoute);
+        } else {
+          locator<NavigationService>().navigateTo(HomeRoute);
+        }
       } else {
         showErrorAlert("Oops!", 'There was an issue signing in with Google. Please Try Again.');
         setState(() {
@@ -243,28 +261,47 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
   Widget buildRegistrationForm(SizingInformation screenSize) {
     return Container(
       constraints: BoxConstraints(
-        minHeight: MediaQuery.of(context).size.height,
+        minHeight: MediaQuery.of(context).size.height * 0.9,
       ),
       child: Form(
         key: formKey,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: 32.0),
-            CustomText(
-              context: context,
-              text: "Register",
-              textColor: Colors.black,
-              textAlign: TextAlign.left,
-              fontSize: 40.0,
-              fontWeight: FontWeight.w700,
-            ),
+            widget.referral == "event_host_referral"
+                ? CustomText(
+                    context: context,
+                    text: "Ready to Start Selling Tickets?",
+                    textColor: Colors.black,
+                    textAlign: TextAlign.center,
+                    fontSize: 30.0,
+                    fontWeight: FontWeight.w700,
+                  )
+                : Container(),
+            widget.referral == "event_host_referral"
+                ? CustomText(
+                    context: context,
+                    text: "Register Below",
+                    textColor: Colors.black,
+                    textAlign: TextAlign.center,
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.w300,
+                  )
+                : CustomText(
+                    context: context,
+                    text: "Register",
+                    textColor: Colors.black,
+                    textAlign: TextAlign.center,
+                    fontSize: 40.0,
+                    fontWeight: FontWeight.w700,
+                  ),
             SizedBox(height: 16.0),
             showEmailConfirmationSent
                 ? Padding(
                     padding: EdgeInsets.symmetric(vertical: 8.0),
                     child: CustomText(
                       context: context,
-                      text: "An Confirmation Email Has Been Sent to the address: $emailVal",
+                      text: "A Confirmation Email Has Been Sent to the address: $emailVal",
                       textColor: Colors.green,
                       textAlign: TextAlign.left,
                       fontSize: 40.0,
@@ -280,6 +317,7 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
                       controller: phoneMaskController,
                       validator: (value) => value.isEmpty ? 'Field Cannot be Empty' : null,
                       onSaved: (value) => phoneNo = value,
+                      onFieldSubmitted: (val) => validateAndSubmitForm(),
                       decoration: InputDecoration(
                         hintText: "Phone Number",
                         border: InputBorder.none,
@@ -292,6 +330,7 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
                       cursorColor: Colors.black,
                       validator: (value) => value.isEmpty ? 'Field Cannot be Empty' : null,
                       onSaved: (value) => emailVal = value,
+                      onFieldSubmitted: (val) => validateAndSubmitForm(),
                       decoration: InputDecoration(
                         hintText: "Email Address",
                         border: InputBorder.none,
@@ -308,6 +347,7 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
                       obscureText: true,
                       validator: (value) => value.isEmpty ? 'Field Cannot be Empty' : null,
                       onSaved: (value) => passwordVal = value,
+                      onFieldSubmitted: (val) => validateAndSubmitForm(),
                       decoration: InputDecoration(
                         hintText: "Password",
                         border: InputBorder.none,
@@ -400,6 +440,17 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (widget.referral != null) {
+      if (widget.referral == "event_host_referral") {
+        referralRoute = 'earningsSetup';
+      }
+    }
   }
 
   @override

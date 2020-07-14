@@ -111,4 +111,14 @@ class EventDataService {
     });
     return eventTickets;
   }
+
+  Future<List<WebblenEvent>> getMyEvents(String uid) async {
+    List<WebblenEvent> events = [];
+    QuerySnapshot snapshot = await eventsRef.where("d.authorID", "==", uid).orderBy('d.startDateTimeInMilliseconds').get();
+    snapshot.docs.forEach((doc) {
+      WebblenEvent event = WebblenEvent.fromMap(doc.data()['d']);
+      events.add(event);
+    });
+    return events;
+  }
 }

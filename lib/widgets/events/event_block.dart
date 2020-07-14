@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:responsive_builder/responsive_builder.dart';
-import 'package:webblen_web_app/constants/custom_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
-import 'package:webblen_web_app/widgets/common/containers/round_container.dart';
 import 'package:webblen_web_app/widgets/common/containers/tag_container.dart';
 import 'package:webblen_web_app/widgets/common/text/custom_text.dart';
 
@@ -112,18 +109,7 @@ class EventBlock extends StatelessWidget {
                     children: <Widget>[
                       TagContainer(tag: event.type),
                       numOfTicsForEvent == null
-                          ? GestureDetector(
-                              onTap: shareEvent,
-                              child: RoundContainer(
-                                child: Icon(
-                                  Icons.share,
-                                  size: 12.0,
-                                  color: Colors.black45,
-                                ),
-                                color: CustomColors.textFieldGray,
-                                size: 30,
-                              ),
-                            )
+                          ? Container()
                           : Container(
                               child: Row(
                                 children: <Widget>[
@@ -150,108 +136,6 @@ class EventBlock extends StatelessWidget {
               ),
             )
           ],
-        ),
-      ),
-    ).showCursorOnHover;
-  }
-}
-
-class FeaturedEventBlock extends StatelessWidget {
-  final SizingInformation screenSize;
-  final WebblenEvent event;
-  final VoidCallback viewEventDetails;
-
-  FeaturedEventBlock({this.screenSize, this.event, this.viewEventDetails});
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: viewEventDetails,
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-        height: screenSize.isDesktop ? 200 : 220,
-        width: screenSize.isDesktop ? 250 : 180,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          image: DecorationImage(
-            fit: BoxFit.fill,
-            image: NetworkImage(event.imageURL),
-            //NetworkImage(event.imageURL),
-          ),
-        ),
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: 8.0,
-            vertical: 8.0,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.black45,
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                height: 16.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minWidth: screenSize.isDesktop ? 220 : 150,
-                    ),
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: Text(
-                        event.title,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: <Widget>[
-                          Icon(
-                            FontAwesomeIcons.mapMarkerAlt,
-                            size: 14.0,
-                            color: Colors.white,
-                          ),
-                          SizedBox(width: 4.0),
-                          CustomText(
-                            context: context,
-                            text: "${event.city}, ${event.province}",
-                            textColor: Colors.white,
-                            textAlign: TextAlign.left,
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 4.0),
-                      CustomText(
-                        context: context,
-                        text: "${event.startDate} | ${event.startTime} ${event.timezone}",
-                        textColor: Colors.white,
-                        textAlign: TextAlign.left,
-                        fontSize: 12.0,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
         ),
       ),
     ).showCursorOnHover;
