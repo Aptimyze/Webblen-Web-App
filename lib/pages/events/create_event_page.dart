@@ -115,6 +115,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
   String twitterUsername;
   String instaUsername;
   String websiteURL;
+  String webAppLink;
 
   //Other
   GoogleMapsPlaces _places = GoogleMapsPlaces(
@@ -1678,6 +1679,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
 //  }
 
   createEvent() async {
+    CustomAlerts().showLoadingAlert(context, "Uploading Event...");
     DateTime startDateTime = DateTime(
       selectedStartDate.year,
       selectedStartDate.day,
@@ -1725,9 +1727,11 @@ class _CreateEventPageState extends State<CreateEventPage> {
       timezone: timezone,
       privacy: privacy,
       reported: false,
+      webAppLink: webAppLink == null ? null : webAppLink,
     );
     EventDataService().uploadEvent(newEvent, zipPostalCode, eventImgFile, ticketDistro).then((error) {
       if (error == null) {
+        Navigator.of(context).pop();
         newEvent.navigateToEvent(newEvent.id);
       } else {
         print(error);
@@ -1805,9 +1809,12 @@ class _CreateEventPageState extends State<CreateEventPage> {
             endTime = res.endTime;
             timezone = res.timezone;
             privacy = res.privacy;
+            webAppLink = res.webAppLink;
             if (res.hasTickets) {
               EventDataService().getEventTicketDistro(res.id).then((res) {
-                ticketDistro = res;
+                if (res != null) {
+                  ticketDistro = res;
+                }
                 isLoading = false;
                 setState(() {});
               });

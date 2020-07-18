@@ -21,10 +21,13 @@ class EventDataService {
     String error;
     List nearbyZipcodes = [];
     String newEventID = randomAlphaNumeric(12);
-    String eventImageURL = await ImageUploadService().uploadImageToFirebaseStorage(eventImageFile, EventImgFile, newEventID);
     newEvent.id = newEventID;
-    newEvent.imageURL = eventImageURL;
-    if (!newEvent.isDigitalEvent) {
+    if (eventImageFile != null) {
+      String eventImageURL = await ImageUploadService().uploadImageToFirebaseStorage(eventImageFile, EventImgFile, newEventID);
+      newEvent.imageURL = eventImageURL;
+    }
+    newEvent.webAppLink = 'https://app.webblen.io/event?id=$newEventID';
+    if (!newEvent.isDigitalEvent && zipPostalCode != null) {
       List listOfAreaCodes = await LocationService().findNearestZipcodes(zipPostalCode);
       if (listOfAreaCodes != null) {
         nearbyZipcodes = listOfAreaCodes;
@@ -33,7 +36,10 @@ class EventDataService {
       }
       newEvent.nearbyZipcodes = nearbyZipcodes;
     }
-    await eventsRef.doc(newEventID).set({'d': newEvent.toMap(), 'g': null, 'l': null});
+    if (ticketDistro.tickets.isNotEmpty) {
+      newEvent.hasTickets = true;
+    }
+    await eventsRef.doc(newEventID).set({'d': newEvent.toMap(), 'g': null, 'l': null}).catchError((e) => print(e));
     if (ticketDistro.tickets.isNotEmpty) {
       await uploadEventTickets(newEventID, ticketDistro);
     }
@@ -44,7 +50,7 @@ class EventDataService {
     String error;
     await ticketDistroRef.doc(eventID).set(ticketDistro.toMap()).catchError((e) {
       error = e.details;
-    });
+    }).catchError((e) => print(e));
     return error;
   }
 
