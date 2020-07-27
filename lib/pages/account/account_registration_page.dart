@@ -364,6 +364,7 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
                       obscureText: true,
                       validator: (value) => value.isEmpty ? 'Field Cannot be Empty' : null,
                       onSaved: (value) => passwordConfirmVal = value,
+                      onFieldSubmitted: (val) => validateAndSubmitForm(),
                       decoration: InputDecoration(
                         hintText: "Confirm Password",
                         border: InputBorder.none,

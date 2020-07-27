@@ -57,8 +57,8 @@ class LocationService {
     return zips;
   }
 
-  Future<String> getZipFromLatLon(double lat, double lon) async {
-    String zip;
+  Future<Map<String, dynamic>> reverseGeocodeLatLon(double lat, double lon) async {
+    Map<String, dynamic> data;
     final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
       functionName: 'reverseGeocodeLatLon',
     );
@@ -72,8 +72,8 @@ class LocationService {
       print(e);
     });
     if (result != null) {
-      zip = result.data['data'][0]['zipcode'];
+      data = result.data['data'][0];
     }
-    return zip;
+    return data;
   }
 }

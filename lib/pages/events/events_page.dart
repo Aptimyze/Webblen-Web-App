@@ -59,14 +59,15 @@ class _EventsPageState extends State<EventsPage> {
       ],
     );
     PlacesDetailsResponse detail = await _places.getDetailsByPlaceId(p.placeId);
-    String cityName = detail.result.addressComponents[0].longName;
-    String stateAbbr = detail.result.addressComponents[2].shortName;
     double lat = detail.result.geometry.location.lat;
     double lon = detail.result.geometry.location.lng;
-    cityFilter = "$cityName, $stateAbbr";
     isLoading = true;
     setState(() {});
-    zipPostalCode = await LocationService().getZipFromLatLon(lat, lon);
+    Map<String, dynamic> locationData = await LocationService().reverseGeocodeLatLon(lat, lon);
+    zipPostalCode = locationData['zipcode'];
+    String cityName = locationData['city'];
+    String stateAbbr = locationData['administrativeLevels']['level1short'];
+    cityFilter = "$cityName, $stateAbbr";
     queryAndFilterEvents();
   }
 

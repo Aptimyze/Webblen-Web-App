@@ -195,10 +195,12 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                                   ).showCursorOnHover,
                             SizedBox(height: 16),
                             TextFieldContainer(
+                              width: 300,
                               child: TextFormField(
                                 cursorColor: Colors.black,
                                 validator: (value) => value.isEmpty ? 'Field Cannot be Empty' : null,
                                 onSaved: (value) => username = value,
+                                onFieldSubmitted: (val) => validateAndSubmitForm(user.uid),
                                 inputFormatters: [
                                   LengthLimitingTextInputFormatter(20),
                                 ],
@@ -208,7 +210,7 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 8),
+                            SizedBox(height: 16),
                             CustomColorButton(
                               onPressed: () => validateAndSubmitForm(user.uid),
                               text: "Complete Setup",
