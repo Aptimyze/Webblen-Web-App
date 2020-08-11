@@ -20,8 +20,13 @@ class EventDataService {
   Future<String> uploadEvent(WebblenEvent newEvent, String zipPostalCode, File eventImageFile, TicketDistro ticketDistro) async {
     String error;
     List nearbyZipcodes = [];
-    String newEventID = randomAlphaNumeric(12);
-    newEvent.id = newEventID;
+    String newEventID;
+    if (newEvent.id == null || newEvent.id.isEmpty) {
+      newEventID = randomAlphaNumeric(12);
+      newEvent.id = newEventID;
+    } else {
+      newEventID = newEvent.id;
+    }
     if (eventImageFile != null) {
       String eventImageURL = await ImageUploadService().uploadImageToFirebaseStorage(eventImageFile, EventImgFile, newEventID);
       newEvent.imageURL = eventImageURL;

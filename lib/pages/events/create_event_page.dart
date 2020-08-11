@@ -72,6 +72,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
 
   DateFormat dateFormatter = DateFormat('MMM dd, yyyy');
   DateFormat timeFormatter = DateFormat('h:mm a');
+  DateFormat dateTimeFormatter = DateFormat('MMM dd, yyyy h:mm a');
   int startDateTimeInMilliseconds;
   DateTime selectedStartDate = DateTime.now();
   DateTime selectedEndDate = DateTime.now();
@@ -1684,12 +1685,7 @@ class _CreateEventPageState extends State<CreateEventPage> {
 
   createEvent() async {
     CustomAlerts().showLoadingAlert(context, "Uploading Event...");
-    DateTime startDateTime = DateTime(
-      selectedStartDate.year,
-      selectedStartDate.day,
-      timeFormatter.parse(startTime).hour,
-      timeFormatter.parse(startTime).minute,
-    );
+    DateTime startDateTime = dateTimeFormatter.parse(startDate + " " + startTime);
     WebblenEvent newEvent = WebblenEvent(
       id: widget.eventID == null ? "" : widget.eventID,
       authorID: currentUID,
@@ -1741,6 +1737,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
         print(error);
       }
     });
+    // Navigator.of(context).pop();
+
     //print(newEvent);
   }
 
@@ -1814,6 +1812,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
             timezone = res.timezone;
             privacy = res.privacy;
             webAppLink = res.webAppLink;
+            selectedStartDate = dateTimeFormatter.parse(startDate + " " + startTime);
+            selectedEndDate = dateTimeFormatter.parse(endDate + " " + endTime);
             if (res.hasTickets) {
               EventDataService().getEventTicketDistro(res.id).then((res) {
                 if (res != null) {

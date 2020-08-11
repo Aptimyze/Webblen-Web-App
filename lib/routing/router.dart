@@ -56,7 +56,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       var referral = routingData['referral'];
       return _getPageRoute(AccountRegistrationPage(referral: referral), settings);
     case AccountSetupRoute:
-      return _getPageRoute(AccountSetupPage(), settings);
+      var referral = routingData['referral'];
+      return _getPageRoute(AccountSetupPage(referral: referral), settings);
     case AccountRoute:
       return _getPageRoute(AccountPage(), settings);
     case WalletRoute:

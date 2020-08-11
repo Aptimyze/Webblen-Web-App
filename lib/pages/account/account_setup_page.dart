@@ -24,6 +24,8 @@ import 'package:webblen_web_app/widgets/common/text/custom_text.dart';
 import 'package:webblen_web_app/widgets/layout/centered_view.dart';
 
 class AccountSetupPage extends StatefulWidget {
+  final String referral;
+  AccountSetupPage({this.referral});
   @override
   _AccountSetupPageState createState() => _AccountSetupPageState();
 }
@@ -92,7 +94,11 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
             setState(() {
               isLoading = false;
             });
-            locator<NavigationService>().navigateTo(AccountRoute);
+            if (widget.referral != null && widget.referral == "earningsSetup") {
+              locator<NavigationService>().navigateTo(WalletSetupEarningsRoute);
+            } else {
+              locator<NavigationService>().navigateTo(AccountRoute);
+            }
           } else {
             setState(() {
               formSubmitError = error;
@@ -213,7 +219,7 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
                             SizedBox(height: 16),
                             CustomColorButton(
                               onPressed: () => validateAndSubmitForm(user.uid),
-                              text: "Complete Setup",
+                              text: widget.referral == "earningsSetup" ? "Continue" : "Complete Setup",
                               textColor: Colors.black,
                               backgroundColor: Colors.white,
                               textSize: 18.0,

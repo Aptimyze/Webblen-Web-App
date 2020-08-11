@@ -147,9 +147,9 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
               if (this.mounted) {
                 showEmailConfirmationSent = true;
                 if (referralRoute == "earningsSetup") {
-                  locator<NavigationService>().navigateTo(WalletSetupEarningsRoute);
+                  locator<NavigationService>().navigateTo(AccountSetupRoute, queryParams: {'referral': "earningsSetup"});
                 } else {
-                  locator<NavigationService>().navigateTo(AccountSetupRoute);
+                  locator<NavigationService>().navigateTo(AccountRoute);
                 }
               }
             } else {
@@ -199,9 +199,9 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
               isLoading = false;
             });
             if (referralRoute == "earningsSetup") {
-              locator<NavigationService>().navigateTo(WalletSetupEarningsRoute);
+              locator<NavigationService>().navigateTo(AccountSetupRoute, queryParams: {'referral': "earningsSetup"});
             } else {
-              locator<NavigationService>().navigateTo(HomeRoute);
+              locator<NavigationService>().navigateTo(AccountRoute);
             }
           } else {
             setState(() {
@@ -245,9 +245,9 @@ class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
     FirebaseAuth.instance.signInWithCredential(credential).then((user) {
       if (user != null) {
         if (referralRoute == "earningsSetup") {
-          locator<NavigationService>().navigateTo(WalletSetupEarningsRoute);
+          locator<NavigationService>().navigateTo(AccountSetupRoute, queryParams: {'referral': "earningsSetup"});
         } else {
-          locator<NavigationService>().navigateTo(HomeRoute);
+          locator<NavigationService>().navigateTo(AccountRoute);
         }
       } else {
         showErrorAlert("Oops!", 'There was an issue signing in with Google. Please Try Again.');

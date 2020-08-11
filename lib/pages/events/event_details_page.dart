@@ -136,15 +136,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   children: <Widget>[
                     TagContainer(tag: event.type),
                     GestureDetector(
-                      onTap: () {
-                        copyText("https://app.webblen.io/#/event?id=${event.id}");
-                        CustomAlerts().showEventShareLink(
-                          context,
-                          event.title,
-                          "https://app.webblen.io/#/event?id=${event.id}",
-                          () {},
-                        );
-                      },
+                      onTap: () => showEventCopyDialog(),
                       child: RoundContainer(
                         child: Icon(
                           Icons.share,
@@ -235,6 +227,16 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
     );
   }
 
+  showEventCopyDialog() {
+    copyText("https://app.webblen.io/#/event?id=${event.id}");
+    CustomAlerts().showEventShareLink(
+      context,
+      event.title,
+      "https://app.webblen.io/#/event?id=${event.id}",
+      () {},
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -246,6 +248,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
         }
         isLoading = false;
         setState(() {});
+        showEventCopyDialog();
       });
     } else {
       isLoading = false;
