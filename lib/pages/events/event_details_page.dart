@@ -69,34 +69,27 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                 ),
                 SizedBox(height: 8.0),
                 Row(
-                  children: <Widget>[
-                    Icon(
-                      FontAwesomeIcons.mapMarkerAlt,
-                      size: 16.0,
-                      color: Colors.black38,
-                    ),
-                    SizedBox(width: 4.0),
-                    CustomText(
-                      context: context,
-                      text: "${event.city}, ${event.province}",
-                      textColor: Colors.black38,
-                      textAlign: TextAlign.left,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 4.0),
-                Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    CustomText(
-                      context: context,
-                      text: "${event.startDate} | ${event.startTime} ${event.timezone}",
-                      textColor: Colors.black45,
-                      textAlign: TextAlign.left,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w500,
+                    Container(
+                      child: Row(
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.mapMarkerAlt,
+                            size: 16.0,
+                            color: Colors.black38,
+                          ),
+                          SizedBox(width: 4.0),
+                          CustomText(
+                            context: context,
+                            text: "${event.city}, ${event.province}",
+                            textColor: Colors.black38,
+                            textAlign: TextAlign.left,
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ],
+                      ),
                     ),
                     event.hasTickets
                         ? CustomColorButton(
@@ -115,14 +108,6 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                             fontSize: 18.0,
                             fontWeight: FontWeight.w500,
                           ),
-//                  event.hasTickets
-//                      ? CustomColorButton(
-//                          text: "Purchase Tickets",
-//                          textColor: Colors.white,
-//                          backgroundColor: CustomColors.darkMountainGreen,
-//                          onPressed: null,
-//                        )
-//                      : Container(),
                   ],
                 ),
                 SizedBox(height: 12.0),
@@ -165,6 +150,24 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   textColor: Colors.black,
                   textAlign: TextAlign.left,
                   fontSize: 16.0,
+                  fontWeight: FontWeight.w500,
+                ),
+                SizedBox(height: 8.0),
+                CustomText(
+                  context: context,
+                  text: "Date:",
+                  textColor: Colors.black,
+                  textAlign: TextAlign.left,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.w700,
+                ),
+                SizedBox(height: 2.0),
+                CustomText(
+                  context: context,
+                  text: "${event.startDate} | ${event.startTime} ${event.timezone}",
+                  textColor: Colors.black45,
+                  textAlign: TextAlign.left,
+                  fontSize: 18.0,
                   fontWeight: FontWeight.w500,
                 ),
                 SizedBox(height: 32.0),
@@ -248,7 +251,6 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
         }
         isLoading = false;
         setState(() {});
-        showEventCopyDialog();
       });
     } else {
       isLoading = false;

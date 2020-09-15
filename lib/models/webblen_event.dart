@@ -7,7 +7,6 @@ import 'package:webblen_web_app/services/navigation/navigation_service.dart';
 class WebblenEvent {
   String id;
   String authorID;
-  String chatID;
   bool hasTickets;
   bool flashEvent;
   bool isDigitalEvent;
@@ -38,6 +37,7 @@ class WebblenEvent {
   double eventPayout;
   String recurrence;
   int startDateTimeInMilliseconds;
+  int endDateTimeInMilliseconds;
   String startDate;
   String startTime;
   String endDate;
@@ -46,11 +46,12 @@ class WebblenEvent {
   String privacy;
   bool reported;
   String webAppLink;
+  List savedBy;
+  bool paidOut;
 
   WebblenEvent({
     this.id,
     this.authorID,
-    this.chatID,
     this.hasTickets,
     this.flashEvent,
     this.isDigitalEvent,
@@ -81,6 +82,7 @@ class WebblenEvent {
     this.eventPayout,
     this.recurrence,
     this.startDateTimeInMilliseconds,
+    this.endDateTimeInMilliseconds,
     this.startDate,
     this.startTime,
     this.endDate,
@@ -89,13 +91,14 @@ class WebblenEvent {
     this.privacy,
     this.reported,
     this.webAppLink,
+    this.savedBy,
+    this.paidOut,
   });
 
   WebblenEvent.fromMap(Map<String, dynamic> data)
       : this(
           id: data['id'],
           authorID: data['authorID'],
-          chatID: data['chatID'],
           hasTickets: data['hasTickets'],
           flashEvent: data['flashEvent'],
           isDigitalEvent: data['isDigitalEvent'],
@@ -119,27 +122,29 @@ class WebblenEvent {
           fbUsername: data['fbUsername'],
           twitterUsername: data['twitterUsername'],
           instaUsername: data['instaUsername'],
-          checkInRadius: data['checkInRadius'],
+          checkInRadius: data['checkInRadius'] * 1.0001,
           estimatedTurnout: data['estimatedTurnout'],
           actualTurnout: data['actualTurnout'],
           attendees: data['attendees'],
-          eventPayout: data['eventPayout'],
+          eventPayout: data['eventPayout'] * 1.001,
           recurrence: data['recurrence'],
           startDateTimeInMilliseconds: data['startDateTimeInMilliseconds'],
+          endDateTimeInMilliseconds: data['endDateTimeInMilliseconds'],
           startDate: data['startDate'],
           startTime: data['startTime'],
           endDate: data['endDate'],
           endTime: data['endTime'],
           timezone: data['timezone'],
           privacy: data['privacy'],
-          reported: data['reported'],
+          reported: false,
           webAppLink: data['webAppLink'],
+          savedBy: data['savedBy'],
+          paidOut: data['paidOut'],
         );
 
   Map<String, dynamic> toMap() => {
         'id': this.id,
         'authorID': this.authorID,
-        'chatID': this.chatID,
         'hasTickets': this.hasTickets,
         'flashEvent': this.flashEvent,
         'isDigitalEvent': this.isDigitalEvent,
@@ -170,6 +175,7 @@ class WebblenEvent {
         'eventPayout': this.eventPayout,
         'recurrence': this.recurrence,
         'startDateTimeInMilliseconds': this.startDateTimeInMilliseconds,
+        'endDateTimeInMilliseconds': this.endDateTimeInMilliseconds,
         'startDate': this.startDate,
         'startTime': this.startTime,
         'endDate': this.endDate,
@@ -178,8 +184,9 @@ class WebblenEvent {
         'privacy': this.privacy,
         'reported': this.reported,
         'webAppLink': this.webAppLink,
+        'savedBy': this.savedBy,
+        'paidOut': this.paidOut,
       };
-
   final NavigationService _navigationService = locator<NavigationService>();
 
   void navigateToEvent(String eventID) {

@@ -1686,10 +1686,10 @@ class _CreateEventPageState extends State<CreateEventPage> {
   createEvent() async {
     CustomAlerts().showLoadingAlert(context, "Uploading Event...");
     DateTime startDateTime = dateTimeFormatter.parse(startDate + " " + startTime);
+    DateTime endDateTime = dateTimeFormatter.parse(endDate + " " + endTime);
     WebblenEvent newEvent = WebblenEvent(
       id: widget.eventID == null ? "" : widget.eventID,
       authorID: currentUID,
-      chatID: null,
       hasTickets: ticketDistro.tickets.isNotEmpty ? true : false,
       flashEvent: false,
       title: eventTitle,
@@ -1720,6 +1720,8 @@ class _CreateEventPageState extends State<CreateEventPage> {
       eventPayout: 0.0001,
       recurrence: 'none',
       startDateTimeInMilliseconds: startDateTime.millisecondsSinceEpoch,
+      endDateTimeInMilliseconds: endDateTime.millisecondsSinceEpoch,
+      savedBy: [],
       startDate: startDate,
       startTime: startTime,
       endDate: endDate,
