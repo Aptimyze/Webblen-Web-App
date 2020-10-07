@@ -135,7 +135,7 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
     } else {
       if (discountCodeIndex >= 0) {
         Map<String, dynamic> code = ticketDistro.discountCodes[discountCodeIndex];
-        double discountPercent = code['discountCodePercentage'];
+        double discountPercent = double.parse(code['discountCodePercentage']) * 0.01;
         discountAmount = chargeAmount * discountPercent;
         discountCodeDescription = "${(discountPercent * 100).toInt().toString()}% Off";
         chargeAmount = chargeAmount - discountAmount;

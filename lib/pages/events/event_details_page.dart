@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
@@ -40,75 +39,35 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
             child: Image.network(
               event.imageURL,
               height: screenSize.isDesktop
-                  ? MediaQuery.of(context).size.width * 0.5
-                  : screenSize.isTablet ? MediaQuery.of(context).size.width * 0.7 : MediaQuery.of(context).size.width * 0.9,
+                  ? MediaQuery.of(context).size.width * 0.3
+                  : screenSize.isTablet
+                      ? MediaQuery.of(context).size.width * 0.7
+                      : MediaQuery.of(context).size.width * 0.9,
               width: screenSize.isDesktop
                   ? MediaQuery.of(context).size.width * 0.5
-                  : screenSize.isTablet ? MediaQuery.of(context).size.width * 0.7 : MediaQuery.of(context).size.width * 0.9,
+                  : screenSize.isTablet
+                      ? MediaQuery.of(context).size.width * 0.7
+                      : MediaQuery.of(context).size.width * 0.9,
             ),
           ),
           Container(
             width: screenSize.isDesktop
                 ? MediaQuery.of(context).size.width * 0.5
-                : screenSize.isTablet ? MediaQuery.of(context).size.width * 0.7 : MediaQuery.of(context).size.width * 0.9,
+                : screenSize.isTablet
+                    ? MediaQuery.of(context).size.width * 0.7
+                    : MediaQuery.of(context).size.width * 0.9,
             padding: EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 SizedBox(height: 12.0),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: CustomText(
-                    context: context,
-                    text: event.title,
-                    textColor: Colors.black,
-                    textAlign: TextAlign.left,
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.w700,
-                  ),
+                Text(
+                  event.title,
+                  style: TextStyle(color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Container(
-                      child: Row(
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.mapMarkerAlt,
-                            size: 16.0,
-                            color: Colors.black38,
-                          ),
-                          SizedBox(width: 4.0),
-                          CustomText(
-                            context: context,
-                            text: "${event.city}, ${event.province}",
-                            textColor: Colors.black38,
-                            textAlign: TextAlign.left,
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ],
-                      ),
-                    ),
-                    event.hasTickets
-                        ? CustomColorButton(
-                            text: "Purchase Tickets",
-                            textColor: Colors.white,
-                            backgroundColor: CustomColors.darkMountainGreen,
-                            onPressed: () => event.navigateToEventTickets(event.id),
-                            width: 150.0,
-                            height: 30.0,
-                          ).showCursorOnHover
-                        : CustomText(
-                            context: context,
-                            text: "FREE EVENT",
-                            textColor: Colors.black,
-                            textAlign: TextAlign.right,
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w500,
-                          ),
-                  ],
+                Text(
+                  "${event.startDate} ${event.startTime} ${event.timezone}",
+                  style: TextStyle(color: CustomColors.webblenRed, fontSize: 14.0, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 12.0),
                 Container(
@@ -170,6 +129,23 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   fontSize: 18.0,
                   fontWeight: FontWeight.w500,
                 ),
+                event.hasTickets
+                    ? CustomColorButton(
+                        text: "Purchase Tickets",
+                        textColor: Colors.white,
+                        backgroundColor: CustomColors.darkMountainGreen,
+                        onPressed: () => event.navigateToEventTickets(event.id),
+                        width: 150.0,
+                        height: 30.0,
+                      ).showCursorOnHover
+                    : CustomText(
+                        context: context,
+                        text: "FREE EVENT",
+                        textColor: Colors.black,
+                        textAlign: TextAlign.right,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w500,
+                      ),
                 SizedBox(height: 32.0),
                 user.uid == event.authorID
                     ? Row(
@@ -269,7 +245,11 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
             children: <Widget>[
               isLoading ? CustomLinearProgress(progressBarColor: CustomColors.webblenRed) : Container(),
               SizedBox(height: 32.0),
-              !isLoading && eventFound && user != null ? eventDetailsWidget(screenSize, user) : !isLoading && !eventFound ? eventNotFoundWidget() : Container(),
+              !isLoading && eventFound && user != null
+                  ? eventDetailsWidget(screenSize, user)
+                  : !isLoading && !eventFound
+                      ? eventNotFoundWidget()
+                      : Container(),
               SizedBox(height: 32.0),
               isLoading ? Container() : Footer(),
             ],

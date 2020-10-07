@@ -13,7 +13,7 @@ class EventDataService {
   static final firestore = firebase.firestore();
   CollectionReference eventsRef = firestore.collection("events");
   CollectionReference ticketsRef = firestore.collection("purchased_tickets");
-  CollectionReference ticketDistroRef = firestore.collection("event_ticket_distros");
+  CollectionReference ticketDistroRef = firestore.collection("ticket_distros");
   //Geoflutterfire geo = Geoflutterfire();
 
   //CREATE

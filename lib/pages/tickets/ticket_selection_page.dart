@@ -147,7 +147,9 @@ class _TicketSelectionPageState extends State<TicketSelectionPage> {
       padding: EdgeInsets.all(16.0),
       width: screenSize.isMobile
           ? MediaQuery.of(context).size.width * 0.9
-          : screenSize.isTablet ? MediaQuery.of(context).size.width * 0.8 : MediaQuery.of(context).size.width * 0.7,
+          : screenSize.isTablet
+              ? MediaQuery.of(context).size.width * 0.8
+              : MediaQuery.of(context).size.width * 0.7,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(8.0)),
         color: Colors.white,
