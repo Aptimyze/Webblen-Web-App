@@ -30,7 +30,8 @@ class StripePaymentService {
   ) async {
     String status;
     final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
-      functionName: 'testWebPurchaseTickets',
+      //functionName: 'testWebPurchaseTickets',
+      functionName: 'liveWebPurchaseTickets',
     );
 
     int ticketChargeInCents = int.parse((ticketCharge.toStringAsFixed(2)).replaceAll(".", ""));
@@ -245,7 +246,7 @@ class StripePaymentService {
     final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
       functionName: 'sendEmailConfirmation',
     );
-    final HttpsCallableResult result = await callable.call(
+    callable.call(
       <String, dynamic>{
         'emailAddress': emailAddress,
         'eventTitle': eventTitle,
@@ -253,10 +254,6 @@ class StripePaymentService {
     ).catchError((e) {
       print(e);
     });
-    if (result.data != null) {
-      //status = result.data['status'];
-      print(result.data);
-    }
     return status;
   }
 }

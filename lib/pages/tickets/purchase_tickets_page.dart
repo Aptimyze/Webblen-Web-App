@@ -757,18 +757,21 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
             cvcNumber, cardHolderName, emailAddress)
         .then((res) {
       if (res == 'passed') {
-        StripePaymentService().sendEmailConfirmation(emailAddress, event.title);
+        Navigator.pop(context);
         StripePaymentService().completeTicketPurchase(uid, ticketsToPurchase, event).then((err) {
-          Navigator.pop(context);
+          StripePaymentService().sendEmailConfirmation(emailAddress, event.title);
           locator<NavigationService>().navigateTo(EventTicketPurchaseConfirmationRoute);
         });
       } else if (res == "Payment Method Error") {
+        //print(res);
         Navigator.of(context).pop();
         CustomAlerts().showErrorAlert(context, "Payment Method Error", "There was an issue with the details of your payment method.");
       } else if (res == "Transaction Error") {
+        //print(res);
         Navigator.of(context).pop();
         CustomAlerts().showErrorAlert(context, "Paymentf Error", "There was an issue charging your card. Please try a different one.");
       } else {
+        //print(res);
         Navigator.of(context).pop();
         CustomAlerts().showErrorAlert(context, "Unknown Error", "Please Contact Us via Email: team@webblen.com");
       }
