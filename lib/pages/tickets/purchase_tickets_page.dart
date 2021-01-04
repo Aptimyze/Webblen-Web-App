@@ -6,7 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_facebook_login_web/flutter_facebook_login_web.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -43,7 +43,7 @@ class PurchaseTicketsPage extends StatefulWidget {
 }
 
 class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
-  static final FacebookLogin facebookSignIn = FacebookLogin();
+  static final FacebookLoginWeb facebookSignIn = FacebookLoginWeb();
   GoogleSignIn googleSignIn = GoogleSignIn(
     scopes: <String>[
       'email',
@@ -400,7 +400,6 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             TextFieldContainer(
-              height: 35,
               width: 200.0, //screenSize.isMobile ? 60 : screenSize.isTablet ? 75 : 100,
               child: TextFormField(
                 cursorColor: Colors.black,
@@ -445,7 +444,6 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
         ),
       ),
       child: TextFormField(
-        keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
         decoration: InputDecoration(
           hintText: "Your Email Address",
           contentPadding: EdgeInsets.only(

@@ -139,7 +139,7 @@ class _EventsPageState extends State<EventsPage> {
       children: events
           .map((e) => EventBlock(
                 eventImgSize: 260,
-                eventDescHeight: 120,
+                eventDescHeight: 90,
                 event: e,
                 shareEvent: null,
                 numOfTicsForEvent: null,

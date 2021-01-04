@@ -29,10 +29,9 @@ dependencies:
   cloud_functions: ^0.4.2
 
   #Auth
-  flutter_facebook_login:
+  flutter_facebook_login_web:
     git:
-      url: git://github.com/romulojjunior/flutter_facebook_login.git
-      ref: v1.3.0-web
+      url: git://github.com/kfiross/flutter_facebook_login_web
 
   google_sign_in: ^4.5.1
 

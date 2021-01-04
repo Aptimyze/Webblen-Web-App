@@ -45,24 +45,23 @@
 
   <!-- FACEBOOK LOGIN -->
 
+  <!--Facebook SDK config -->
   <script>
-    window.fbAsyncInit = function() {
-      FB.init({
-        appId      : '1366128250170949',
-        xfbml      : true,
-        version    : 'v7.0'
-      });
-      FB.AppEvents.logPageView();
-    };
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId            : '1366128250170949',
+      autoLogAppEvents : true,
+      xfbml            : true,
+      version          : 'v7.0'
+    });
+  };
+</script>
 
-    (function(d, s, id){
-       var js, fjs = d.getElementsByTagName(s)[0];
-       if (d.getElementById(id)) {return;}
-       js = d.createElement(s); js.id = id;
-       js.src = "https://connect.facebook.net/en_US/sdk.js";
-       fjs.parentNode.insertBefore(js, fjs);
-     }(document, 'script', 'facebook-jssdk'));
-  </script>
+  <!-- Facebook JS CDN SDK -->
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+  <!-- for interop with dart through this plugin -->
+  <script src="https://flutterfacebooklogin.s3.us-east-2.amazonaws.com/web_interop.js"></script>
 
 </body>
 

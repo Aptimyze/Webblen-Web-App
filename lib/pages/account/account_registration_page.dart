@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_facebook_login_web/flutter_facebook_login_web.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -29,7 +29,7 @@ class AccountRegistrationPage extends StatefulWidget {
 }
 
 class _AccountRegistrationPageState extends State<AccountRegistrationPage> {
-  static final FacebookLogin facebookSignIn = FacebookLogin();
+  static final FacebookLoginWeb facebookSignIn = FacebookLoginWeb();
   GoogleSignIn googleSignIn = GoogleSignIn(
     scopes: <String>[
       'email',

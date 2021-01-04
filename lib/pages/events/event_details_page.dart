@@ -11,7 +11,6 @@ import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/widgets/common/alerts/custom_alerts.dart';
 import 'package:webblen_web_app/widgets/common/buttons/custom_color_button.dart';
 import 'package:webblen_web_app/widgets/common/containers/round_container.dart';
-import 'package:webblen_web_app/widgets/common/containers/tag_container.dart';
 import 'package:webblen_web_app/widgets/common/navigation/footer.dart';
 import 'package:webblen_web_app/widgets/common/state/progress_indicator.dart';
 import 'package:webblen_web_app/widgets/common/text/custom_text.dart';
@@ -65,20 +64,13 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   event.title,
                   style: TextStyle(color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                Text(
-                  "${event.startDate} ${event.startTime} ${event.timezone}",
-                  style: TextStyle(color: CustomColors.webblenRed, fontSize: 14.0, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 12.0),
-                Container(
-                  height: 1.0,
-                  color: Colors.black12,
-                ),
-                SizedBox(height: 8.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    TagContainer(tag: event.type),
+                  children: [
+                    Text(
+                      "${event.startDate} ${event.startTime} ${event.timezone}",
+                      style: TextStyle(color: CustomColors.webblenRed, fontSize: 14.0, fontWeight: FontWeight.bold),
+                    ),
                     GestureDetector(
                       onTap: () => showEventCopyDialog(),
                       child: RoundContainer(
@@ -92,6 +84,11 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                       ),
                     ).showCursorOnHover,
                   ],
+                ),
+                SizedBox(height: 12.0),
+                Container(
+                  height: 1.0,
+                  color: Colors.black12,
                 ),
                 SizedBox(height: 8.0),
                 CustomText(
@@ -108,7 +105,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   text: event.desc,
                   textColor: Colors.black,
                   textAlign: TextAlign.left,
-                  fontSize: 16.0,
+                  fontSize: 14.0,
                   fontWeight: FontWeight.w500,
                 ),
                 SizedBox(height: 8.0),
@@ -126,9 +123,10 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   text: "${event.startDate} | ${event.startTime} ${event.timezone}",
                   textColor: Colors.black45,
                   textAlign: TextAlign.left,
-                  fontSize: 18.0,
+                  fontSize: 14.0,
                   fontWeight: FontWeight.w500,
                 ),
+                SizedBox(height: 16.0),
                 event.hasTickets
                     ? CustomColorButton(
                         text: "Purchase Tickets",
@@ -162,17 +160,6 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                             ),
                           ).showCursorOnHover,
                           SizedBox(width: 18.0),
-//                    GestureDetector(
-//                      onTap: () => event.navigateToEditEvent(event.id),
-//                      child: CustomText(
-//                        context: context,
-//                        text: "Delete Event",
-//                        textColor: Colors.red,
-//                        textAlign: TextAlign.left,
-//                        fontSize: 14.0,
-//                        fontWeight: FontWeight.w400,
-//                      ),
-//                    ).showCursorOnHover,
                         ],
                       )
                     : Container(),
