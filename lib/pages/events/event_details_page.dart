@@ -37,6 +37,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
             borderRadius: BorderRadius.circular(8.0),
             child: Image.network(
               event.imageURL,
+              filterQuality: FilterQuality.medium,
               height: screenSize.isDesktop
                   ? MediaQuery.of(context).size.width * 0.3
                   : screenSize.isTablet
@@ -91,40 +92,44 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   color: Colors.black12,
                 ),
                 SizedBox(height: 8.0),
-                CustomText(
-                  context: context,
-                  text: "Details:",
-                  textColor: Colors.black,
+                Text(
+                  "Details:",
                   textAlign: TextAlign.left,
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.w700,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 SizedBox(height: 2.0),
-                CustomText(
-                  context: context,
-                  text: event.desc,
-                  textColor: Colors.black,
+                Text(
+                  event.desc,
                   textAlign: TextAlign.left,
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.w500,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 SizedBox(height: 8.0),
-                CustomText(
-                  context: context,
-                  text: "Date:",
-                  textColor: Colors.black,
+                Text(
+                  "Date:",
                   textAlign: TextAlign.left,
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.w700,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 SizedBox(height: 2.0),
-                CustomText(
-                  context: context,
-                  text: "${event.startDate} | ${event.startTime} ${event.timezone}",
-                  textColor: Colors.black45,
+                Text(
+                  "${event.startDate} | ${event.startTime} ${event.timezone}",
                   textAlign: TextAlign.left,
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.w500,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 SizedBox(height: 16.0),
                 event.hasTickets
@@ -230,7 +235,22 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
           child: ListView(
             shrinkWrap: true,
             children: <Widget>[
-              isLoading ? CustomLinearProgress(progressBarColor: CustomColors.webblenRed) : Container(),
+              isLoading
+                  ? Column(
+                      children: [
+                        CustomLinearProgress(progressBarColor: CustomColors.webblenRed),
+                        SizedBox(height: 8),
+                        CustomText(
+                          context: context,
+                          text: "Long Wait?... Try Refreshing Page",
+                          textColor: Colors.black,
+                          textAlign: TextAlign.left,
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ],
+                    )
+                  : Container(),
               SizedBox(height: 32.0),
               !isLoading && eventFound && user != null
                   ? eventDetailsWidget(screenSize, user)
