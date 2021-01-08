@@ -10,7 +10,7 @@ class StripePaymentService {
   static final firestore = firebase.firestore();
   CollectionReference stripeRef = firestore.collection("stripe");
   CollectionReference stripeActivityRef = firestore.collection("stripe_connect_activity");
-  CollectionReference ticketDistroRef = firestore.collection("event_ticket_distros");
+  CollectionReference ticketDistroRef = firestore.collection("ticket_distros");
   CollectionReference purchasedTicketsRef = firestore.collection("purchased_tickets");
 
   Future<String> purchaseTickets(
@@ -244,7 +244,7 @@ class StripePaymentService {
     String status;
     print('sending email to: $emailAddress');
     final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
-      functionName: 'sendEmailConfirmation',
+      functionName: 'sendEmailConfirmationViaWeb',
     );
     callable.call(
       <String, dynamic>{

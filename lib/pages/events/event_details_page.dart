@@ -102,13 +102,16 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   ),
                 ),
                 SizedBox(height: 2.0),
-                Text(
-                  event.desc,
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w500,
+                Container(
+                  child: Text(
+                    event.desc,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      height: 1.1,
+                      color: Colors.black,
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
                 SizedBox(height: 8.0),

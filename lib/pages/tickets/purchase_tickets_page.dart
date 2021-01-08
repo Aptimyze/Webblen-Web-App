@@ -155,9 +155,6 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
   }
 
   void loginWithFacebook() async {
-    setState(() {
-      isLoading = true;
-    });
     final FacebookLoginResult result = await facebookSignIn.logIn(['email']);
     switch (result.status) {
       case FacebookLoginStatus.loggedIn:
@@ -166,58 +163,37 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
           if (user != null) {
             setState(() {
               isLoggedIn = true;
-              isLoading = false;
             });
           } else {
-            setState(() {
-              isLoading = false;
-            });
             CustomAlerts().showErrorAlert(context, "Oops!", 'There was an issue signing in with Facebook. Please Try Again.');
           }
         });
         break;
       case FacebookLoginStatus.cancelledByUser:
         CustomAlerts().showErrorAlert(context, "Login Cancelled", 'Cancelled Facebook Login');
-        setState(() {
-          isLoading = false;
-        });
         break;
       case FacebookLoginStatus.error:
         CustomAlerts().showErrorAlert(context, "Oops!", 'There was an issue signing in with Facebook. Please Try Again.');
-        setState(() {
-          isLoading = false;
-        });
+
         break;
     }
   }
 
   void loginWithGoogle() async {
-    setState(() {
-      isLoading = true;
-    });
-
     GoogleSignInAccount googleAccount = await googleSignIn.signIn();
     if (googleAccount == null) {
       CustomAlerts().showErrorAlert(context, "Login Cancelled", 'Cancelled Google Login');
-      setState(() {
-        isLoading = false;
-      });
       return;
     }
     GoogleSignInAuthentication googleAuth = await googleAccount.authentication;
-
     AuthCredential credential = GoogleAuthProvider.getCredential(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
     FirebaseAuth.instance.signInWithCredential(credential).then((user) {
       if (user != null) {
         setState(() {
           isLoggedIn = true;
-          isLoading = false;
         });
       } else {
         CustomAlerts().showErrorAlert(context, "Oops!", 'There was an issue signing in with Google. Please Try Again.');
-        setState(() {
-          isLoading = false;
-        });
       }
     });
   }
@@ -541,7 +517,7 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
         ),
         maxLines: 1,
         inputFormatters: [
-          WhitelistingTextInputFormatter.digitsOnly,
+          FilteringTextInputFormatter.digitsOnly,
           LengthLimitingTextInputFormatter(2),
         ],
         textInputAction: TextInputAction.done,
@@ -575,7 +551,7 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
         ),
         maxLines: 1,
         inputFormatters: [
-          WhitelistingTextInputFormatter.digitsOnly,
+          FilteringTextInputFormatter.digitsOnly,
           LengthLimitingTextInputFormatter(4),
         ],
         textInputAction: TextInputAction.done,
@@ -651,7 +627,7 @@ class _PurchaseTicketsPageState extends State<PurchaseTicketsPage> {
         ),
         maxLines: 1,
         inputFormatters: [
-          WhitelistingTextInputFormatter.digitsOnly,
+          FilteringTextInputFormatter.digitsOnly,
           LengthLimitingTextInputFormatter(3),
         ],
         textInputAction: TextInputAction.done,
