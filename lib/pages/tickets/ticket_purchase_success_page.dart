@@ -15,6 +15,9 @@ class TicketPurchaseSuccessPage extends StatefulWidget {
 }
 
 class _TicketPurchaseSuccessPageState extends State<TicketPurchaseSuccessPage> {
+  bool userExists = false;
+  bool isLoading = true;
+
   Widget ticketConfirmationContent(SizingInformation screenSize) {
     return Container(
       height: screenSize.isMobile ? MediaQuery.of(context).size.height * 0.85 : MediaQuery.of(context).size.height * 0.70,
@@ -31,14 +34,16 @@ class _TicketPurchaseSuccessPageState extends State<TicketPurchaseSuccessPage> {
             fontWeight: FontWeight.w700,
           ),
           SizedBox(height: 16),
-          CustomText(
-            context: context,
-            text: "A purchase confirmation email has been sent to you. Your tickets are located in your wallet.",
-            textColor: Colors.black,
-            textAlign: TextAlign.center,
-            fontSize: 18.0,
-            fontWeight: FontWeight.w500,
-          ),
+          isLoading
+              ? Container()
+              : CustomText(
+                  context: context,
+                  text: "A purchase confirmation email has been sent to you. Your tickets are located in your wallet.",
+                  textColor: Colors.black,
+                  textAlign: TextAlign.center,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w500,
+                ),
           SizedBox(height: 8),
           CustomColorButton(
             text: "View Wallet",

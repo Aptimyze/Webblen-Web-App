@@ -62,14 +62,11 @@ class _AccountSetupPageState extends State<AccountSetupPage> {
       file = uploadInput.files.first;
       fileReader.readAsDataUrl(file);
       fileReader.onLoadEnd.listen((event) {
-        print(file.size);
         if (file.size > 5000000) {
           CustomAlerts().showErrorAlert(context, "File Size Error", "File Size Cannot Exceed 5MB");
         } else if (file.type == "image/jpg" || file.type == "image/jpeg" || file.type == "image/png") {
           String base64FileString = fileReader.result.toString().split(',')[1];
-
-          //COMPRESS FILE HERE
-
+          //COMPRESS FILE HERE4ê
           setState(() {
             userImgFile = file;
             userImageByteMemory = base64Decode(base64FileString);
