@@ -14,6 +14,23 @@
       "**/node_modules/**"
     ],
     "appAssociation": "AUTO",
-    "rewrites": [ { "source": "/**", "dynamicLinks": true } ]
+    "rewrites": [
+      {
+        "source": "/**",
+        "dynamicLinks": true
+      },
+      {
+        "source": "/share_stream/**",
+        "dynamicLinks": true
+      },
+      {
+        "source": "/share_event/**",
+        "dynamicLinks": true
+      },
+      {
+        "source": "/share_post/**",
+        "dynamicLinks": true
+      }
+    ]
   }
 }
