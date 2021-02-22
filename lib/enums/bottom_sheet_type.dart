@@ -1,0 +1,18 @@
+enum BottomSheetType {
+  addContent,
+  newContentConfirmation,
+  destructiveConfirmation,
+  homeFilter,
+  imagePicker,
+  postPublished,
+  postAuthorOptions,
+  postOptions,
+  streamPublished,
+  streamCreatorOptions,
+  streamOptions,
+  eventPublished,
+  eventCreatorOptions,
+  eventOptions,
+  currentUserOptions,
+  userOptions,
+}

@@ -1,80 +1,78 @@
 class WebblenUser {
-  String messageToken;
-  String username;
-  String uid;
-  String profile_pic;
-  List savedEvents;
-  List tags;
-  List friends;
-  List blockedUsers;
-  double eventPoints;
+  // ignore: non_constant_identifier_names
+  double WBLN;
+  List achievements;
   double ap;
   int apLvl;
+  List blockedUsers;
+  String emailAddress;
   int eventsToLvlUp;
-  int lastCheckInTimeInMilliseconds;
-  int lastNotifInMilliseconds;
-  int lastPayoutTimeInMilliseconds;
-  bool canMakeAds;
+  String fbAccessToken;
+  List followers;
+  List following;
+  String googleAccessToken;
+  String googleIDToken;
+  String id;
   bool isAdmin;
+  String profilePicURL;
+  String username;
 
   WebblenUser({
-    this.messageToken,
-    this.username,
-    this.uid,
-    this.profile_pic,
-    this.savedEvents,
-    this.tags,
-    this.friends,
-    this.blockedUsers,
-    this.eventPoints,
+    // ignore: non_constant_identifier_names
+    this.WBLN,
+    this.achievements,
     this.ap,
     this.apLvl,
+    this.blockedUsers,
+    this.emailAddress,
     this.eventsToLvlUp,
-    this.lastCheckInTimeInMilliseconds,
-    this.lastNotifInMilliseconds,
-    this.lastPayoutTimeInMilliseconds,
-    this.canMakeAds,
+    this.fbAccessToken,
+    this.followers,
+    this.following,
+    this.googleAccessToken,
+    this.googleIDToken,
+    this.id,
     this.isAdmin,
+    this.profilePicURL,
+    this.username,
   });
 
   WebblenUser.fromMap(Map<String, dynamic> data)
       : this(
-          messageToken: data['messageToken'],
-          username: data['username'],
-          uid: data['uid'],
-          profile_pic: data['profile_pic'],
-          savedEvents: data['savedEvents'],
-          tags: data['tags'],
-          friends: data['friends'],
-          blockedUsers: data['blockedUsers'],
-          eventPoints: data['eventPoints'],
+          WBLN: data['WBLN'].toDouble(),
+          achievements: data['achievements'],
           ap: data['ap'],
           apLvl: data['apLvl'],
+          blockedUsers: data['blockedUsers'],
+          emailAddress: data['emailAddress'],
           eventsToLvlUp: data['eventsToLvlUp'],
-          lastCheckInTimeInMilliseconds: data['lastCheckInTimeInMilliseconds'],
-          lastNotifInMilliseconds: data['lastNotifInMilliseconds'],
-          lastPayoutTimeInMilliseconds: data['lastPayoutTimeInMilliseconds'],
-          canMakeAds: data['canMakeAds'],
+          fbAccessToken: data['fbAccessToken'],
+          followers: data['followers'],
+          following: data['following'],
+          googleAccessToken: data['googleAccessToken'],
+          googleIDToken: data['googleIDToken'],
+          id: data['id'],
           isAdmin: data['isAdmin'],
+          profilePicURL: data['profilePicURL'],
+          username: data['username'],
         );
 
   Map<String, dynamic> toMap() => {
-        'messageToken': this.messageToken,
-        'username': this.username,
-        'uid': this.uid,
-        'profile_pic': this.profile_pic,
-        'savedEvents': this.savedEvents,
-        'tags': this.tags,
-        'friends': this.friends,
-        'blockedUsers': this.blockedUsers,
-        'eventPoints': this.eventPoints,
+        'WBLN': this.WBLN,
+        'achievements': this.achievements,
         'ap': this.ap,
         'apLvl': this.apLvl,
+        'blockedUsers': this.blockedUsers,
+        'emailAddress': this.emailAddress,
         'eventsToLvlUp': this.eventsToLvlUp,
-        'lastCheckInTimeInMilliseconds': this.lastCheckInTimeInMilliseconds,
-        'lastNotifInMilliseconds': this.lastNotifInMilliseconds,
-        'lastPayoutTimeInMilliseconds': this.lastPayoutTimeInMilliseconds,
-        'canMakeAds': this.canMakeAds,
+        'fbAccessToken': this.fbAccessToken,
+        'followers': this.followers,
+        'following': this.following,
+        'googleAccessToken': this.googleAccessToken,
+        'googleIDToken': this.googleIDToken,
+        'id': this.id,
         'isAdmin': this.isAdmin,
+        'profilePicURL': this.profilePicURL,
+        'username': this.username,
       };
 }

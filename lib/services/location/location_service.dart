@@ -1,79 +1,103 @@
-import 'dart:js';
+import 'dart:html';
 
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase/firebase.dart' as firebase;
-import 'package:firebase/firestore.dart';
-
-import 'location_services_js.dart';
+import 'package:geocoder/geocoder.dart';
+import 'package:stacked_services/stacked_services.dart';
+import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/services/firestore/data/platform_data_service.dart';
 
 class LocationService {
-  static final firestore = firebase.firestore();
-  CollectionReference eventsRef = firestore.collection("events");
-
-  success(pos) {
-    try {
-      print(pos.coords.latitude);
-      print(pos.coords.longitude);
-    } catch (ex) {
-      print("Exception thrown : " + ex.toString());
-    }
-  }
-
-  Future<Map<String, dynamic>> getCurrentLocation() async {
-    Map<String, dynamic> coords = {};
-    await getCurrentPosition(allowInterop((pos) {
-      try {
-        coords['lat'] = pos.coords.latitude;
-        coords['lon'] = pos.coords.longitude;
-        print(pos.coords.latitude);
-        print(pos.coords.longitude);
-      } catch (ex) {
-        print("Exception thrown : " + ex.toString());
-      }
-      return;
-    }));
-    return coords;
-  }
+  Map<String, double> currentLocation;
+  SnackbarService _snackbarService = locator<SnackbarService>();
+  PlatformDataService _platformDataService = locator<PlatformDataService>();
 
   Future<List> findNearestZipcodes(String zipcode) async {
-    List zips = [];
-    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
-      functionName: 'findNearestZipcodes',
-    );
-
+    List zips;
+    final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable("findNearestZipcodes");
     final HttpsCallableResult result = await callable.call(
       <String, dynamic>{
         'zipcode': zipcode,
       },
     ).catchError((e) {
-      print(e);
+      //print(e);
     });
     if (result != null) {
       List areaCodes = result.data['data'];
-      if (areaCodes.isNotEmpty) {
+      if (areaCodes != null && areaCodes.isNotEmpty) {
         zips = areaCodes;
       }
     }
     return zips;
   }
 
-  Future<Map<String, dynamic>> reverseGeocodeLatLon(double lat, double lon) async {
-    Map<String, dynamic> data;
-    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
-      functionName: 'reverseGeocodeLatLon',
-    );
-
+  Future<Map<dynamic, dynamic>> reverseGeocodeLatLon(double lat, double lon) async {
+    Map<dynamic, dynamic> data;
+    final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable("reverseGeocodeLatLon");
     final HttpsCallableResult result = await callable.call(
       <String, dynamic>{
         'lat': lat,
         'lon': lon,
       },
     ).catchError((e) {
-      print(e);
+      //print(e);
     });
     if (result != null) {
       data = result.data['data'][0];
     }
     return data;
+  }
+
+  Future<String> getAddressFromLatLon(double lat, double lon) async {
+    String foundAddress;
+    Coordinates coordinates = Coordinates(lat, lon);
+    String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
+    var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates);
+    var address = addresses.first;
+    foundAddress = address.addressLine;
+    return foundAddress;
+  }
+
+  Future<String> getZipFromLatLon(double lat, double lon) async {
+    String zip;
+    Coordinates coordinates = Coordinates(lat, lon);
+    String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
+    var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates).catchError((e) {});
+    var address = addresses.first;
+    zip = address.postalCode;
+    return zip;
+  }
+
+  Future<String> getCityNameFromLatLon(double lat, double lon) async {
+    String cityName;
+    Coordinates coordinates = Coordinates(lat, lon);
+    String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
+    var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates);
+    var address = addresses.first;
+    cityName = address.locality;
+    return cityName;
+  }
+
+  Future<String> getProvinceFromLatLon(double lat, double lon) async {
+    String province;
+    Coordinates coordinates = Coordinates(lat, lon);
+    String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
+    var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates);
+    var address = addresses.first;
+    province = address.adminArea;
+    return province;
+  }
+
+  double getLatFromGeoPoint(Map<dynamic, dynamic> geoP) {
+    double lat;
+    List coordinates = geoP.values.toList();
+    lat = coordinates[0];
+    return lat == null ? 0.0 : lat;
+  }
+
+  double getLonFromGeopoint(Map<dynamic, dynamic> geoP) {
+    double lon;
+    List coordinates = geoP.values.toList();
+    lon = coordinates[1];
+    return lon == null ? 0.0 : lon;
   }
 }

@@ -1,47 +1,57 @@
-import 'package:firebase/firebase.dart' as fb;
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:stacked_services/stacked_services.dart';
+import 'package:stacked_themes/stacked_themes.dart';
+import 'package:webblen_web_app/ui/bottom_sheets/setup_bottom_sheet_ui.dart';
 
-import 'locater.dart';
-import 'routing/route_names.dart';
-import 'routing/router.dart';
-import 'services/navigation/navigation_service.dart';
-import 'widgets/layout/layout_template.dart';
+import 'app/locator.dart';
+import 'app/router.gr.dart';
+import 'app/theme_config.dart';
 
-void main() {
-  setupLocater();
-  fb.initializeApp(
-    apiKey: "AIzaSyApD1l8k7XAUQ7jOMA0p9edI6JllSbCawM",
-    authDomain: "webblen-events.firebaseapp.com",
-    databaseURL: "https://webblen-events.firebaseio.com",
-    projectId: "webblen-events",
-    storageBucket: "webblen-events.appspot.com",
-    messagingSenderId: "618036466482",
-  );
+void main() async {
+  // Register all the models and services before the app starts
+  await ThemeManager.initialise();
+  WidgetsFlutterBinding.ensureInitialized();
+  // await fb.initializeApp(
+  //   apiKey: "AIzaSyApD1l8k7XAUQ7jOMA0p9edI6JllSbCawM",
+  //   authDomain: "webblen-events.firebaseapp.com",
+  //   databaseURL: "https://webblen-events.firebaseio.com",
+  //   projectId: "webblen-events",
+  //   storageBucket: "webblen-events.appspot.com",
+  //   messagingSenderId: "618036466482",
+  // );
+  setupLocator();
+  setupBottomSheetUI();
+  setupSnackBarUi();
+
   runApp(WebblenWebApp());
 }
 
+void setupSnackBarUi() {
+  final service = locator<SnackbarService>();
+  service.registerSnackbarConfig(
+    SnackbarConfig(
+      backgroundColor: Colors.redAccent,
+      textColor: Colors.white,
+      mainButtonTextColor: Colors.black,
+    ),
+  );
+}
+
 class WebblenWebApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [StreamProvider<FirebaseUser>.value(value: FirebaseAuth.instance.onAuthStateChanged)],
-      child: MaterialApp(
+    return ThemeBuilder(
+      lightTheme: regularTheme,
+      darkTheme: darkTheme,
+      builder: (context, regularTheme, darkTheme, themeMode) => MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Webblen',
-        theme: ThemeData(
-          textTheme: Theme.of(context).textTheme.apply(
-                fontFamily: "Helvetica Neue",
-              ),
-        ),
-        builder: (context, child) => LayoutTemplate(
-          child: child,
-        ),
-        navigatorKey: locator<NavigationService>().navigatorKey,
-        onGenerateRoute: generateRoute,
-        initialRoute: HomeRoute,
+        theme: regularTheme,
+        darkTheme: darkTheme,
+        themeMode: themeMode,
+        initialRoute: Routes.RootViewRoute,
+        onGenerateRoute: WebblenRouter().onGenerateRoute,
+        navigatorKey: StackedService.navigatorKey,
       ),
     );
   }

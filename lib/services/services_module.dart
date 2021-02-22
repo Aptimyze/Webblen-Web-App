@@ -1,0 +1,59 @@
+import 'package:injectable/injectable.dart';
+import 'package:stacked_services/stacked_services.dart';
+import 'package:stacked_themes/stacked_themes.dart';
+import 'package:webblen_web_app/services/share/share_service.dart';
+import 'package:webblen_web_app/services/stripe/stripe_payment_service.dart';
+
+import 'algolia/algolia_search_service.dart';
+import 'auth/auth_service.dart';
+import 'dynamic_links/dynamic_link_service.dart';
+import 'firestore/common/firestore_storage_service.dart';
+import 'firestore/data/comment_data_service.dart';
+import 'firestore/data/notification_data_service.dart';
+import 'firestore/data/platform_data_service.dart';
+import 'firestore/data/post_data_service.dart';
+import 'firestore/data/user_data_service.dart';
+import 'location/google_places_service.dart';
+import 'location/location_service.dart';
+
+///RUN "flutter pub run build_runner build --delete-conflicting-outputs" in Project Terminal to Generate Service Modules
+
+@module
+abstract class ServicesModule {
+  @lazySingleton
+  ThemeService get themeService => ThemeService.getInstance();
+  @lazySingleton
+  NavigationService get navigationService;
+  @lazySingleton
+  DialogService get dialogService;
+  @lazySingleton
+  BottomSheetService get bottomSheetService;
+  @lazySingleton
+  SnackbarService get snackBarService;
+  @lazySingleton
+  AuthService get authService;
+  @lazySingleton
+  FirestoreStorageService get firestoreStorageService;
+  @lazySingleton
+  PlatformDataService get platformDataService;
+  @lazySingleton
+  NotificationDataService get notificationDataService;
+  @lazySingleton
+  UserDataService get userDataService;
+  @lazySingleton
+  PostDataService get postDataService;
+  @lazySingleton
+  CommentDataService get commentDataService;
+  @lazySingleton
+  StripePaymentService get stripePaymentService;
+  @lazySingleton
+  LocationService get locationService;
+  @lazySingleton
+  GooglePlacesService get googlePlacesService;
+  @lazySingleton
+  AlgoliaSearchService get algoliaSearchService;
+  @lazySingleton
+  DynamicLinkService get dynamicLinkService;
+  @lazySingleton
+  ShareService get shareService;
+}

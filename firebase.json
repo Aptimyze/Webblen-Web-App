@@ -16,20 +16,12 @@
     "appAssociation": "AUTO",
     "rewrites": [
       {
-        "source": "/**",
+        "source": "/shared_link/**",
         "dynamicLinks": true
       },
       {
-        "source": "/share_stream/**",
-        "dynamicLinks": true
-      },
-      {
-        "source": "/share_event/**",
-        "dynamicLinks": true
-      },
-      {
-        "source": "/share_post/**",
-        "dynamicLinks": true
+        "source": "!/shared_link/**",
+        "destination": "/index.html"
       }
     ]
   }

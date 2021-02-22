@@ -11,22 +11,32 @@ dependencies:
     sdk: flutter
 
   #Web Dependencies
-  responsive_builder: ^0.1.5
-  get_it: ^4.0.0
-  http: ^0.12.0+2
-  url_launcher: ^5.4.10
-  js: ^0.6.0
+  responsive_builder:
+  responsive_grid:
+  url_launcher:
+  js:
+  url_strategy:
 
+  #ARCHITECTURE
+  stacked:
+  stacked_services:
+  stacked_themes:
+  get_it:
+  injectable:
+  observable_ish:
+  auto_route:
 
-  #Data Management
-  provider: ^4.0.4
+  #HTTP REQUESTS
+  http:
 
-  #Firebase
-  firebase: ^7.2.1
-#  firebase_storage: ^3.1.1
-  firebase_auth: ^0.15.4
-#  firebase_dynamic_links: ^0.5.0+9
-  cloud_functions: ^0.4.2
+  #ADD CANCELLABLE ACTIONS TO ASYNC
+  async:
+
+  #FIRESTORE DATABASE
+  firebase:
+  cloud_functions:
+  firebase_dynamic_links:
+  firebase_auth:
 
   #Auth
   flutter_facebook_login_web:
@@ -36,12 +46,18 @@ dependencies:
   google_sign_in: ^4.5.1
 
   #Location
-  flutter_google_places: ^0.2.4
-  google_places_flutter: ^1.0.5
-  timezone: ^0.5.7
-  #geoflutterfire: ^2.1.0
+  flutter_google_places:
+  flutter_google_places_api:
+  geoflutterfire:
+  geocoder:
+
+  #FILES & IMAGES
+  cached_network_image:
 
   #Other Dependencies
+  shimmer:
+  share_plus:
+  flutter_typeahead:
   stripe_sdk: ^2.8.2
   qr_flutter: ^3.2.0
   algolia: ^0.1.7
@@ -52,12 +68,15 @@ dependencies:
   flutter_masked_text: ^0.8.0
   intl: ^0.16.1
   flutter_calendar_carousel: ^1.4.11
-  responsive_grid: ^1.1.1
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  build_runner:
+  auto_route_generator:
+  injectable_generator:
 
 flutter:
   uses-material-design: true
