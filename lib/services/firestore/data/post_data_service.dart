@@ -1,15 +1,14 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:firebase/firebase.dart' as fb;
-import 'package:firebase/firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/locator.dart';
 import 'package:webblen_web_app/models/webblen_post.dart';
 import 'package:webblen_web_app/services/firestore/common/firestore_storage_service.dart';
 
 class PostDataService {
-  CollectionReference postsRef = fb.firestore().collection('posts');
+  CollectionReference postsRef = FirebaseFirestore.instance.collection('posts');
   int dateTimeInMilliseconds1YearAgo = DateTime.now().millisecondsSinceEpoch - 31500000000;
-  SnackbarService _snackbarService = locator<SnackbarService>();
+  DialogService _dialogService = locator<DialogService>();
   FirestoreStorageService _firestoreStorageService = locator<FirestoreStorageService>();
 
   Future checkIfPostExists(String id) async {
@@ -42,10 +41,9 @@ class PostDataService {
   Future saveUnsavePost({@required String userID, @required String postID, @required bool savedPost}) async {
     List savedBy = [];
     DocumentSnapshot snapshot = await postsRef.doc(postID).get().catchError((e) {
-      _snackbarService.showSnackbar(
-        title: 'Post Error',
-        message: e.message,
-        duration: Duration(seconds: 5),
+      _dialogService.showDialog(
+        title: "Post Error",
+        description: e.message,
       );
       return false;
     });
@@ -60,34 +58,32 @@ class PostDataService {
           savedBy.remove(userID);
         }
       }
-      await postsRef.doc(postID).update(data: {'savedBy': savedBy});
+      await postsRef.doc(postID).update({'savedBy': savedBy});
     }
     return savedBy.contains(userID);
   }
 
   reportPost({@required String postID, @required String reporterID}) async {
     DocumentSnapshot snapshot = await postsRef.doc(postID).get().catchError((e) {
-      return _snackbarService.showSnackbar(
-        title: 'Post Error',
-        message: e.message,
-        duration: Duration(seconds: 5),
+      _dialogService.showDialog(
+        title: "Report Error",
+        description: e.message,
       );
+      return null;
     });
     if (snapshot.exists) {
       List reportedBy = snapshot.data()['reportedBy'] == null ? [] : snapshot.data()['reportedBy'].toList(growable: true);
       if (reportedBy.contains(reporterID)) {
-        return _snackbarService.showSnackbar(
-          title: 'Report Error',
-          message: "You've already reported this post. This post is currently pending review.",
-          duration: Duration(seconds: 5),
+        return _dialogService.showDialog(
+          title: "Report Error",
+          description: "You've already reported this post. This post is currently pending review.",
         );
       } else {
         reportedBy.add(reporterID);
-        postsRef.doc(postID).update(data: {"reportedBy": reportedBy});
-        return _snackbarService.showSnackbar(
-          title: 'Post Reported',
-          message: "This post is now pending review.",
-          duration: Duration(seconds: 5),
+        postsRef.doc(postID).update({"reportedBy": reportedBy});
+        return _dialogService.showDialog(
+          title: "Report Error",
+          description: "This post is now pending review",
         );
       }
     }
@@ -100,7 +96,7 @@ class PostDataService {
   }
 
   Future updatePost({@required WebblenPost post}) async {
-    await postsRef.doc(post.id).update(data: post.toMap()).catchError((e) {
+    await postsRef.doc(post.id).update(post.toMap()).catchError((e) {
       return e.message;
     });
   }
@@ -112,23 +108,52 @@ class PostDataService {
     }
   }
 
+  Future deleteEventOrStreamPost({@required String eventOrStreamID, @required String postType}) async {
+    QuerySnapshot snapshot = await postsRef.where("parentID", isEqualTo: eventOrStreamID).get();
+    snapshot.docs.forEach((doc) async {
+      await postsRef.doc(doc.id).delete();
+      if (postType == 'event') {
+        await _firestoreStorageService.deleteImage(storageBucket: 'images', folderName: 'events', fileName: eventOrStreamID);
+      } else {
+        await _firestoreStorageService.deleteImage(storageBucket: 'images', folderName: 'streams', fileName: eventOrStreamID);
+      }
+    });
+  }
+
   Future getPostByID(String id) async {
     WebblenPost post;
     DocumentSnapshot snapshot = await postsRef.doc(id).get().catchError((e) {
-      _snackbarService.showSnackbar(
-        title: 'Post Error',
-        message: e.message,
-        duration: Duration(seconds: 5),
+      _dialogService.showDialog(
+        title: "Post Error",
+        description: e.message,
       );
       return null;
     });
     if (snapshot.exists) {
       post = WebblenPost.fromMap(snapshot.data());
+    } else {
+      _dialogService.showDialog(
+        title: "Post Error",
+        description: "This post no longer exists",
+      );
+      return post;
     }
     return post;
   }
 
-  ///READ & QUERIES
+  Future getPostToEditByID(String id) async {
+    WebblenPost post;
+    DocumentSnapshot snapshot = await postsRef.doc(id).get().catchError((e) {
+      return null;
+    });
+    if (snapshot.exists) {
+      post = WebblenPost.fromMap(snapshot.data());
+    } else {
+      return null;
+    }
+    return post;
+  }
+
   ///READ & QUERIES
   Future<List<DocumentSnapshot>> loadPosts({
     @required String areaCode,
@@ -139,22 +164,25 @@ class PostDataService {
     Query query;
     List<DocumentSnapshot> docs = [];
     if (areaCode.isEmpty) {
-      query =
-          postsRef.where('postDateTimeInMilliseconds', ">=", dateTimeInMilliseconds1YearAgo).orderBy('postDateTimeInMilliseconds', 'desc').limit(resultsLimit);
+      query = postsRef
+          .where('postDateTimeInMilliseconds', isGreaterThan: dateTimeInMilliseconds1YearAgo)
+          .orderBy('postDateTimeInMilliseconds', descending: true)
+          .limit(resultsLimit);
     } else {
       query = postsRef
-          .where('nearbyZipcodes', 'array-contains', areaCode)
-          .where('postDateTimeInMilliseconds', ">=", dateTimeInMilliseconds1YearAgo)
-          .orderBy('postDateTimeInMilliseconds', 'desc')
+          .where('nearbyZipcodes', arrayContains: areaCode)
+          .where('postDateTimeInMilliseconds', isGreaterThan: dateTimeInMilliseconds1YearAgo)
+          .orderBy('postDateTimeInMilliseconds', descending: true)
           .limit(resultsLimit);
     }
     QuerySnapshot snapshot = await query.get().catchError((e) {
-      _snackbarService.showSnackbar(
-        title: 'Error',
-        message: e.message,
-        duration: Duration(seconds: 5),
-      );
-      return docs;
+      if (!e.message.contains("insufficient permissions")) {
+        _dialogService.showDialog(
+          title: "Error",
+          description: e.message,
+        );
+      }
+      return [];
     });
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
@@ -180,24 +208,26 @@ class PostDataService {
     List<DocumentSnapshot> docs = [];
     if (areaCode.isEmpty) {
       query = postsRef
-          .where('postDateTimeInMilliseconds', ">=", dateTimeInMilliseconds1YearAgo)
-          .orderBy('postDateTimeInMilliseconds', 'desc')
-          .startAfter(snapshot: lastDocSnap)
+          .where('postDateTimeInMilliseconds', isGreaterThan: dateTimeInMilliseconds1YearAgo)
+          .orderBy('postDateTimeInMilliseconds', descending: true)
+          .startAfterDocument(lastDocSnap)
           .limit(resultsLimit);
     } else {
       query = postsRef
-          .where('nearbyZipcodes', 'array-contains', areaCode)
-          .where('postDateTimeInMilliseconds', ">=", dateTimeInMilliseconds1YearAgo)
-          .orderBy('postDateTimeInMilliseconds', 'desc')
-          .startAfter(snapshot: lastDocSnap)
+          .where('nearbyZipcodes', arrayContains: areaCode)
+          .where('postDateTimeInMilliseconds', isGreaterThan: dateTimeInMilliseconds1YearAgo)
+          .orderBy('postDateTimeInMilliseconds', descending: true)
+          .startAfterDocument(lastDocSnap)
           .limit(resultsLimit);
     }
     QuerySnapshot snapshot = await query.get().catchError((e) {
-      _snackbarService.showSnackbar(
-        title: 'Error',
-        message: e.message,
-        duration: Duration(seconds: 5),
-      );
+      if (!e.message.contains("insufficient permissions")) {
+        _dialogService.showDialog(
+          title: "Error",
+          description: e.message,
+        );
+      }
+      return [];
     });
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
@@ -215,13 +245,15 @@ class PostDataService {
 
   Future<List<DocumentSnapshot>> loadPostsByUserID({@required String id, @required int resultsLimit}) async {
     List<DocumentSnapshot> docs = [];
-    Query query = postsRef.where('authorID', "==", id).orderBy('postDateTimeInMilliseconds', 'desc').limit(resultsLimit);
+    Query query = postsRef.where('authorID', isEqualTo: id).orderBy('postDateTimeInMilliseconds', descending: true).limit(resultsLimit);
     QuerySnapshot snapshot = await query.get().catchError((e) {
-      _snackbarService.showSnackbar(
-        title: 'Error',
-        message: e.message,
-        duration: Duration(seconds: 5),
-      );
+      if (!e.message.contains("insufficient permissions")) {
+        _dialogService.showDialog(
+          title: "Error",
+          description: e.message,
+        );
+      }
+      return [];
     });
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
@@ -235,13 +267,16 @@ class PostDataService {
     @required int resultsLimit,
   }) async {
     List<DocumentSnapshot> docs = [];
-    Query query = postsRef.where('authorID', "==", id).orderBy('postDateTimeInMilliseconds', 'desc').startAfter(snapshot: lastDocSnap).limit(resultsLimit);
+    Query query =
+        postsRef.where('authorID', isEqualTo: id).orderBy('postDateTimeInMilliseconds', descending: true).startAfterDocument(lastDocSnap).limit(resultsLimit);
     QuerySnapshot snapshot = await query.get().catchError((e) {
-      _snackbarService.showSnackbar(
-        title: 'Error',
-        message: e.message,
-        duration: Duration(seconds: 5),
-      );
+      if (!e.message.contains("insufficient permissions")) {
+        _dialogService.showDialog(
+          title: "Error",
+          description: e.message,
+        );
+      }
+      return [];
     });
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;

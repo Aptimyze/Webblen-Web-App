@@ -10,9 +10,7 @@ bool isDarkMode() {
   return _themeService.isDarkMode;
 }
 
-Color appBackgroundColor() {
-  return _themeService.isDarkMode ? CustomColors.webblenDarkGray : Colors.white;
-}
+Color appBackgroundColor = _themeService.isDarkMode ? CustomColors.webblenDarkGray : Colors.white;
 
 Color appButtonColor() {
   return _themeService.isDarkMode ? CustomColors.webblenDarkGray : Colors.white;
@@ -20,6 +18,10 @@ Color appButtonColor() {
 
 Color appButtonColorAlt() {
   return _themeService.isDarkMode ? CustomColors.steelGray : CustomColors.iosOffWhite;
+}
+
+Color appTagBackgroundColor() {
+  return _themeService.isDarkMode ? Colors.white12 : CustomColors.iosOffWhite;
 }
 
 Color appIconColor() {
@@ -38,7 +40,7 @@ Color appFontColorAlt() {
   return _themeService.isDarkMode ? Colors.white54 : Colors.black54;
 }
 
-Color appPostBorderColor() {
+Color appDividerColor() {
   return _themeService.isDarkMode ? Colors.white12 : CustomColors.iosOffWhite;
 }
 
@@ -83,10 +85,6 @@ Color appCursorColor() {
 }
 
 Color appImageButtonColor() {
-  return _themeService.isDarkMode ? Colors.white12 : CustomColors.iosOffWhite;
-}
-
-Color appTagBackgroundColorAlt() {
   return _themeService.isDarkMode ? Colors.white12 : CustomColors.iosOffWhite;
 }
 

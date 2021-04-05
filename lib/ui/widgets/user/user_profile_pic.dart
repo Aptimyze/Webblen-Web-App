@@ -1,8 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:webblen_web_app/constants/app_colors.dart';
+import 'package:webblen_web_app/constants/custom_colors.dart';
 
 class UserProfilePic extends StatelessWidget {
   final String userPicUrl;
@@ -21,56 +20,42 @@ class UserProfilePic extends StatelessWidget {
         ? Container(
             height: size,
             width: size,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(size / 2),
-              child: Container(
-                height: size,
-                width: size,
-                child: Shimmer.fromColors(
-                  baseColor: appShimmerBaseColor(),
-                  highlightColor: appShimmerHighlightColor(),
-                  child: Container(
-                    height: size,
-                    width: size,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
+            decoration: BoxDecoration(color: CustomColors.iosOffWhite, borderRadius: BorderRadius.all(Radius.circular(size / 2))),
           )
-        : Container(
-            height: size,
-            width: size,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(size / 2),
-              child: CachedNetworkImage(
-                fit: BoxFit.cover,
-                imageUrl: userPicUrl,
-                filterQuality: FilterQuality.medium,
-                placeholder: (context, url) => Container(
-                  height: size,
-                  width: size,
-                  child: Shimmer.fromColors(
-                      baseColor: appShimmerBaseColor(),
-                      highlightColor: appShimmerHighlightColor(),
-                      child: Container(
-                        height: size,
-                        width: size,
-                        color: Colors.white,
-                      )),
-                ),
-                errorWidget: (
-                  context,
-                  url,
-                  error,
-                ) =>
-                    Icon(
-                  FontAwesomeIcons.user,
-                  color: appFontColor(),
-                ),
-                useOldImageOnUrlChange: false,
-              ),
-            ),
+        : CircleAvatar(
+            radius: size / 2,
+            backgroundImage: NetworkImage(userPicUrl),
+            backgroundColor: CustomColors.iosOffWhite,
           );
+  }
+}
+
+class UserProfilePicFromFile extends StatelessWidget {
+  final File file;
+  final double size;
+
+  UserProfilePicFromFile({
+    this.file,
+    this.size,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: size,
+      width: size,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(size / 2),
+        child: Container(
+          height: size,
+          width: size,
+          child: Image.file(
+            file,
+            filterQuality: FilterQuality.medium,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
   }
 }

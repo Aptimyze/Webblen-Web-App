@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
+import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/models/webblen_post.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/widgets/posts/post_text_block/post_text_block_view_model.dart';
@@ -27,7 +29,7 @@ class PostTextBlockView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           GestureDetector(
-            onTap: null,
+            onTap: () => model.navigateToUserView(post.authorID),
             child: Row(
               children: <Widget>[
                 UserProfilePic(
@@ -38,7 +40,7 @@ class PostTextBlockView extends StatelessWidget {
                 SizedBox(
                   width: 10.0,
                 ),
-                post.tags.isEmpty
+                post.city == null || post.city.isEmpty
                     ? Text(
                         "@${model.authorUsername}",
                         style: TextStyle(
@@ -93,56 +95,6 @@ class PostTextBlockView extends StatelessWidget {
     );
   }
 
-  Widget commentSaveAndPostTime(PostTextBlockViewModel model) {
-    return Padding(
-      padding: EdgeInsets.only(left: 16.0, top: 8.0, right: 16.0, bottom: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              GestureDetector(
-                onTap: () => model.saveUnsavePost(currentUID: currentUID, postID: post.id),
-                child: Icon(
-                  model.savedPost ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart,
-                  size: 18,
-                  color: model.savedPost ? appSavedContentColor() : appIconColorAlt(),
-                ),
-              ),
-            ],
-          ),
-          Text(
-            TimeCalc().getPastTimeFromMilliseconds(post.postDateTimeInMilliseconds),
-            style: TextStyle(
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget commentCount(PostTextBlockViewModel model) {
-    return post.commentCount == 0
-        ? Container()
-        : Padding(
-            padding: EdgeInsets.only(left: 16.0, top: 12.0, right: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  post.commentCount == 1 ? "${post.commentCount} comment" : "${post.commentCount} comments",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: appFontColorAlt(),
-                  ),
-                ),
-              ],
-            ),
-          );
-  }
-
   Widget postMessage(PostTextBlockViewModel model) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -175,11 +127,61 @@ class PostTextBlockView extends StatelessWidget {
     );
   }
 
+  Widget commentCount(PostTextBlockViewModel model) {
+    return post.commentCount == 0
+        ? Container(height: 4)
+        : Padding(
+            padding: EdgeInsets.only(left: 16.0, top: 8, bottom: 4, right: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  post.commentCount == 1 ? "${post.commentCount} comment" : "${post.commentCount} comments",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: appFontColorAlt(),
+                  ),
+                ),
+              ],
+            ),
+          );
+  }
+
+  Widget commentSaveAndPostTime(PostTextBlockViewModel model) {
+    return Padding(
+      padding: EdgeInsets.only(left: 16.0, top: 4, bottom: 4, right: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              GestureDetector(
+                onTap: () => model.saveUnsavePost(postID: post.id),
+                child: Icon(
+                  model.savedPost ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart,
+                  size: 18,
+                  color: model.savedPost ? appSavedContentColor() : appIconColorAlt(),
+                ),
+              ),
+            ],
+          ),
+          Text(
+            TimeCalc().getPastTimeFromMilliseconds(post.postDateTimeInMilliseconds),
+            style: TextStyle(
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget postTags(PostTextBlockViewModel model) {
     return post.tags == null || post.tags.isEmpty
         ? Container()
         : Container(
-            margin: EdgeInsets.only(left: 16, bottom: 8, right: 16),
+            margin: EdgeInsets.only(left: 16, top: 4, bottom: 8, right: 16),
             height: 30,
             child: ListView.builder(
               addAutomaticKeepAlives: true,
@@ -207,29 +209,40 @@ class PostTextBlockView extends StatelessWidget {
       fireOnModelReadyOnce: true,
       initialiseSpecialViewModelsOnce: true,
       viewModelBuilder: () => PostTextBlockViewModel(),
-      onModelReady: (model) => model.initialize(currentUID: currentUID, postAuthorID: post.authorID, postID: post.id),
-      builder: (context, model, child) => GestureDetector(
-        onDoubleTap: () => model.saveUnsavePost(currentUID: currentUID, postID: post.id),
-        onTap: () => model.navigateToPostView(post.id),
+      onModelReady: (model) => model.initialize(post: post),
+      builder: (context, model, child) => Align(
+        alignment: Alignment.center,
         child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              head(model),
-              postBody(),
-              commentCount(model),
-              commentSaveAndPostTime(model),
-              verticalSpaceSmall,
-              postTags(model),
-              verticalSpaceTiny,
-              Divider(
-                thickness: 4.0,
-                color: appPostBorderColor(),
-              ),
-            ],
+          constraints: BoxConstraints(
+            maxWidth: 500,
           ),
+          child: GestureDetector(
+            onDoubleTap: () => model.saveUnsavePost(postID: post.id),
+            onLongPress: () {
+              HapticFeedback.lightImpact();
+              showPostOptions(post);
+            },
+            onTap: () => model.navigateToPostView(post.id),
+            child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  head(model),
+                  postBody(),
+                  commentCount(model),
+                  verticalSpaceTiny,
+                  commentSaveAndPostTime(model),
+                  postTags(model),
+                  Divider(
+                    thickness: 4.0,
+                    color: appDividerColor(),
+                  ),
+                ],
+              ),
+            ),
+          ).showCursorOnHover,
         ),
       ),
     );

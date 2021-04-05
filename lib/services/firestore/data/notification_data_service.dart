@@ -1,17 +1,16 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:firebase/firebase.dart' as fb;
-import 'package:firebase/firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/locator.dart';
 import 'package:webblen_web_app/models/webblen_notification.dart';
 
 class NotificationDataService {
   SnackbarService _snackbarService = locator<SnackbarService>();
-  CollectionReference notifsRef = fb.firestore().collection("webblen_notifications");
+  CollectionReference notifsRef = FirebaseFirestore.instance.collection("webblen_notifications");
 
   Future<int> getNumberOfUnreadNotifications(String uid) async {
     int num = 0;
-    QuerySnapshot snapshot = await notifsRef.where('receiverUID', '==', uid).where('read', '==', false).get();
+    QuerySnapshot snapshot = await notifsRef.where('receiverUID', isEqualTo: uid).where('read', isEqualTo: false).get();
     if (snapshot.docs.isNotEmpty) {
       num = snapshot.docs.length;
     }
@@ -19,10 +18,10 @@ class NotificationDataService {
   }
 
   changeUnreadNotificationStatus(String uid) async {
-    QuerySnapshot snapshot = await notifsRef.where('receiverUID', '==', uid).where('read', '==', false).get();
+    QuerySnapshot snapshot = await notifsRef.where('receiverUID', isEqualTo: uid).where('read', isEqualTo: false).get();
     if (snapshot.docs.isNotEmpty) {
       snapshot.docs.forEach((doc) async {
-        await notifsRef.doc(doc.id).update(data: {'read': true}).catchError((e) {
+        await notifsRef.doc(doc.id).update({'read': true}).catchError((e) {
           return e.message;
         });
       });
@@ -39,13 +38,14 @@ class NotificationDataService {
   }
 
   ///QUERY DATA
-  //Load Comments Created
+  //Load Notifications
   Future<List<DocumentSnapshot>> loadNotifications({
     @required String uid,
     @required int resultsLimit,
   }) async {
     List<DocumentSnapshot> docs = [];
-    QuerySnapshot snapshot = await notifsRef.where('receiverUID', '==', uid).orderBy('expDateInMilliseconds', 'desc').limit(15).get().catchError((e) {
+    QuerySnapshot snapshot =
+        await notifsRef.where('receiverUID', isEqualTo: uid).orderBy('expDateInMilliseconds', descending: true).limit(15).get().catchError((e) {
       _snackbarService.showSnackbar(
         title: 'Error',
         message: e.message,
@@ -58,7 +58,7 @@ class NotificationDataService {
     return docs;
   }
 
-  //Load Additional Causes by Follower Count
+  //Load Additional Notifications
   Future<List<DocumentSnapshot>> loadAdditionalNotifications({
     @required String uid,
     @required DocumentSnapshot lastDocSnap,
@@ -66,9 +66,9 @@ class NotificationDataService {
   }) async {
     List<DocumentSnapshot> docs = [];
     QuerySnapshot snapshot = await notifsRef
-        .where('receiverUID', '==', uid)
-        .orderBy('expDateInMilliseconds', 'desc')
-        .startAfter(snapshot: lastDocSnap)
+        .where('receiverUID', isEqualTo: uid)
+        .orderBy('expDateInMilliseconds', descending: true)
+        .startAfterDocument(lastDocSnap)
         .limit(15)
         .get()
         .catchError((e) {

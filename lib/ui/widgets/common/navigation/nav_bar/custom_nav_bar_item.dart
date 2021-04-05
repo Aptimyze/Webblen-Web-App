@@ -1,33 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
-import 'package:webblen_web_app/extensions/hover_extensions.dart';
 
 class CustomNavBarItem extends StatelessWidget {
   final VoidCallback onTap;
   final bool isActive;
   final IconData iconData;
+  final String label;
 
-  CustomNavBarItem({this.onTap, this.isActive, this.iconData});
+  CustomNavBarItem({this.onTap, this.isActive, this.iconData, this.label});
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.only(left: 8),
-        height: 40,
-        width: 40,
+        padding: EdgeInsets.only(top: 4, left: 8, right: 8),
+        height: 50,
+        width: 50,
         color: Colors.transparent,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               iconData,
               color: isActive ? appIconColor() : appInActiveColorAlt(),
-              size: 20,
+              size: 24,
             ),
+            SizedBox(height: 2),
+            label == null
+                ? Container()
+                : Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 12.0,
+                      color: isActive ? appIconColor() : appInActiveColorAlt(),
+                    ),
+                  ),
           ],
         ),
       ),
-    ).showCursorOnHover;
+    );
   }
 }

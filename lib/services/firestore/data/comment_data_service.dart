@@ -1,15 +1,17 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:firebase/firebase.dart' as fb;
-import 'package:firebase/firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/locator.dart';
 import 'package:webblen_web_app/models/webblen_post.dart';
 import 'package:webblen_web_app/models/webblen_post_comment.dart';
 
+import 'activity_data_service.dart';
+
 class CommentDataService {
+  final ActivityDataService _activityDataService = locator<ActivityDataService>();
   final SnackbarService _snackbarService = locator<SnackbarService>();
-  final CollectionReference commentsRef = fb.firestore().collection("comments");
-  final CollectionReference postsRef = fb.firestore().collection("posts");
+  final CollectionReference commentsRef = FirebaseFirestore.instance.collection("comments");
+  final CollectionReference postsRef = FirebaseFirestore.instance.collection("posts");
 
   //CREATE
   Future<String> sendComment(String parentID, String postAuthorID, WebblenPostComment comment) async {
@@ -20,7 +22,7 @@ class CommentDataService {
     DocumentSnapshot snapshot = await postsRef.doc(parentID).get();
     WebblenPost post = WebblenPost.fromMap(snapshot.data());
     post.commentCount += 1;
-    await postsRef.doc(parentID).update(data: post.toMap()).catchError((e) {
+    await postsRef.doc(parentID).update(post.toMap()).catchError((e) {
       error = e.details;
     });
     if (error == null && postAuthorID != comment.senderUID) {
@@ -38,7 +40,7 @@ class CommentDataService {
     replies.add(comment.toMap());
     originalComment.replies = replies;
     originalComment.replyCount += 1;
-    await commentsRef.doc(parentID).collection("comments").doc(originalCommentID).update(data: originalComment.toMap()).catchError((e) {
+    await commentsRef.doc(parentID).collection("comments").doc(originalCommentID).update(originalComment.toMap()).catchError((e) {
       error = e.details;
     });
     if (error == null && originaCommenterUID != comment.senderUID) {
@@ -57,7 +59,7 @@ class CommentDataService {
     DocumentSnapshot snapshot = await postsRef.doc(parentID).get();
     WebblenPost post = WebblenPost.fromMap(snapshot.data());
     post.commentCount -= 1;
-    await postsRef.doc(parentID).update(data: post.toMap()).catchError((e) {
+    await postsRef.doc(parentID).update(post.toMap()).catchError((e) {
       error = e.details;
     });
     return error;
@@ -72,7 +74,7 @@ class CommentDataService {
     replies.removeAt(replyIndex);
     originalComment.replies = replies;
     originalComment.replyCount -= 1;
-    await commentsRef.doc(parentID).collection("comments").doc(comment.originalReplyCommentID).update(data: originalComment.toMap()).catchError((e) {
+    await commentsRef.doc(parentID).collection("comments").doc(comment.originalReplyCommentID).update(originalComment.toMap()).catchError((e) {
       error = e.details;
     });
     return error;
@@ -85,7 +87,7 @@ class CommentDataService {
     @required int resultsLimit,
   }) async {
     List<DocumentSnapshot> docs = [];
-    Query query = commentsRef.doc(postID).collection('comments').orderBy('timePostedInMilliseconds', 'desc').limit(resultsLimit);
+    Query query = commentsRef.doc(postID).collection('comments').orderBy('timePostedInMilliseconds', descending: true).limit(resultsLimit);
 
     QuerySnapshot snapshot = await query.get().catchError((e) {
       _snackbarService.showSnackbar(
@@ -101,7 +103,7 @@ class CommentDataService {
     return docs;
   }
 
-  //Load Additional Causes by Follower Count
+  //Load Additional Comments
   Future<List<DocumentSnapshot>> loadAdditionalComments({
     @required String postID,
     @required DocumentSnapshot lastDocSnap,
@@ -109,7 +111,12 @@ class CommentDataService {
   }) async {
     Query query;
     List<DocumentSnapshot> docs = [];
-    query = commentsRef.doc(postID).collection('comments').orderBy('timePostedInMilliseconds', 'desc').startAfter(snapshot: lastDocSnap).limit(resultsLimit);
+    query = commentsRef
+        .doc(postID)
+        .collection('comments')
+        .orderBy('timePostedInMilliseconds', descending: true)
+        .startAfterDocument(lastDocSnap)
+        .limit(resultsLimit);
 
     QuerySnapshot snapshot = await query.get().catchError((e) {
       _snackbarService.showSnackbar(

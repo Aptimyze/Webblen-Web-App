@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
 import 'package:stacked/stacked.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/widgets/common/buttons/apple_auth_button.dart';
@@ -11,16 +8,14 @@ import 'package:webblen_web_app/ui/widgets/common/buttons/email_auth_button.dart
 import 'package:webblen_web_app/ui/widgets/common/buttons/fb_auth_button.dart';
 import 'package:webblen_web_app/ui/widgets/common/buttons/google_auth_button.dart';
 import 'package:webblen_web_app/ui/widgets/common/buttons/phone_auth_button.dart';
+import 'package:webblen_web_app/ui/widgets/common/text_field/phone_text_field.dart';
 import 'package:webblen_web_app/ui/widgets/common/text_field/single_line_text_field.dart';
 import 'package:webblen_web_app/utils/url_handler.dart';
 
 import 'auth_view_model.dart';
 
 class AuthView extends StatelessWidget {
-  final phoneMaskController = MaskedTextController(mask: '000-000-0000');
-  final smsController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  const AuthView({Key key}) : super(key: key);
 
   Widget orTextLabel() {
     return Text(
@@ -40,13 +35,11 @@ class AuthView extends StatelessWidget {
         FacebookAuthButton(
           action: () => model.loginWithFacebook(),
         ),
-        Platform.isIOS
-            ? AppleAuthButton(
-                action: null,
-              )
-            : Container(),
+        AppleAuthButton(
+          action: () {},
+        ),
         GoogleAuthButton(
-          action: null,
+          action: () {},
         ),
         model.signInViaPhone
             ? EmailAuthButton(
@@ -71,8 +64,9 @@ class AuthView extends StatelessWidget {
             ),
             TextSpan(
               text: 'Terms and Conditions ',
+              mouseCursor: MaterialStateMouseCursor.clickable,
               style: TextStyle(color: Colors.blue),
-              recognizer: TapGestureRecognizer()..onTap = () => UrlHandler().launchInWebViewOrVC(context, "https://webblen.io/terms-and-conditions"),
+              recognizer: TapGestureRecognizer()..onTap = () => UrlHandler().launchInWebViewOrVC("https://webblen.io/terms-and-conditions"),
             ),
             TextSpan(
               text: 'and ',
@@ -80,8 +74,9 @@ class AuthView extends StatelessWidget {
             ),
             TextSpan(
               text: 'Privacy Policy. ',
+              mouseCursor: MaterialStateMouseCursor.clickable,
               style: TextStyle(color: Colors.blue),
-              recognizer: TapGestureRecognizer()..onTap = () => UrlHandler().launchInWebViewOrVC(context, "https://webblen.io/privacy-policy"),
+              recognizer: TapGestureRecognizer()..onTap = () => UrlHandler().launchInWebViewOrVC("https://webblen.io/privacy-policy"),
             ),
           ],
         ),
@@ -111,7 +106,7 @@ class AuthView extends StatelessWidget {
               ),
               SizedBox(height: 16),
               SingleLineTextField(
-                controller: smsController,
+                controller: model.smsController,
                 hintText: 'SMS Code',
                 textLimit: null,
                 isPassword: false,
@@ -127,7 +122,7 @@ class AuthView extends StatelessWidget {
                 width: screenWidth(context),
                 onPressed: () => model.signInWithSMSCode(
                   context: context,
-                  smsCode: smsController.text,
+                  smsCode: model.smsController.text,
                 ),
               ),
             ],
@@ -144,82 +139,86 @@ class AuthView extends StatelessWidget {
     }
   }
 
+  Widget authForm(BuildContext context, AuthViewModel model) {
+    return Column(
+      children: <Widget>[
+        SizedBox(
+          height: 200,
+          child: Image.asset(
+            'assets/images/webblen_logo_text.jpg',
+            filterQuality: FilterQuality.medium,
+          ),
+        ),
+        verticalSpaceMedium,
+        model.signInViaPhone
+            ? PhoneTextField(
+                controller: model.phoneMaskController,
+                hintText: "701-120-3000",
+                onChanged: (phoneNo) => model.setPhoneNo(phoneNo),
+                onFieldSubmitted: () => sendSMSCode(context, model),
+              )
+            : SingleLineTextField(
+                controller: model.emailController,
+                hintText: "Email Address",
+                textLimit: null,
+                isPassword: false,
+                onFieldSubmitted: () => model.signInWithEmail(email: model.emailController.text, password: model.passwordController.text),
+              ),
+        verticalSpaceSmall,
+        model.signInViaPhone
+            ? Container()
+            : SingleLineTextField(
+                controller: model.passwordController,
+                hintText: "Password",
+                textLimit: null,
+                isPassword: true,
+                onFieldSubmitted: () => model.signInWithEmail(email: model.emailController.text, password: model.passwordController.text),
+              ),
+        verticalSpaceMedium,
+        CustomButton(
+          elevation: 1,
+          text: model.signInViaPhone ? 'Send SMS Code' : 'Login',
+          textColor: Colors.black,
+          backgroundColor: Colors.white,
+          isBusy: model.isBusy,
+          height: 50,
+          width: screenWidth(context),
+          onPressed: model.signInViaPhone
+              ? () => sendSMSCode(context, model)
+              : () => model.signInWithEmail(email: model.emailController.text, password: model.passwordController.text),
+        ),
+        verticalSpaceMedium,
+        orTextLabel(),
+        verticalSpaceSmall,
+        authButtons(model),
+        verticalSpaceLarge,
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: serviceAgreement(context),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<AuthViewModel>.reactive(
       viewModelBuilder: () => AuthViewModel(),
       builder: (context, model, child) => Scaffold(
         backgroundColor: Colors.white,
-        body: GestureDetector(
-          onTap: FocusScope.of(context).unfocus,
-          child: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            color: Colors.white,
-            child: Center(
+        body: Center(
+          child: GestureDetector(
+            onTap: FocusScope.of(context).unfocus,
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 32),
+              constraints: BoxConstraints(
+                maxWidth: 700,
+              ),
+              color: Colors.white,
               child: ListView(
                 shrinkWrap: true,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 32),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        SizedBox(
-                          height: 200,
-                          child: Image.asset('assets/images/webblen_logo_text.jpg'),
-                        ),
-                        verticalSpaceLarge,
-                        // model.signInViaPhone
-                        //     ? PhoneTextField(
-                        //         controller: phoneMaskController,
-                        //         hintText: "701-120-3000",
-                        //         onChanged: (phoneNo) => model.setPhoneNo(phoneNo),
-                        //       )
-                        //     :
-                        Column(
-                          children: [
-                            SingleLineTextField(
-                              controller: emailController,
-                              hintText: "Email Address",
-                              textLimit: null,
-                              isPassword: false,
-                            ),
-                            verticalSpaceSmall,
-                            SingleLineTextField(
-                              controller: passwordController,
-                              hintText: "Password",
-                              textLimit: null,
-                              isPassword: true,
-                            ),
-                          ],
-                        ),
-                        verticalSpaceMedium,
-                        CustomButton(
-                          elevation: 1,
-                          text: model.signInViaPhone ? 'Send SMS Code' : 'Login',
-                          textColor: Colors.black,
-                          backgroundColor: Colors.white,
-                          isBusy: model.isBusy,
-                          height: 50,
-                          width: screenWidth(context),
-                          onPressed: model.signInViaPhone
-                              ? () => sendSMSCode(context, model)
-                              : () => model.signInWithEmail(email: emailController.text, password: passwordController.text),
-                        ),
-                        verticalSpaceMedium,
-                        orTextLabel(),
-                        verticalSpaceSmall,
-                        authButtons(model),
-                      ],
-                    ),
-                  ),
-                  verticalSpaceLarge,
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: serviceAgreement(context),
-                  ),
+                  authForm(context, model),
                 ],
               ),
             ),

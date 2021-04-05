@@ -16,15 +16,15 @@ class CustomButton extends StatelessWidget {
   final bool isBusy;
 
   CustomButton({
-    this.text,
-    this.textSize,
-    this.height,
-    this.width,
-    this.onPressed,
-    this.backgroundColor,
-    this.textColor,
-    this.elevation,
-    this.isBusy,
+    @required this.text,
+    @required this.textSize,
+    @required this.height,
+    @required this.width,
+    @required this.onPressed,
+    @required this.backgroundColor,
+    @required this.textColor,
+    @required this.elevation,
+    @required this.isBusy,
   });
 
   @override
@@ -104,20 +104,18 @@ class CustomIconButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(14.0),
         onTap: onPressed,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 8),
           height: height,
           width: width,
-          child: Row(
-            mainAxisAlignment: centerContent ? MainAxisAlignment.center : MainAxisAlignment.start,
-            children: <Widget>[
-              icon,
-              text != null
-                  ? SizedBox(
+          child: text != null
+              ? Row(
+                  mainAxisAlignment: centerContent ? MainAxisAlignment.center : MainAxisAlignment.start,
+                  children: <Widget>[
+                    icon,
+                    SizedBox(
                       width: 10.0,
-                    )
-                  : Container(),
-              text != null
-                  ? Padding(
+                    ),
+                    Padding(
                       padding: EdgeInsets.only(top: 1),
                       child: MediaQuery(
                         data: MediaQuery.of(context).copyWith(
@@ -132,10 +130,12 @@ class CustomIconButton extends StatelessWidget {
                           ),
                         ),
                       ),
-                    )
-                  : Container()
-            ],
-          ),
+                    ),
+                  ],
+                )
+              : Center(
+                  child: icon,
+                ),
         ),
       ),
     );

@@ -18,7 +18,7 @@ class TagButton extends StatelessWidget {
         onTap: onTap,
         child: Material(
           elevation: 0,
-          color: appTagBackgroundColorAlt(),
+          color: appTagBackgroundColor(),
           borderRadius: BorderRadius.circular(14.0),
           child: InkWell(
             borderRadius: BorderRadius.circular(14.0),

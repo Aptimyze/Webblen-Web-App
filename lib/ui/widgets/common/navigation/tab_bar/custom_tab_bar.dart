@@ -21,6 +21,22 @@ class WebblenHomePageTabBar extends StatelessWidget {
         indicatorSize: TabBarIndicatorSize.label,
         indicator: BoxDecoration(borderRadius: BorderRadius.circular(10), color: appActiveColor()),
         tabs: [
+          // Tab(
+          //   child: Container(
+          //     height: 30,
+          //     width: 75,
+          //     decoration: BoxDecoration(
+          //       borderRadius: BorderRadius.circular(60),
+          //     ),
+          //     child: Align(
+          //       alignment: Alignment.center,
+          //       child: Text(
+          //         "For You",
+          //         style: TextStyle(fontWeight: fontWeight),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           Tab(
             child: Container(
               height: 30,
@@ -31,7 +47,7 @@ class WebblenHomePageTabBar extends StatelessWidget {
               child: Align(
                 alignment: Alignment.center,
                 child: Text(
-                  "News",
+                  "Posts",
                   style: TextStyle(fontWeight: fontWeight),
                 ),
               ),
@@ -69,31 +85,15 @@ class WebblenHomePageTabBar extends StatelessWidget {
               ),
             ),
           ),
-          Tab(
-            child: Container(
-              height: 30,
-              width: 75,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(60),
-              ),
-              child: Align(
-                alignment: Alignment.center,
-                child: Text(
-                  "Following",
-                  style: TextStyle(fontWeight: fontWeight),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
 }
 
-class WebblenExplorePageTabBar extends StatelessWidget {
+class AnonHomePageTabBar extends StatelessWidget {
   final TabController tabController;
-  WebblenExplorePageTabBar({this.tabController});
+  AnonHomePageTabBar({this.tabController});
 
   @override
   Widget build(BuildContext context) {
@@ -101,83 +101,6 @@ class WebblenExplorePageTabBar extends StatelessWidget {
     return Container(
       height: 30,
       padding: EdgeInsets.only(bottom: 4),
-      child: TabBar(
-        controller: tabController,
-        isScrollable: true,
-        labelPadding: EdgeInsets.symmetric(horizontal: 10),
-        indicatorColor: appActiveColor(),
-        labelColor: Colors.white,
-        unselectedLabelColor: appInActiveColorAlt(),
-        indicatorSize: TabBarIndicatorSize.label,
-        indicator: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: appActiveColor(),
-        ),
-        tabs: [
-          Tab(
-            child: Container(
-              height: 30,
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(60),
-              ),
-              child: Align(
-                alignment: Alignment.center,
-                child: Text(
-                  "Streams",
-                  style: TextStyle(fontWeight: fontWeight),
-                ),
-              ),
-            ),
-          ),
-          Tab(
-            child: Container(
-              height: 30,
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(60),
-              ),
-              child: Align(
-                alignment: Alignment.center,
-                child: Text(
-                  "Events",
-                  style: TextStyle(fontWeight: fontWeight),
-                ),
-              ),
-            ),
-          ),
-          Tab(
-            child: Container(
-              height: 30,
-              width: 115,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(60),
-              ),
-              child: Align(
-                alignment: Alignment.center,
-                child: Text(
-                  "People/Groups",
-                  style: TextStyle(fontWeight: fontWeight),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class WebblenProfileTabBar extends StatelessWidget {
-  final TabController tabController;
-  WebblenProfileTabBar({this.tabController});
-
-  @override
-  Widget build(BuildContext context) {
-    FontWeight fontWeight = FontWeight.w600;
-    return Container(
-      height: 35,
-      padding: EdgeInsets.only(bottom: 8),
       child: TabBar(
         controller: tabController,
         isScrollable: true,
@@ -236,6 +159,125 @@ class WebblenProfileTabBar extends StatelessWidget {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class WebblenAllSearchResultsTabBar extends StatelessWidget {
+  final TabController tabController;
+  WebblenAllSearchResultsTabBar({this.tabController});
+
+  @override
+  Widget build(BuildContext context) {
+    FontWeight fontWeight = FontWeight.w600;
+    return Container(
+      height: 30,
+      padding: EdgeInsets.only(bottom: 4),
+      child: TabBar(
+        controller: tabController,
+        isScrollable: true,
+        labelPadding: EdgeInsets.symmetric(horizontal: 10),
+        indicatorColor: appActiveColor(),
+        labelColor: Colors.white,
+        unselectedLabelColor: appInActiveColorAlt(),
+        indicatorSize: TabBarIndicatorSize.label,
+        indicator: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: appActiveColor(),
+        ),
+        tabs: [
+          Tab(
+            child: Container(
+              height: 30,
+              width: 90,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(60),
+              ),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Posts",
+                  style: TextStyle(fontWeight: fontWeight),
+                ),
+              ),
+            ),
+          ),
+          Tab(
+            child: Container(
+              height: 30,
+              width: 90,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(60),
+              ),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Streams",
+                  style: TextStyle(fontWeight: fontWeight),
+                ),
+              ),
+            ),
+          ),
+          Tab(
+            child: Container(
+              height: 30,
+              width: 90,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(60),
+              ),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Events",
+                  style: TextStyle(fontWeight: fontWeight),
+                ),
+              ),
+            ),
+          ),
+          Tab(
+            child: Container(
+              height: 30,
+              width: 115,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(60),
+              ),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "People/Groups",
+                  style: TextStyle(fontWeight: fontWeight),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class WebblenProfileTabBar extends StatelessWidget {
+  final TabController tabController;
+  WebblenProfileTabBar({this.tabController});
+
+  @override
+  Widget build(BuildContext context) {
+    FontWeight fontWeight = FontWeight.w600;
+    return Container(
+      height: 35,
+      padding: EdgeInsets.only(top: 4, bottom: 8),
+      child: TabBar(
+        controller: tabController,
+        isScrollable: true,
+        labelPadding: EdgeInsets.symmetric(horizontal: 10),
+        indicatorColor: appActiveColor(),
+        labelColor: Colors.white,
+        unselectedLabelColor: appInActiveColorAlt(),
+        indicatorSize: TabBarIndicatorSize.label,
+        indicator: BoxDecoration(borderRadius: BorderRadius.circular(10), color: appActiveColor()),
+        tabs: [
           Tab(
             child: Container(
               height: 30,
@@ -246,7 +288,39 @@ class WebblenProfileTabBar extends StatelessWidget {
               child: Align(
                 alignment: Alignment.center,
                 child: Text(
-                  "Activity",
+                  "Posts",
+                  style: TextStyle(fontWeight: fontWeight),
+                ),
+              ),
+            ),
+          ),
+          Tab(
+            child: Container(
+              height: 30,
+              width: 75,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(60),
+              ),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Streams",
+                  style: TextStyle(fontWeight: fontWeight),
+                ),
+              ),
+            ),
+          ),
+          Tab(
+            child: Container(
+              height: 30,
+              width: 75,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(60),
+              ),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Events",
                   style: TextStyle(fontWeight: fontWeight),
                 ),
               ),
@@ -255,46 +329,14 @@ class WebblenProfileTabBar extends StatelessWidget {
           // Tab(
           //   child: Container(
           //     height: 30,
-          //     width: 110,
+          //     width: 75,
           //     decoration: BoxDecoration(
           //       borderRadius: BorderRadius.circular(60),
           //     ),
           //     child: Align(
           //       alignment: Alignment.center,
           //       child: Text(
-          //         "Saved Posts",
-          //         style: TextStyle(fontWeight: fontWeight),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Tab(
-          //   child: Container(
-          //     height: 30,
-          //     width: 110,
-          //     decoration: BoxDecoration(
-          //       borderRadius: BorderRadius.circular(60),
-          //     ),
-          //     child: Align(
-          //       alignment: Alignment.center,
-          //       child: Text(
-          //         "Saved Streams",
-          //         style: TextStyle(fontWeight: fontWeight),
-          //       ),
-          //     ),
-          //   ),
-          // ),
-          // Tab(
-          //   child: Container(
-          //     height: 30,
-          //     width: 110,
-          //     decoration: BoxDecoration(
-          //       borderRadius: BorderRadius.circular(60),
-          //     ),
-          //     child: Align(
-          //       alignment: Alignment.center,
-          //       child: Text(
-          //         "Saved Events",
+          //         "Activity",
           //         style: TextStyle(fontWeight: fontWeight),
           //       ),
           //     ),

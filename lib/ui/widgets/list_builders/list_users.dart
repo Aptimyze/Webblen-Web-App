@@ -15,7 +15,7 @@ class ListUsers extends StatelessWidget {
   Widget listUsers() {
     return RefreshIndicator(
       onRefresh: refreshData,
-      backgroundColor: appBackgroundColor(),
+      backgroundColor: appBackgroundColor,
       child: ListView.builder(
         physics: AlwaysScrollableScrollPhysics(),
         controller: scrollController,
@@ -57,7 +57,7 @@ class ListUsers extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: screenHeight(context),
-      color: appBackgroundColor(),
+      color: appBackgroundColor,
       child: listUsers(),
     );
   }

@@ -1,21 +1,22 @@
-import 'dart:html';
+import 'dart:async';
+import 'dart:io';
 
-import 'package:auto_route/auto_route.dart';
-import 'package:firebase/firebase.dart' as fb;
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 
 class FirestoreStorageService {
-  fb.UploadTask uploadTask;
-  fb.UploadTaskSnapshot uploadTaskSnapshot;
+  final StorageReference storageReference = FirebaseStorage.instance.ref();
 
   Future<String> uploadImage({@required File img, @required String storageBucket, @required String folderName, @required String fileName}) async {
-    String imgURL;
-    uploadTask = fb.storage().refFromURL("gs://webblen-events.appspot.com").child(storageBucket).child(folderName).child(fileName).put(img);
-    uploadTaskSnapshot = await uploadTask.future;
-    imgURL = await (await uploadTaskSnapshot.ref.getDownloadURL()).toString();
-    return imgURL;
+    StorageReference ref = storageReference.child(storageBucket).child(folderName).child(fileName);
+    StorageUploadTask uploadTask = ref.putFile(img);
+    await uploadTask;
+    String downloadUrl = await ref.getDownloadURL();
+    return downloadUrl;
   }
 
   deleteImage({@required String storageBucket, @required String folderName, @required String fileName}) async {
-    fb.storage().refFromURL("gs://webblen-events.appspot.com").child(storageBucket).child(folderName).child(fileName).delete().catchError((e) {});
+    StorageReference storageReference = FirebaseStorage.instance.ref();
+    storageReference.child(storageBucket).child(folderName).child(fileName).delete().catchError((e) {});
   }
 }

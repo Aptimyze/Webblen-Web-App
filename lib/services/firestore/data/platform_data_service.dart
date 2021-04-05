@@ -1,14 +1,13 @@
 import 'dart:async';
 
-import 'package:firebase/firebase.dart' as fb;
-import 'package:firebase/firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/locator.dart';
 
 class PlatformDataService {
   SnackbarService _snackbarService = locator<SnackbarService>();
-  CollectionReference appReleaseRef = fb.firestore().collection("app_release_info");
-  CollectionReference webblenCurrencyRef = fb.firestore().collection("webblen_currency");
+  CollectionReference appReleaseRef = FirebaseFirestore.instance.collection("app_release_info");
+  CollectionReference webblenCurrencyRef = FirebaseFirestore.instance.collection("webblen_currency");
 
   Future<bool> isUpdateAvailable() async {
     bool updateAvailable = false;
@@ -126,6 +125,13 @@ class PlatformDataService {
     DocumentSnapshot snapshot = await appReleaseRef.doc('general').get();
     taxRate = snapshot.data()['taxRate'];
     return taxRate;
+  }
+
+  Future<String> getWebblenDownloadLink() async {
+    String key;
+    DocumentSnapshot snapshot = await appReleaseRef.doc('webblen').get();
+    key = snapshot.data()['downloadLink'];
+    return key;
   }
 
   Future<String> getStripePubKey() async {

@@ -1,68 +1,72 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/locator.dart';
-import 'package:webblen_web_app/services/auth/auth_service.dart';
-import 'package:webblen_web_app/services/dynamic_links/dynamic_link_service.dart';
+import 'package:webblen_web_app/app/router.gr.dart';
+import 'package:webblen_web_app/models/webblen_post.dart';
 import 'package:webblen_web_app/services/firestore/data/post_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
-import 'package:webblen_web_app/services/share/share_service.dart';
+import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
 class PostImgBlockViewModel extends BaseViewModel {
-  AuthService _authService = locator<AuthService>();
   NavigationService _navigationService = locator<NavigationService>();
-  BottomSheetService _bottomSheetService = locator<BottomSheetService>();
   PostDataService _postDataService = locator<PostDataService>();
   UserDataService _userDataService = locator<UserDataService>();
-  SnackbarService _snackbarService = locator<SnackbarService>();
-  DynamicLinkService _dynamicLinkService = locator<DynamicLinkService>();
-  ShareService _shareService = locator<ShareService>();
+  WebblenBaseViewModel _webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  DialogService _dialogService = locator<DialogService>();
 
   bool savedPost = false;
-  String authorImageURL = "https://icon2.cleanpng.com/20180228/hdq/kisspng-circle-angle-material-gray-circle-pattern-5a9716f391f119.9417320315198512515978.jpg";
+  String authorImageURL = "";
   String authorUsername = "";
 
-  initialize({String currentUID, String postID, String postAuthorID}) async {
+  initialize({@required WebblenPost post}) async {
     setBusy(true);
-
-    savedPost = await _postDataService.checkIfPostSaved(userID: currentUID, postID: postID);
+    //precacheImage(NetworkImage(post.imageURL), context);
+    savedPost = await _postDataService.checkIfPostSaved(userID: _webblenBaseViewModel.uid, postID: post.id);
     //Get Post Author Data
-    _userDataService.getWebblenUserByID(postAuthorID).then((res) {
+    _userDataService.getWebblenUserByID(post.authorID).then((res) {
       if (res is String) {
         //print(String);
       } else {
         authorImageURL = res.profilePicURL;
         authorUsername = res.username;
+        //precacheImage(NetworkImage(authorImageURL), context);
       }
       notifyListeners();
       setBusy(false);
     });
   }
 
-  saveUnsavePost({String currentUID, String postID}) async {
-    if (savedPost) {
-      savedPost = false;
+  saveUnsavePost({@required String postID}) async {
+    DialogResponse response = await _dialogService.showDialog(
+      title: "Cannot Save Post",
+      description: "You Must Be Logged in to Save Posts",
+      barrierDismissible: true,
+      cancelTitle: "Cancel",
+      buttonTitle: "Log In",
+    );
+    if (response.confirmed) {
+      _webblenBaseViewModel.navigateToAuthView();
     } else {
-      savedPost = true;
+      if (savedPost) {
+        savedPost = false;
+      } else {
+        savedPost = true;
+      }
+      HapticFeedback.lightImpact();
+      notifyListeners();
+      await _postDataService.saveUnsavePost(userID: _webblenBaseViewModel.uid, postID: postID, savedPost: savedPost);
     }
-    HapticFeedback.lightImpact();
-    notifyListeners();
-    await _postDataService.saveUnsavePost(userID: currentUID, postID: postID, savedPost: savedPost);
   }
 
   ///NAVIGATION
-  navigateToPostView(String postID) async {
-    // String res = await _navigationService.navigateTo(Routes.PostViewRoute, arguments: {'postID': postID});
-    // if (res == "post no longer exists") {
-    //   _snackbarService.showSnackbar(
-    //     title: 'Uh Oh...',
-    //     message: "This post no longer exists",
-    //     duration: Duration(seconds: 5),
-    //   );
-    // }
+  navigateToPostView(String id) async {
+    _navigationService.navigateTo(Routes.PostViewRoute(id: id));
   }
 
-  navigateToUserView(String uid) {
-    //_navigationService.navigateTo(Routes.UserViewRoute, arguments: {'uid': uid});
+  navigateToUserView(String id) {
+    _navigationService.navigateTo(Routes.UserProfileView(id: id));
   }
 }

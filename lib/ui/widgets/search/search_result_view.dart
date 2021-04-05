@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
+import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/models/search_result.dart';
+import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
 import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 
@@ -35,20 +37,24 @@ class UserSearchResultView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 isFollowing
-                    ? Row(
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.user,
-                            size: 12,
-                            color: appIconColorAlt(),
-                          ),
-                          CustomText(
-                            text: "following",
-                            fontSize: 12,
-                            fontWeight: FontWeight.w300,
-                            color: appFontColorAlt(),
-                          ),
-                        ],
+                    ? Container(
+                        padding: EdgeInsets.only(bottom: 4),
+                        child: Row(
+                          children: [
+                            Icon(
+                              FontAwesomeIcons.userAlt,
+                              size: 10,
+                              color: appIconColorAlt(),
+                            ),
+                            horizontalSpaceTiny,
+                            CustomText(
+                              text: "following",
+                              fontSize: 12,
+                              fontWeight: FontWeight.w300,
+                              color: appFontColorAlt(),
+                            ),
+                          ],
+                        ),
                       )
                     : Container(),
                 CustomText(
@@ -62,7 +68,7 @@ class UserSearchResultView extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ).showCursorOnHover;
   }
 }
 
@@ -95,7 +101,7 @@ class StreamSearchResultView extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ).showCursorOnHover;
   }
 }
 
@@ -128,7 +134,7 @@ class EventSearchResultView extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ).showCursorOnHover;
   }
 }
 
@@ -156,7 +162,7 @@ class RecentSearchTermView extends StatelessWidget {
           children: [
             CustomText(
               text: searchTerm,
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: appFontColor(),
             ),
@@ -164,7 +170,7 @@ class RecentSearchTermView extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ).showCursorOnHover;
   }
 }
 
@@ -185,7 +191,7 @@ class ViewAllResultsSearchTermView extends StatelessWidget {
           children: [
             CustomText(
               text: searchTerm,
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
               color: appTextButtonColor(),
             ),
@@ -193,6 +199,6 @@ class ViewAllResultsSearchTermView extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ).showCursorOnHover;
   }
 }

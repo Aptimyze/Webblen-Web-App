@@ -1,14 +1,15 @@
 import 'package:algolia/algolia.dart';
-import 'package:auto_route/auto_route.dart';
-import 'package:firebase/firebase.dart' as fb;
-import 'package:firebase/firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:webblen_web_app/models/search_result.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
+import 'package:webblen_web_app/models/webblen_live_stream.dart';
+import 'package:webblen_web_app/models/webblen_post.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
 
 class AlgoliaSearchService {
-  final DocumentReference algoliaDocRef = fb.firestore().collection("app_release_info").doc("algolia");
-  final CollectionReference userDocRef = fb.firestore().collection("users");
+  final DocumentReference algoliaDocRef = FirebaseFirestore.instance.collection("app_release_info").doc("algolia");
+  final CollectionReference userDocRef = FirebaseFirestore.instance.collection("webblen_users");
 
   Future<Algolia> initializeAlgolia() async {
     Algolia algolia;
@@ -74,6 +75,118 @@ class AlgoliaSearchService {
     return results;
   }
 
+  Future<List<WebblenUser>> queryUsersByFollowers({@required String searchTerm, @required String uid}) async {
+    Algolia algolia = await initializeAlgolia();
+    List<WebblenUser> results = [];
+    if (searchTerm != null && searchTerm.isNotEmpty) {
+      AlgoliaQuery query = algolia.instance.index('webblen_users').search(searchTerm);
+      AlgoliaQuerySnapshot eventsSnapshot = await query.getObjects();
+      eventsSnapshot.hits.forEach((snapshot) {
+        if (snapshot.data != null) {
+          WebblenUser result = WebblenUser.fromMap(snapshot.data);
+          if (result.following.contains(uid)) {
+            results.add(result);
+          }
+        }
+      });
+    }
+    return results;
+  }
+
+  Future<List<WebblenUser>> queryUsersByFollowing({@required String searchTerm, @required String uid}) async {
+    Algolia algolia = await initializeAlgolia();
+    List<WebblenUser> results = [];
+    if (searchTerm != null && searchTerm.isNotEmpty) {
+      AlgoliaQuery query = algolia.instance.index('webblen_users').search(searchTerm);
+      AlgoliaQuerySnapshot eventsSnapshot = await query.getObjects();
+      eventsSnapshot.hits.forEach((snapshot) {
+        if (snapshot.data != null) {
+          WebblenUser result = WebblenUser.fromMap(snapshot.data);
+          if (result.followers.contains(uid)) {
+            results.add(result);
+          }
+        }
+      });
+    }
+    return results;
+  }
+
+  Future<List<WebblenUser>> queryAdditionalUsersByFollowing({
+    @required String searchTerm,
+    @required int resultsLimit,
+    @required String uid,
+    @required int pageNum,
+  }) async {
+    Algolia algolia = await initializeAlgolia();
+    List<WebblenUser> results = [];
+    if (searchTerm != null && searchTerm.isNotEmpty) {
+      AlgoliaQuery query = algolia.instance.index('webblen_users').setHitsPerPage(resultsLimit).setPage(pageNum).search(searchTerm);
+      AlgoliaQuerySnapshot eventsSnapshot = await query.getObjects();
+      eventsSnapshot.hits.forEach((snapshot) {
+        if (snapshot.data != null) {
+          WebblenUser result = WebblenUser.fromMap(snapshot.data);
+          if (result.followers.contains(uid)) {
+            results.add(result);
+          }
+        }
+      });
+    }
+    return results;
+  }
+
+  Future<List<SearchResult>> searchPosts({@required String searchTerm, @required resultsLimit}) async {
+    Algolia algolia = await initializeAlgolia();
+    List<SearchResult> results = [];
+    if (searchTerm != null && searchTerm.isNotEmpty) {
+      AlgoliaQuery query = algolia.instance.index('posts').setHitsPerPage(resultsLimit).search(searchTerm);
+      AlgoliaQuerySnapshot eventsSnapshot = await query.getObjects();
+      eventsSnapshot.hits.forEach((snapshot) {
+        if (snapshot.data != null) {
+          SearchResult result = SearchResult(
+            id: snapshot.data['id'],
+            type: 'post',
+            name: snapshot.data['title'],
+            additionalData: null,
+          );
+          results.add(result);
+        }
+      });
+    }
+    return results;
+  }
+
+  Future<List<WebblenPost>> queryPosts({@required String searchTerm, @required resultsLimit}) async {
+    Algolia algolia = await initializeAlgolia();
+    List<WebblenPost> results = [];
+    if (searchTerm != null && searchTerm.isNotEmpty) {
+      AlgoliaQuery query = algolia.instance.index('posts').setHitsPerPage(resultsLimit).search(searchTerm);
+      AlgoliaQuerySnapshot eventsSnapshot = await query.getObjects();
+      eventsSnapshot.hits.forEach((snapshot) {
+        if (snapshot.data != null) {
+          WebblenPost result = WebblenPost.fromMap(snapshot.data);
+          results.add(result);
+        }
+      });
+    }
+    return results;
+  }
+
+  Future<List<WebblenPost>> queryAdditionalPosts({@required String searchTerm, @required int resultsLimit, @required int pageNum}) async {
+    Algolia algolia = await initializeAlgolia();
+    List<WebblenPost> results = [];
+    if (searchTerm != null && searchTerm.isNotEmpty) {
+      AlgoliaQuery query = algolia.instance.index('posts').setHitsPerPage(resultsLimit).setPage(pageNum).search(searchTerm);
+      AlgoliaQuerySnapshot eventsSnapshot = await query.getObjects();
+      eventsSnapshot.hits.forEach((snapshot) {
+        if (snapshot.data != null) {
+          WebblenPost result = WebblenPost.fromMap(snapshot.data);
+          results.add(result);
+        }
+      });
+    }
+    return results;
+  }
+
   Future<List<SearchResult>> searchEvents({@required String searchTerm, @required resultsLimit}) async {
     Algolia algolia = await initializeAlgolia();
     List<SearchResult> results = [];
@@ -131,14 +244,14 @@ class AlgoliaSearchService {
     Algolia algolia = await initializeAlgolia();
     List<SearchResult> results = [];
     if (searchTerm != null && searchTerm.isNotEmpty) {
-      AlgoliaQuery query = algolia.instance.index('webblen_streams').setHitsPerPage(resultsLimit).search(searchTerm);
+      AlgoliaQuery query = algolia.instance.index('webblen_live_streams').setHitsPerPage(resultsLimit).search(searchTerm);
       AlgoliaQuerySnapshot eventsSnapshot = await query.getObjects();
       eventsSnapshot.hits.forEach((snapshot) {
         if (snapshot.data != null) {
           SearchResult result = SearchResult(
             id: snapshot.data['id'],
             type: 'stream',
-            name: snapshot.data['name'],
+            name: snapshot.data['title'],
             additionalData: null,
           );
           results.add(result);
@@ -148,31 +261,65 @@ class AlgoliaSearchService {
     return results;
   }
 
-  // Future<List<WebblenStream>> queryStreams({@required String searchTerm, @required resultsLimit}) async {
+  Future<List<WebblenLiveStream>> queryStreams({@required String searchTerm, @required resultsLimit}) async {
+    Algolia algolia = await initializeAlgolia();
+    List<WebblenLiveStream> results = [];
+    if (searchTerm != null && searchTerm.isNotEmpty) {
+      AlgoliaQuery query = algolia.instance.index('webblen_live_streams').setHitsPerPage(resultsLimit).search(searchTerm);
+      AlgoliaQuerySnapshot eventsSnapshot = await query.getObjects();
+      eventsSnapshot.hits.forEach((snapshot) {
+        if (snapshot.data != null) {
+          WebblenLiveStream result = WebblenLiveStream.fromMap(snapshot.data);
+          results.add(result);
+        }
+      });
+    }
+    return results;
+  }
+
+  Future<List<WebblenLiveStream>> queryAdditionalStreams({@required String searchTerm, @required int resultsLimit, @required int pageNum}) async {
+    Algolia algolia = await initializeAlgolia();
+    List<WebblenLiveStream> results = [];
+    if (searchTerm != null && searchTerm.isNotEmpty) {
+      AlgoliaQuery query = algolia.instance.index('webblen_live_streams').setHitsPerPage(resultsLimit).setPage(pageNum).search(searchTerm);
+      AlgoliaQuerySnapshot eventsSnapshot = await query.getObjects();
+      eventsSnapshot.hits.forEach((snapshot) {
+        if (snapshot.data != null) {
+          WebblenLiveStream result = WebblenLiveStream.fromMap(snapshot.data);
+          results.add(result);
+        }
+      });
+    }
+    return results;
+  }
+
+  // Future<List<WebblenUser>> queryForYou({@required String zip, @required String tag, @required resultsLimit}) async {
   //   Algolia algolia = await initializeAlgolia();
-  //   List<WebblenStream> results = [];
+  //   List<WebblenUser> results = [];
   //   if (searchTerm != null && searchTerm.isNotEmpty) {
-  //     AlgoliaQuery query = algolia.instance.index('webblen_streams').setHitsPerPage(resultsLimit).search(searchTerm);
+  //     AlgoliaQuery postsQuery = algolia.instance.index('posts').setHitsPerPage(resultsLimit).search(searchTerm);
+  //     AlgoliaQuery eventsQuery = algolia.instance.index('webblen_events').setHitsPerPage(resultsLimit).search(searchTerm);
+  //     AlgoliaQuery streamsQuery = algolia.instance.index('webblen_streams').setHitsPerPage(resultsLimit).search(searchTerm);
   //     AlgoliaQuerySnapshot eventsSnapshot = await query.getObjects();
   //     eventsSnapshot.hits.forEach((snapshot) {
   //       if (snapshot.data != null) {
-  //         WebblenStream result = WebblenStream.fromMap(snapshot.data);
+  //         WebblenUser result = WebblenUser.fromMap(snapshot.data);
   //         results.add(result);
   //       }
   //     });
   //   }
   //   return results;
   // }
-  //
-  // Future<List<WebblenStream>> queryAdditionalStreams({@required String searchTerm, @required int resultsLimit, @required int pageNum}) async {
+
+  // Future<List<WebblenUser>> queryAdditionalForYou({@required String searchTerm, @required int resultsLimit, @required int pageNum}) async {
   //   Algolia algolia = await initializeAlgolia();
-  //   List<WebblenStream> results = [];
+  //   List<WebblenUser> results = [];
   //   if (searchTerm != null && searchTerm.isNotEmpty) {
-  //     AlgoliaQuery query = algolia.instance.index('webblen_streams').setHitsPerPage(resultsLimit).setPage(pageNum).search(searchTerm);
+  //     AlgoliaQuery query = algolia.instance.index('webblen_users').setHitsPerPage(resultsLimit).setPage(pageNum).search(searchTerm);
   //     AlgoliaQuerySnapshot eventsSnapshot = await query.getObjects();
   //     eventsSnapshot.hits.forEach((snapshot) {
   //       if (snapshot.data != null) {
-  //         WebblenStream result = WebblenStream.fromMap(snapshot.data);
+  //         WebblenUser result = WebblenUser.fromMap(snapshot.data);
   //         results.add(result);
   //       }
   //     });
@@ -235,14 +382,17 @@ class AlgoliaSearchService {
     if (snapshot.exists) {
       if (snapshot.data()['recentSearchTerms'] != null) {
         recentSearchTerms = snapshot.data()['recentSearchTerms'].toList(growable: true);
-        recentSearchTerms.insert(0, searchTerm);
+        if (!recentSearchTerms.contains(searchTerm)) {
+          recentSearchTerms.insert(0, searchTerm);
+        }
+
         if (recentSearchTerms.length > 5) {
           recentSearchTerms.removeLast();
         }
       } else {
         recentSearchTerms.add(searchTerm);
       }
-      userDocRef.doc(uid).update(data: {'recentSearchTerms': recentSearchTerms});
+      userDocRef.doc(uid).update({'recentSearchTerms': recentSearchTerms});
     }
   }
 }

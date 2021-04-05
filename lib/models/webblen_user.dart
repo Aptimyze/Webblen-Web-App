@@ -16,6 +16,14 @@ class WebblenUser {
   bool isAdmin;
   String profilePicURL;
   String username;
+  String bio;
+  String website;
+  bool isPrivate;
+  List recentSearchTerms;
+  bool onboarded;
+  String lastSeenZipcode;
+  String lastSeenCity;
+  List associatedTags;
 
   WebblenUser({
     // ignore: non_constant_identifier_names
@@ -35,6 +43,14 @@ class WebblenUser {
     this.isAdmin,
     this.profilePicURL,
     this.username,
+    this.bio,
+    this.website,
+    this.isPrivate,
+    this.recentSearchTerms,
+    this.onboarded,
+    this.lastSeenZipcode,
+    this.lastSeenCity,
+    this.associatedTags,
   });
 
   WebblenUser.fromMap(Map<String, dynamic> data)
@@ -55,6 +71,14 @@ class WebblenUser {
           isAdmin: data['isAdmin'],
           profilePicURL: data['profilePicURL'],
           username: data['username'],
+          bio: data['bio'],
+          website: data['website'],
+          isPrivate: data['isPrivate'],
+          recentSearchTerms: data['recentSearchTerms'],
+          onboarded: data['onboarded'],
+          lastSeenZipcode: data['lastSeenZipcode'],
+          lastSeenCity: data['lastSeenCity'],
+          associatedTags: data['associatedTags'],
         );
 
   Map<String, dynamic> toMap() => {
@@ -74,5 +98,13 @@ class WebblenUser {
         'isAdmin': this.isAdmin,
         'profilePicURL': this.profilePicURL,
         'username': this.username,
+        'bio': this.bio,
+        'website': this.website,
+        'isPrivate': this.isPrivate,
+        'recentSearchTerms': this.recentSearchTerms,
+        'onboarded': this.onboarded,
+        'lastSeenZipcode': this.lastSeenZipcode,
+        'lastSeenCity': this.lastSeenCity,
+        'associatedTags': this.associatedTags,
       };
 }

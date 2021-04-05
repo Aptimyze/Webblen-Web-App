@@ -1,19 +1,25 @@
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_credit_card/credit_card_widget.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:stacked_themes/stacked_themes.dart';
 import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/router.gr.dart';
 import 'package:webblen_web_app/services/auth/auth_service.dart';
 
 class AuthViewModel extends BaseViewModel {
   AuthService _authService = locator<AuthService>();
   DialogService _dialogService = locator<DialogService>();
   NavigationService _navigationService = locator<NavigationService>();
-  ThemeService themeService = locator<ThemeService>();
+  ThemeService _themeService = locator<ThemeService>();
   SnackbarService _snackbarService = locator<SnackbarService>();
+
+  ///HELPERS
+  final phoneMaskController = MaskedTextController(mask: '000-000-0000');
+  final smsController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   bool signInViaPhone = true;
   String phoneNo;
@@ -34,17 +40,19 @@ class AuthViewModel extends BaseViewModel {
       if (result) {
         navigateToHomePage();
       } else {
-        _snackbarService.showSnackbar(
+        _dialogService.showDialog(
           title: 'Login Error',
-          message: "There Was an Issue Logging In. Please Try Again",
-          duration: Duration(seconds: 5),
+          description: "There Was an Issue Logging In. Please Try Again",
+          barrierDismissible: true,
+          buttonTitle: "Ok",
         );
       }
     } else {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Login Error',
-        message: result,
-        duration: Duration(seconds: 5),
+        description: result,
+        barrierDismissible: true,
+        buttonTitle: "Ok",
       );
     }
   }
@@ -63,36 +71,38 @@ class AuthViewModel extends BaseViewModel {
     };
 
     final PhoneVerificationFailed verificationFailed = (FirebaseAuthException exception) {
-      return _snackbarService.showSnackbar(
+      return _dialogService.showDialog(
         title: 'Phone Login Error',
-        message: exception.message,
-        duration: Duration(seconds: 5),
+        description: exception.message,
+        barrierDismissible: true,
+        buttonTitle: "Ok",
       );
     };
 
     final PhoneVerificationCompleted verificationCompleted = (PhoneAuthCredential credential) async {
       // ANDROID ONLY!
       // Sign the user in (or link) with the auto-generated credential
-      if (Platform.isAndroid) {
-        await FirebaseAuth.instance.signInWithCredential(credential);
-      }
+      // if (Platform.isAndroid) {
+      //   await FirebaseAuth.instance.signInWithCredential(credential);
+      // }
     };
 
     if (phoneNo != null && phoneNo.isNotEmpty && phoneNo.length >= 10) {
       //SEND SMS CODE FOR VERIFICATION
-      String error = await _authService.verifyPhoneNum(
+      String error = await _authService.signInWithPhoneNumber(
         phoneNo: phoneNo,
-        autoRetrievalTimeout: autoRetrieve,
-        smsCodeSent: smsCodeSent,
-        verificationCompleted: verificationCompleted,
-        verificationFailed: verificationFailed,
+        // autoRetrievalTimeout: autoRetrieve,
+        // smsCodeSent: smsCodeSent,
+        // verificationCompleted: verificationCompleted,
+        // verificationFailed: verificationFailed,
       );
 
       if (error != null) {
-        _snackbarService.showSnackbar(
+        _dialogService.showDialog(
           title: 'Phone Login Error',
-          message: error,
-          duration: Duration(seconds: 5),
+          description: error,
+          barrierDismissible: true,
+          buttonTitle: "Ok",
         );
         return false;
       } else {
@@ -100,13 +110,12 @@ class AuthViewModel extends BaseViewModel {
       }
     } else {
       setBusy(false);
-
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Phone Login Error',
-        message: "Invalid Phone Number",
-        duration: Duration(seconds: 5),
+        description: "Invalid Phone Number",
+        barrierDismissible: true,
+        buttonTitle: "Ok",
       );
-
       return false;
     }
   }
@@ -120,10 +129,11 @@ class AuthViewModel extends BaseViewModel {
 
     if (res is String) {
       setBusy(false);
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Phone Login Error',
-        message: res,
-        duration: Duration(seconds: 5),
+        description: res,
+        barrierDismissible: true,
+        buttonTitle: "Ok",
       );
     } else {
       navigateToHomePage();
@@ -152,19 +162,19 @@ class AuthViewModel extends BaseViewModel {
     setBusy(false);
 
     if (res is String) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Facebook Sign In Error',
-        message: res,
-        duration: Duration(seconds: 5),
+        description: res,
+        barrierDismissible: true,
+        buttonTitle: "Ok",
       );
     } else {
-      print(res);
       navigateToHomePage();
     }
   }
 
   ///NAVIGATION
   navigateToHomePage() {
-    //_navigationService.navigateTo(Routes.HomeNavViewRoute);
+    _navigationService.pushNamedAndRemoveUntil(Routes.WebblenBaseViewRoute);
   }
 }

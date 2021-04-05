@@ -60,7 +60,7 @@ class HomeFilterBottomSheetModel extends BaseViewModel {
 
   ///CLEAR FILTERS
   clearLocationFilter() {
-    cityName = "Everywhere";
+    cityName = "Worldwide";
     areaCode = "";
     locationTextController.text = cityName;
     notifyListeners();
@@ -74,12 +74,12 @@ class HomeFilterBottomSheetModel extends BaseViewModel {
   ///GET LOCATION DETAILS
   getPlaceDetails(String place) async {
     String placeID = placeSearchResults[place];
+    locationTextController.text = place;
     googlePlacesService.getDetailsFromPlaceID(key: googleAPIKey, placeID: placeID);
     Map<String, dynamic> details = await googlePlacesService.getDetailsFromPlaceID(key: googleAPIKey, placeID: placeID);
     if (details.isNotEmpty) {
       cityName = details['cityName'];
       areaCode = details['areaCode'];
-      locationTextController.text = cityName;
       notifyListeners();
     } else {
       _snackbarService.showSnackbar(

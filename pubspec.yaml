@@ -4,7 +4,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.6.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -12,19 +12,20 @@ dependencies:
 
   #Web Dependencies
   responsive_builder:
-  responsive_grid:
   url_launcher:
   js:
   url_strategy:
+  smooth_scroll_web:
 
   #ARCHITECTURE
-  stacked:
-  stacked_services:
+  stacked: "1.7.7"
+  stacked_services: ^0.6.4
   stacked_themes:
-  get_it:
+  get_it: ^5.0.6
   injectable:
   observable_ish:
-  auto_route:
+  auto_route: ^0.6.9
+
 
   #HTTP REQUESTS
   http:
@@ -32,42 +33,56 @@ dependencies:
   #ADD CANCELLABLE ACTIONS TO ASYNC
   async:
 
+  #ALGOLIA
+  algolia:
+
   #FIRESTORE DATABASE
-  firebase:
+  firebase_core:
+  cloud_firestore:
+  firebase_auth: ^0.18.4+1
+  firebase_storage:
+  firebase_messaging:
   cloud_functions:
-  firebase_dynamic_links:
-  firebase_auth:
 
   #Auth
   flutter_facebook_login_web:
     git:
       url: git://github.com/kfiross/flutter_facebook_login_web
 
-  google_sign_in: ^4.5.1
+  google_sign_in:
 
-  #Location
-  flutter_google_places:
-  flutter_google_places_api:
-  geoflutterfire:
+  #LOCATION
+  location:
+  google_place:
+  maps_launcher:
   geocoder:
 
-  #FILES & IMAGES
-  cached_network_image:
-
-  #Other Dependencies
+  #UI
+  font_awesome_flutter:
   shimmer:
-  share_plus:
+
+  #FILES & IMAGES
+  transparent_image:
+  image_picker:
+  image_picker_for_web:
+
+  #DATE & TIME
+  flutter_calendar_carousel:
+
+  #FINANCE
+  flutter_credit_card:
+  stripe_sdk:
+
+  #OTHER
+  auto_size_text:
+  share:
   flutter_typeahead:
-  stripe_sdk: ^2.8.2
-  qr_flutter: ^3.2.0
-  algolia: ^0.1.7
-  font_awesome_flutter: 8.5.0
-  random_string: ^1.1.0
-  rflutter_alert: ^1.0.3
-  flutter_signin_button: ^1.0.0
-  flutter_masked_text: ^0.8.0
-  intl: ^0.16.1
-  flutter_calendar_carousel: ^1.4.11
+  introduction_screen:
+  flutter_masked_text:
+  syncfusion_flutter_sliders:
+  syncfusion_flutter_charts:
+  intl_phone_field:
+
 
 
 dev_dependencies:

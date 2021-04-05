@@ -8,6 +8,9 @@ ThemeData regularTheme = ThemeData(
   accentColor: CustomColors.webblenRed,
   brightness: Brightness.light,
   fontFamily: fontFamily,
+  textSelectionTheme: TextSelectionThemeData(
+    cursorColor: Colors.black,
+  ),
 );
 
 ThemeData darkTheme = ThemeData(
@@ -15,6 +18,9 @@ ThemeData darkTheme = ThemeData(
   accentColor: CustomColors.webblenRed,
   brightness: Brightness.dark,
   fontFamily: fontFamily,
+  textSelectionTheme: TextSelectionThemeData(
+    cursorColor: Colors.white,
+  ),
 );
 
 List<ThemeData> appThemes = [

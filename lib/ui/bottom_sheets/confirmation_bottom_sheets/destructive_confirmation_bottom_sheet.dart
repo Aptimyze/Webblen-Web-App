@@ -22,59 +22,65 @@ class DestructiveConfirmationBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<DestructiveConfirmationBottomSheetModel>.nonReactive(
       viewModelBuilder: () => DestructiveConfirmationBottomSheetModel(),
-      builder: (context, model, child) => Container(
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 25),
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        decoration: BoxDecoration(
-          color: appBackgroundColor(),
-          borderRadius: BorderRadius.all(
-            Radius.circular(16),
+      builder: (context, model, child) => Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: 500,
           ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            CustomText(
-              text: request.title,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: appFontColor(),
-              textAlign: TextAlign.center,
+          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 25),
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: BoxDecoration(
+            color: appBackgroundColor,
+            borderRadius: BorderRadius.all(
+              Radius.circular(16),
             ),
-            verticalSpaceTiny,
-            CustomText(
-              text: request.description,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: appFontColorAlt(),
-              textAlign: TextAlign.center,
-            ),
-            verticalSpaceMedium,
-            CustomButton(
-              onPressed: () => completer(SheetResponse(responseData: "confirmed")),
-              text: request.mainButtonTitle,
-              textSize: 16,
-              textColor: Colors.white,
-              height: 40,
-              width: screenWidth(context),
-              backgroundColor: appDestructiveColor(),
-              elevation: 1.0,
-              isBusy: false,
-            ),
-            verticalSpaceSmall,
-            CustomButton(
-              onPressed: () => completer(SheetResponse(responseData: "cancelled")),
-              text: request.secondaryButtonTitle,
-              textSize: 16,
-              textColor: appFontColor(),
-              height: 40,
-              width: screenWidth(context),
-              backgroundColor: appButtonColorAlt(),
-              elevation: 1.0,
-              isBusy: false,
-            ),
-          ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CustomText(
+                text: request.title,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: appFontColor(),
+                textAlign: TextAlign.center,
+              ),
+              verticalSpaceTiny,
+              CustomText(
+                text: request.description,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: appFontColorAlt(),
+                textAlign: TextAlign.center,
+              ),
+              verticalSpaceMedium,
+              CustomButton(
+                onPressed: () => completer(SheetResponse(responseData: "confirmed")),
+                text: request.mainButtonTitle,
+                textSize: 16,
+                textColor: Colors.white,
+                height: 40,
+                width: screenWidth(context),
+                backgroundColor: appDestructiveColor(),
+                elevation: 1.0,
+                isBusy: false,
+              ),
+              verticalSpaceSmall,
+              CustomButton(
+                onPressed: () => completer(SheetResponse(responseData: "cancelled")),
+                text: request.secondaryButtonTitle,
+                textSize: 16,
+                textColor: appFontColor(),
+                height: 40,
+                width: screenWidth(context),
+                backgroundColor: appButtonColorAlt(),
+                elevation: 1.0,
+                isBusy: false,
+              ),
+            ],
+          ),
         ),
       ),
     );

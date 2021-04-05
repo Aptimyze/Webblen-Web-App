@@ -1,14 +1,14 @@
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/locator.dart';
-import 'package:webblen_web_app/services/auth/auth_service.dart';
+import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
+import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
 class CommentBlockViewModel extends BaseViewModel {
-  AuthService _authService = locator<AuthService>();
-  DialogService _dialogService = locator<DialogService>();
   NavigationService _navigationService = locator<NavigationService>();
   UserDataService _userDataService = locator<UserDataService>();
+  WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();
 
   ///ERROR STATUS
   bool errorLoadingData = false;
@@ -22,13 +22,13 @@ class CommentBlockViewModel extends BaseViewModel {
   ///VIEW STATUS
   bool showingReplies = false;
 
+  ///Loading User
+  bool loadingUser = false;
+
   ///INITIALIZE
   initialize(String uid) async {
     //set busy status
     setBusy(true);
-
-    //get current user id
-    String currentUserID = await _authService.getCurrentUserID();
 
     //get comment author data
     var res = await _userDataService.getWebblenUserByID(uid);
@@ -42,7 +42,7 @@ class CommentBlockViewModel extends BaseViewModel {
       authorProfilePicURL = res.profilePicURL;
 
       //check if author is current user
-      if (authorUID == currentUserID) {
+      if (authorUID == webblenBaseViewModel.uid) {
         isAuthor = true;
       }
     }
@@ -60,10 +60,21 @@ class CommentBlockViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  navigateToMentionedUser(String username) async {
+    if (!loadingUser) {
+      loadingUser = true;
+      notifyListeners();
+      WebblenUser user = await _userDataService.getWebblenUserByUsername(username);
+      loadingUser = false;
+      notifyListeners();
+      navigateToUserPage(user.id);
+    }
+  }
+
   ///NAVIGATION
-// replaceWithPage() {
-//   _navigationService.replaceWith(PageRouteName);
-// }
+  navigateToUserPage(String id) {
+    //_navigationService.navigateTo(Routes.UserProfileView, arguments: {'id': id});
+  }
 //
 // navigateToPage() {
 //   _navigationService.navigateTo(PageRouteName);

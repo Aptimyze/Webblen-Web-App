@@ -1,8 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
+import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/models/webblen_post.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/widgets/posts/post_img_block/post_img_block_view_model.dart';
@@ -11,11 +13,9 @@ import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 import 'package:webblen_web_app/utils/time_calc.dart';
 
 class PostImgBlockView extends StatelessWidget {
-  final String currentUID;
   final WebblenPost post;
   final Function(WebblenPost) showPostOptions;
   PostImgBlockView({
-    this.currentUID,
     this.post,
     this.showPostOptions,
   });
@@ -27,7 +27,7 @@ class PostImgBlockView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           GestureDetector(
-            onTap: null,
+            onTap: () => model.navigateToUserView(post.authorID),
             child: Row(
               children: <Widget>[
                 UserProfilePic(
@@ -90,12 +90,13 @@ class PostImgBlockView extends StatelessWidget {
   }
 
   Widget postImg(BuildContext context) {
-    return CachedNetworkImage(
-      imageUrl: post.imageURL,
-      height: screenWidth(context),
-      width: screenWidth(context),
-      fadeInCurve: Curves.easeIn,
-      filterQuality: FilterQuality.high,
+    return FadeInImage.memoryNetwork(
+      placeholder: kTransparentImage,
+      imageScale: 1,
+      fadeInCurve: Curves.ease,
+      fit: BoxFit.cover,
+      image: post.imageURL,
+      key: Key(post.id),
     );
   }
 
@@ -109,7 +110,7 @@ class PostImgBlockView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               GestureDetector(
-                onTap: () => model.saveUnsavePost(currentUID: currentUID, postID: post.id),
+                onTap: () => model.saveUnsavePost(postID: post.id),
                 child: Icon(
                   model.savedPost ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart,
                   size: 18,
@@ -185,7 +186,7 @@ class PostImgBlockView extends StatelessWidget {
     return post.tags == null || post.tags.isEmpty
         ? Container()
         : Container(
-            margin: EdgeInsets.only(left: 16, bottom: 8, right: 16),
+            margin: EdgeInsets.only(left: 16, right: 16),
             height: 30,
             child: ListView.builder(
               addAutomaticKeepAlives: true,
@@ -213,30 +214,40 @@ class PostImgBlockView extends StatelessWidget {
       fireOnModelReadyOnce: true,
       initialiseSpecialViewModelsOnce: true,
       viewModelBuilder: () => PostImgBlockViewModel(),
-      onModelReady: (model) => model.initialize(currentUID: currentUID, postAuthorID: post.authorID, postID: post.id),
-      builder: (context, model, child) => GestureDetector(
-        onDoubleTap: () => model.saveUnsavePost(currentUID: currentUID, postID: post.id),
-        onTap: () => model.navigateToPostView(post.id),
+      onModelReady: (model) => model.initialize(post: post),
+      builder: (context, model, child) => Align(
+        alignment: Alignment.center,
         child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              head(model),
-              postImg(context),
-              commentSaveAndPostTime(model),
-              postMessage(model),
-              commentCount(model),
-              verticalSpaceSmall,
-              postTags(model),
-              Divider(
-                thickness: 4.0,
-                color: appPostBorderColor(),
-              ),
-            ],
+          constraints: BoxConstraints(
+            maxWidth: 500,
           ),
-        ),
+          child: GestureDetector(
+            onDoubleTap: () => model.saveUnsavePost(postID: post.id),
+            onLongPress: () {
+              HapticFeedback.lightImpact();
+              showPostOptions(post);
+            },
+            onTap: () => model.navigateToPostView(post.id),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                head(model),
+                postImg(context),
+                commentSaveAndPostTime(model),
+                postMessage(model),
+                commentCount(model),
+                verticalSpaceSmall,
+                postTags(model),
+                Divider(
+                  thickness: 4.0,
+                  color: appDividerColor(),
+                ),
+              ],
+            ),
+          ),
+        ).showCursorOnHover,
       ),
     );
   }

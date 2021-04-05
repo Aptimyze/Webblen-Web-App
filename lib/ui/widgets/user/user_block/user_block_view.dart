@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
+import 'package:webblen_web_app/app/locator.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
+import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
+import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
 import 'package:webblen_web_app/ui/widgets/user/user_block/user_block_view_model.dart';
 
@@ -12,8 +15,9 @@ import '../user_profile_pic.dart';
 class UserBlockView extends StatelessWidget {
   final WebblenUser user;
   final bool displayBottomBorder;
-
   UserBlockView({this.user, this.displayBottomBorder});
+
+  final WebblenBaseViewModel _webblenBaseViewModel = locator<WebblenBaseViewModel>();
 
   Widget isFollowingUser() {
     return Container(
@@ -56,7 +60,7 @@ class UserBlockView extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                true ? isFollowingUser() : Container(),
+                _webblenBaseViewModel.user != null && _webblenBaseViewModel.user.following.contains(user.id) ? isFollowingUser() : Container(),
                 CustomText(
                   text: "@${user.username}",
                   fontSize: 16,
@@ -77,7 +81,6 @@ class UserBlockView extends StatelessWidget {
       disposeViewModel: false,
       initialiseSpecialViewModelsOnce: true,
       fireOnModelReadyOnce: true,
-      onModelReady: (model) => model.initialize(user.followers),
       viewModelBuilder: () => UserBlockViewModel(),
       builder: (context, model, child) => GestureDetector(
         onTap: () => model.navigateToUserView(user.id),
@@ -92,6 +95,6 @@ class UserBlockView extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ).showCursorOnHover;
   }
 }
