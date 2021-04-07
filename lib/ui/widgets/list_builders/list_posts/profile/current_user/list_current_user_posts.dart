@@ -2,36 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/models/webblen_post.dart';
-import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/widgets/common/zero_state_view.dart';
-import 'package:webblen_web_app/ui/widgets/list_builders/list_posts/profile/user/list_user_posts_model.dart';
 import 'package:webblen_web_app/ui/widgets/posts/post_img_block/post_img_block_view.dart';
 import 'package:webblen_web_app/ui/widgets/posts/post_text_block/post_text_block_view.dart';
 
-class ListUserPosts extends StatelessWidget {
-  final WebblenUser user;
-  final ScrollController scrollController;
+import 'list_current_user_posts_model.dart';
 
-  ListUserPosts({
-    @required this.user,
-    @required this.scrollController,
-  });
+class ListCurrentUserPosts extends StatelessWidget {
+  final ScrollController scrollController;
+  ListCurrentUserPosts({@required this.scrollController});
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<ListUserPostsModel>.reactive(
-      onModelReady: (model) => model.initialize(id: user.id),
-      viewModelBuilder: () => ListUserPostsModel(),
+    return ViewModelBuilder<ListCurrentUserPostsModel>.reactive(
+      onModelReady: (model) => model.initialize(),
+      viewModelBuilder: () => ListCurrentUserPostsModel(),
       builder: (context, model, child) => model.isBusy
           ? Container()
           : model.dataResults.isEmpty
               ? ZeroStateView(
                   imageAssetName: "umbrella_chair",
                   imageSize: 200,
-                  header: "@${user.username} Does Not Have Any Posts",
-                  subHeader: "Maybe someday they will? Check back later",
-                  mainActionButtonTitle: null,
+                  header: "You Do Not Have Any Posts",
+                  subHeader: "Create a New Post to Share with the Community",
+                  mainActionButtonTitle: "Create Post",
                   mainAction: null,
                   secondaryActionButtonTitle: null,
                   secondaryAction: null,
@@ -44,7 +39,7 @@ class ListUserPosts extends StatelessWidget {
                     onRefresh: model.refreshData,
                     child: ListView.builder(
                       controller: scrollController,
-                      key: PageStorageKey('user-posts'),
+                      key: PageStorageKey('current-user-posts'),
                       addAutomaticKeepAlives: true,
                       shrinkWrap: true,
                       padding: EdgeInsets.only(
@@ -55,6 +50,12 @@ class ListUserPosts extends StatelessWidget {
                       itemBuilder: (context, index) {
                         WebblenPost post;
                         post = WebblenPost.fromMap(model.dataResults[index].data());
+                        // if (model.dataResults[index] is WebblenPost) {
+                        //   post = model.dataResults[index];
+                        // } else {
+                        //   post = WebblenPost.fromMap(model.dataResults[index].data());
+                        // }
+
                         return post.imageURL == null
                             ? PostTextBlockView(
                                 post: post,

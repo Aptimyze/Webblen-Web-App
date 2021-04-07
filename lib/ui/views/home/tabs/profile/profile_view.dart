@@ -11,6 +11,7 @@ import 'package:webblen_web_app/ui/widgets/common/navigation/tab_bar/custom_tab_
 import 'package:webblen_web_app/ui/widgets/common/zero_state_view.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_events/list_events.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_live_streams/list_streams.dart';
+import 'package:webblen_web_app/ui/widgets/list_builders/list_posts/profile/current_user/list_current_user_posts.dart';
 import 'package:webblen_web_app/ui/widgets/user/follow_stats_row.dart';
 import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 
@@ -145,23 +146,9 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
       controller: _tabController,
       children: [
         //posts
-        // model.postResults.isEmpty && !model.isBusy
-        //     ?
-        ZeroStateView(
-          imageAssetName: "umbrella_chair",
-          imageSize: 200,
-          header: "You Have No Posts",
-          subHeader: "Create a New Post to Share with the Community",
-          mainActionButtonTitle: "Create Post",
-          mainAction: () => model.webblenBaseViewModel.navigateToCreatePostPage(),
-          secondaryActionButtonTitle: null,
-          secondaryAction: null,
-          refreshData: model.refreshPosts,
+        ListCurrentUserPosts(
+          scrollController: model.scrollController,
         ),
-        // : ListPosts(
-        //     pageStorageKey: PageStorageKey('profile-posts'),
-        //     showPostOptions: (post) => model.showContentOptions(content: post),
-        //   ),
 
         //scheduled streams
         model.streamResults.isEmpty && !model.reloadingStreams

@@ -83,7 +83,7 @@ class LiveStreamDetailsView extends StatelessWidget {
                     size: 16,
                     color: appIconColor(),
                   ),
-                ),
+                ).showCursorOnHover,
         ],
       ),
     );
@@ -200,7 +200,7 @@ class LiveStreamDetailsView extends StatelessWidget {
                           size: 30,
                           color: appIconColor(),
                         ),
-                      ),
+                      ).showCursorOnHover,
                     ),
               model.stream.instaUsername == null || model.stream.instaUsername.isEmpty
                   ? Container()
@@ -213,7 +213,7 @@ class LiveStreamDetailsView extends StatelessWidget {
                           size: 30,
                           color: appIconColor(),
                         ),
-                      ),
+                      ).showCursorOnHover,
                     ),
               model.stream.twitterUsername == null || model.stream.twitterUsername.isEmpty
                   ? Container()
@@ -226,7 +226,7 @@ class LiveStreamDetailsView extends StatelessWidget {
                           size: 30,
                           color: appIconColor(),
                         ),
-                      ),
+                      ).showCursorOnHover,
                     ),
               model.stream.website == null || model.stream.website.isEmpty
                   ? Container()
@@ -239,7 +239,7 @@ class LiveStreamDetailsView extends StatelessWidget {
                           size: 30,
                           color: appIconColor(),
                         ),
-                      ),
+                      ).showCursorOnHover,
                     ),
             ],
           ),

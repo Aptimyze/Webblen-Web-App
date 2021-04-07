@@ -1,3 +1,7 @@
+import 'dart:html';
+import 'dart:typed_data';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 import 'package:js/js.dart';
@@ -61,6 +65,11 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> {
   double streamPromo;
   double eventPromo;
 
+  ///FILE UPLOAD DATA
+  double uploadProgress;
+  File imgToUpload;
+  Uint8List imgToUploadByteMemory;
+
   ///TAB BAR STATE
   int _navBarIndex = 0;
 
@@ -89,26 +98,18 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> {
   Stream<WebblenUser> streamUser() async* {
     while (true) {
       await Future.delayed(Duration(seconds: 1));
+      WebblenUser user;
 
-      if (isAnonymous == null || isAnonymous) {
-        isAnonymous = await _authService.isAnonymous();
-        print(isAnonymous);
-        notifyListeners();
-        yield null;
-      }
-
-      if (!loadedUID) {
-        uid = await _authService.getCurrentUserID();
-        loadedUID;
-        notifyListeners();
-      }
-
-      WebblenUser user = await _userDataService.getWebblenUserByID(uid);
-
-      //get previous location of user
-      if (cityName == null || areaCode == null) {
-        areaCode = user.lastSeenZipcode == null || user.lastSeenZipcode.isEmpty ? "58104" : user.lastSeenZipcode;
-        cityName = await _locationService.getCityFromZip(areaCode);
+      if (isAnonymous != null && !isAnonymous) {
+        if (loadedUID) {
+          user = await _userDataService.getWebblenUserByID(uid);
+          //get previous location of user
+          if (cityName == null || areaCode == null) {
+            areaCode = user.lastSeenZipcode == null || user.lastSeenZipcode.isEmpty ? "58104" : user.lastSeenZipcode;
+            cityName = await _locationService.getCityFromZip(areaCode);
+            notifyListeners();
+          }
+        }
       }
       yield user;
     }
@@ -118,8 +119,27 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> {
   initialize() async {
     setBusy(true);
     _themeService.setThemeMode(ThemeManagerMode.light);
-    await checkAuthState();
 
+    //auth state listener
+    FirebaseAuth.instance.authStateChanges().listen((firebaseUser) async {
+      if (firebaseUser == null) {
+        _authService.signInAnonymously();
+      } else {
+        if (firebaseUser.uid != uid && !firebaseUser.isAnonymous) {
+          loadedUID = true;
+          uid = firebaseUser.uid;
+          isAnonymous = false;
+          notifyListeners();
+        } else {
+          user = null;
+          isAnonymous = true;
+          notifyListeners();
+          setBusy(false);
+        }
+      }
+    });
+
+    //getLocationDetails();
     //load content promos (if any exists)
     postPromo = await _platformDataService.getPostPromo();
     streamPromo = await _platformDataService.getStreamPromo();
@@ -160,19 +180,30 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> {
   }
 
   ///LOCATION
-  Future<bool> getLocationDetails() async {
-    await getCurrentPosition(allowInterop((pos) => acquireLocation(pos)));
-    return true;
+  Future<bool> getLocationDetails() {
+    getCurrentPosition(allowInterop((pos) {
+      print(pos.coords.latitude);
+      print(pos.coords.longitude);
+      currentLocation['lat'] = pos.coords.latitude;
+      currentLocation['lon'] = pos.coords.longitude;
+      print(currentLocation['lat']);
+      // cityName = await _locationService.getCityNameFromLatLon(pos.coords.latitude, pos.coords.longitude);
+      // areaCode = await _locationService.getZipFromLatLon(pos.coords.latitude, pos.coords.longitude);
+      //_userDataService.updateLastSeenZipcode(id: uid, zip: areaCode);
+      notifyListeners();
+      return;
+    }));
   }
 
-  Future<void> acquireLocation(pos) async {
+  acquireLocation(pos) async {
     try {
       print(pos.coords.latitude);
       print(pos.coords.longitude);
       currentLocation['lat'] = pos.coords.latitude;
       currentLocation['lon'] = pos.coords.longitude;
-      cityName = await _locationService.getCityNameFromLatLon(currentLocation['lat'], currentLocation['lon']);
-      areaCode = await _locationService.getZipFromLatLon(currentLocation['lat'], currentLocation['lon']);
+      print(currentLocation['lat']);
+      cityName = await _locationService.getCityNameFromLatLon(pos.coords.latitude, pos.coords.longitude);
+      areaCode = await _locationService.getZipFromLatLon(pos.coords.latitude, pos.coords.longitude);
       _userDataService.updateLastSeenZipcode(id: uid, zip: areaCode);
       notifyListeners();
     } catch (ex) {
@@ -227,14 +258,13 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> {
   Future showContentOptions({@required dynamic content}) async {
     var sheetResponse = await _bottomSheetService.showCustomSheet(
       barrierDismissible: true,
-      variant: user != null && user.id == content.authorID ? BottomSheetType.contentAuthorOptions : BottomSheetType.contentOptions,
-      // variant: content is WebblenLiveStream
-      //     ? user.id == content.hostID
-      //         ? BottomSheetType.contentAuthorOptions
-      //         : BottomSheetType.contentOptions
-      //     : user.id == content.authorID
-      //         ? BottomSheetType.contentAuthorOptions
-      //         : BottomSheetType.contentOptions,
+      variant: content is WebblenLiveStream
+          ? user.id == content.hostID
+              ? BottomSheetType.contentAuthorOptions
+              : BottomSheetType.contentOptions
+          : user.id == content.authorID
+              ? BottomSheetType.contentAuthorOptions
+              : BottomSheetType.contentOptions,
     );
 
     if (sheetResponse != null) {
@@ -242,7 +272,7 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> {
       if (res == "edit") {
         if (content is WebblenPost) {
           //edit post
-          //_navigationService.navigateTo(Routes.CreatePostViewRoute, arguments: CreatePostViewArguments(id: content.id));
+          _navigationService.navigateTo(Routes.CreatePostViewRoute(id: content.id, promo: 0));
         } else if (content is WebblenEvent) {
           //edit event
           // _navigationService.navigateTo(Routes.CreateEventViewRoute, arguments: {
@@ -250,9 +280,7 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> {
           // });
         } else if (content is WebblenLiveStream) {
           //edit stream
-          // _navigationService.navigateTo(Routes.CreateLiveStreamViewRoute, arguments: {
-          //   'id': content.id,
-          // });
+          _navigationService.navigateTo(Routes.CreateLiveStreamViewRoute(id: content.id, promo: 0));
         }
       } else if (res == "share") {
         if (content is WebblenPost) {
@@ -437,5 +465,28 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> {
       id = getRandomString(20);
     }
     _navigationService.navigateTo(Routes.CreateLiveStreamViewRoute(id: id, promo: addPromo ? streamPromo : 0));
+  }
+
+  ///FILE UPLOADER
+  setUploadProgress(double progress) {
+    uploadProgress = progress;
+    notifyListeners();
+  }
+
+  setImgToUploadFile(File file) {
+    imgToUpload = file;
+    notifyListeners();
+  }
+
+  setImgToUploadByteMemory(Uint8List byteMemory) {
+    imgToUploadByteMemory = byteMemory;
+    notifyListeners();
+  }
+
+  clearUploaderData() {
+    uploadProgress = null;
+    //imgToUpload = null;
+    imgToUploadByteMemory = null;
+    notifyListeners();
   }
 }

@@ -42,7 +42,7 @@ class AutoCompleteAddressTextField extends StatelessWidget {
           suggestionsCallback: (searchTerm) async {
             Map<String, dynamic> res = await model.googlePlacesService.googleSearchAutoComplete(key: model.googleAPIKey, input: searchTerm);
             model.setPlacesSearchResults(res);
-            return model.placeSearchResults.keys.toList();
+            return res.keys.toList();
           },
           itemBuilder: (context, place) {
             return ListTile(

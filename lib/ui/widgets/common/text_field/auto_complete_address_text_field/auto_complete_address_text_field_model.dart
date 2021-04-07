@@ -8,7 +8,7 @@ import 'package:webblen_web_app/services/location/google_places_service.dart';
 class AutoCompleteAddressTextFieldModel extends BaseViewModel {
   ///SERVICES
   PlatformDataService _platformDataService = locator<PlatformDataService>();
-  SnackbarService _snackbarService = locator<SnackbarService>();
+  DialogService _dialogService = locator<DialogService>();
   GooglePlacesService googlePlacesService = locator<GooglePlacesService>();
 
   ///HELPERS
@@ -41,11 +41,12 @@ class AutoCompleteAddressTextFieldModel extends BaseViewModel {
     locationTextController.text = place;
     notifyListeners();
     details = await googlePlacesService.getDetailsFromPlaceID(key: googleAPIKey, placeID: placeID);
+    setPlacesSearchResults(details);
+    notifyListeners();
     if (details.isEmpty) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Error',
-        message: "There was an issue getting the details of this location. Please Try Again.",
-        duration: Duration(seconds: 5),
+        description: "There was an issue getting the details of this location. Please Try Again.",
       );
     }
     return details;

@@ -1,19 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:stacked/stacked.dart';
 import 'package:webblen_web_app/app/locator.dart';
 import 'package:webblen_web_app/services/firestore/data/post_data_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
-class ListUserPostsModel extends BaseViewModel {
+class ListCurrentUserPostsModel extends BaseViewModel {
   PostDataService _postDataService = locator<PostDataService>();
   WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();
 
   ///HELPERS
-  ScrollController scrollController = ScrollController();
-
-  ///USER DATA
-  String uid;
+  // ScrollController scrollController = ScrollController();
 
   ///DATA
   List<DocumentSnapshot> dataResults = [];
@@ -23,22 +19,12 @@ class ListUserPostsModel extends BaseViewModel {
 
   int resultsLimit = 5;
 
-  initialize({@required String id}) async {
-    // load additional data on scroll
-    uid = id;
-    notifyListeners();
-
-    scrollController.addListener(() {
-      double triggerFetchMoreSize = 0.9 * scrollController.position.maxScrollExtent;
-      if (scrollController.position.pixels > triggerFetchMoreSize) {
-        loadAdditionalData();
-      }
-    });
+  initialize() async {
     await loadData();
   }
 
   Future<void> refreshData() async {
-    scrollController.jumpTo(scrollController.position.minScrollExtent);
+    //scrollController.jumpTo(scrollController.position.minScrollExtent);
 
     //clear previous data
     dataResults = [];
@@ -55,7 +41,7 @@ class ListUserPostsModel extends BaseViewModel {
 
     //load data with params
     dataResults = await _postDataService.loadPostsByUserID(
-      id: uid,
+      id: webblenBaseViewModel.uid,
       resultsLimit: resultsLimit,
     );
     notifyListeners();
@@ -75,7 +61,7 @@ class ListUserPostsModel extends BaseViewModel {
 
     //load additional posts
     List<DocumentSnapshot> newResults = await _postDataService.loadAdditionalPostsByUserID(
-      id: uid,
+      id: webblenBaseViewModel.uid,
       resultsLimit: resultsLimit,
       lastDocSnap: dataResults[dataResults.length - 1],
     );

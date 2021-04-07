@@ -40,10 +40,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         // ),
 
         ///POSTS
-        ListHomePosts(
-          //scrollController: model.scrollController,
-          showPostOptions: (content) => model.showContentOptions(content: content),
-        ),
+        ListHomePosts(),
 
         ///STREAMS & VIDEO
         ListHomeLiveStreams(
@@ -103,7 +100,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         color: appBackgroundColor,
         child: Center(
           child: Container(
-            child: model.isBusy
+            child: model.isBusy || model.webblenBaseViewModel.isBusy
                 ? Center(
                     child: CustomCircleProgressIndicator(
                       color: appActiveColor(),

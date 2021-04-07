@@ -26,17 +26,9 @@ class ListHomePostsModel extends BaseViewModel {
   bool loadingAdditionalData = false;
   bool moreDataAvailable = true;
 
-  int resultsLimit = 10;
+  int resultsLimit = 20;
 
   initialize() async {
-    // load additional data on scroll
-    scrollController.addListener(() {
-      double triggerFetchMoreSize = 0.9 * scrollController.position.maxScrollExtent;
-      if (scrollController.position.pixels > triggerFetchMoreSize) {
-        loadAdditionalData();
-      }
-    });
-
     // get content filter
     cityName = webblenBaseViewModel.cityName;
     areaCode = webblenBaseViewModel.areaCode;
@@ -128,5 +120,13 @@ class ListHomePostsModel extends BaseViewModel {
     //set loading additional posts status
     loadingAdditionalData = false;
     notifyListeners();
+  }
+
+  showContentOptions(dynamic content) async {
+    String val = await webblenBaseViewModel.showContentOptions(content: content);
+    if (val == "deleted content") {
+      dataResults.removeWhere((doc) => doc.id == content.id);
+      notifyListeners();
+    }
   }
 }

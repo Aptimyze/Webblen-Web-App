@@ -58,7 +58,7 @@ class LiveStreamBlockView extends StatelessWidget {
         children: [
           Container(
             height: 250,
-            width: 400,
+            width: 350,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: FadeInImage.memoryNetwork(
@@ -70,7 +70,7 @@ class LiveStreamBlockView extends StatelessWidget {
           ),
           Container(
             height: 250,
-            width: 400,
+            width: 350,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               gradient: LinearGradient(
@@ -83,7 +83,7 @@ class LiveStreamBlockView extends StatelessWidget {
           ),
           Container(
             height: 250,
-            width: 400,
+            width: 350,
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

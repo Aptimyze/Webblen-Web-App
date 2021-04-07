@@ -66,19 +66,6 @@ class ProfileViewModel extends BaseViewModel {
     setBusy(true);
 
     //load additional data on scroll
-    scrollController.addListener(() {
-      double triggerFetchMoreSize = 0.9 * scrollController.position.maxScrollExtent;
-      if (scrollController.position.pixels > triggerFetchMoreSize) {
-        if (tabController.index == 0 && postResults.length > 2) {
-          //loadAdditionalPosts();
-        } else if (tabController.index == 1 && streamResults.length > 2) {
-          //loadAdditionalStreams();
-        } else if (tabController.index == 2 && eventResults.length > 2) {
-          //loadAdditionalEvents();
-        }
-      }
-    });
-    notifyListeners();
 
     //load profile data
     //await loadData();

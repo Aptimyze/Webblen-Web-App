@@ -40,7 +40,6 @@ import '../ui/views/home/tabs/profile/profile_view_model.dart' as _i36;
 import '../ui/views/home/tabs/search/recent_search_view_model.dart' as _i37;
 import '../ui/views/home/tabs/wallet/wallet_view_model.dart' as _i38;
 import '../ui/widgets/common/navigation/nav_bar/custom_top_nav_bar/custom_top_nav_bar_model.dart' as _i34;
-import '../ui/widgets/list_builders/list_content_for_you/list_content_for_you/list_content_for_you_model.dart' as _i15;
 import '../ui/widgets/list_builders/list_live_streams/home/list_home_live_streams_model.dart' as _i16;
 import '../ui/widgets/list_builders/list_posts/home/list_home_posts_model.dart' as _i17; // ignore_for_file: unnecessary_lambdas
 
@@ -62,7 +61,6 @@ _i1.GetIt $initGetIt(_i1.GetIt get, {String environment, _i2.EnvironmentFilter e
   gh.lazySingleton<_i12.ForYouEventDataService>(() => servicesModule.forYouEventDataService);
   gh.lazySingleton<_i13.ForYouPostDataService>(() => servicesModule.forYouPostDataService);
   gh.lazySingleton<_i14.GooglePlacesService>(() => servicesModule.googlePlacesService);
-  gh.lazySingleton<_i15.ListContentForYouModel>(() => _i15.ListContentForYouModel());
   gh.lazySingleton<_i16.ListHomeLiveStreamsModel>(() => _i16.ListHomeLiveStreamsModel());
   gh.lazySingleton<_i17.ListHomePostsModel>(() => _i17.ListHomePostsModel());
   gh.lazySingleton<_i18.LiveStreamChatDataService>(() => servicesModule.liveStreamChatDataService);

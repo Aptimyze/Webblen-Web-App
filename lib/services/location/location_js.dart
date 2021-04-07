@@ -1,28 +1,28 @@
-@JS('navigator.geolocation') // navigator.geolocation namespace
-library jslocation; // library name can be whatever youwant
+@JS('navigator.geolocation')
+library jslocation;
 
-import "package:js/js.dart";
+import 'package:js/js.dart';
 
-@JS('getCurrentPosition') // Accessing method
-
-external void getCurrentPosition(Future<void> success(GeolocationPosition pos));
+@JS('getCurrentPosition') //Geolocation API's getCurrentPosition
+// ignore: use_function_type_syntax_for_parameters
+external void getCurrentPosition(Function success(GeolocationPosition pos));
 
 @JS()
 @anonymous
 class GeolocationCoordinates {
-  external double get latitude;
-  external double get longitude;
-
   external factory GeolocationCoordinates({
     double latitude,
     double longitude,
   });
+
+  external double get latitude;
+  external double get longitude;
 }
 
 @JS()
 @anonymous
 class GeolocationPosition {
-  external GeolocationCoordinates get coords;
-
   external factory GeolocationPosition({GeolocationCoordinates coords});
+
+  external GeolocationCoordinates get coords;
 }

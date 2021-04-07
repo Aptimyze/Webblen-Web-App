@@ -95,7 +95,7 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
         //posts
         ListUserPosts(
           user: model.user,
-          showPostOptions: (content) => model.webblenBaseViewModel.showContentOptions(content: content),
+          scrollController: model.scrollController,
         ),
 
         //scheduled streams
@@ -176,19 +176,6 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
             ],
           ),
         ),
-
-        // CustomAppBar().basicActionAppBar(
-        //   title: model.user == null ? "" : model.user.username,
-        //   showBackButton: true,
-        //   actionWidget: IconButton(
-        //     onPressed: () => model.showUserOptions(),
-        //     icon: Icon(
-        //       FontAwesomeIcons.ellipsisH,
-        //       size: 16,
-        //       color: appIconColor(),
-        //     ),
-        //   ),
-        // ),
         body: Container(
           height: screenHeight(context),
           width: screenWidth(context),

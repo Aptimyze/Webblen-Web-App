@@ -122,21 +122,23 @@ class LocationService {
 
   Future<String> getZipFromLatLon(double lat, double lon) async {
     String zip;
-    Coordinates coordinates = Coordinates(lat, lon);
-    String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
-    var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates).catchError((e) {});
-    var address = addresses.first;
-    zip = address.postalCode;
+    GooglePlacesService _googlePlacesService = locator<GooglePlacesService>();
+    String key = await _platformDataService.getGoogleApiKey().catchError((e) {});
+    Map<String, dynamic> data = await _googlePlacesService.getLocationDetailsFromLatLon(key: key, lat: lat, lon: lon);
+    print(data);
+    // var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates).catchError((e) {});
+    // var address = addresses.first;
+    // zip = address.postalCode;
     return zip;
   }
 
   Future<String> getCityNameFromLatLon(double lat, double lon) async {
     String cityName;
-    Coordinates coordinates = Coordinates(lat, lon);
+    GooglePlacesService _googlePlacesService = locator<GooglePlacesService>();
     String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
-    var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates);
-    var address = addresses.first;
-    cityName = address.locality;
+    // var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates);
+    // var address = addresses.first;
+    // cityName = address.locality;
     return cityName;
   }
 
@@ -154,8 +156,16 @@ class LocationService {
     GooglePlacesService _googlePlacesService = locator<GooglePlacesService>();
     String cityName;
     String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
-    cityName = await _googlePlacesService.googleSearchZip(key: googleAPIKey, input: zip);
+    cityName = await _googlePlacesService.googleGetCityFromZip(key: googleAPIKey, input: zip);
     return cityName;
+  }
+
+  Future<String> getProvinceFromZip(String zip) async {
+    GooglePlacesService _googlePlacesService = locator<GooglePlacesService>();
+    String province;
+    String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
+    province = await _googlePlacesService.googleGetProvinceFromZip(key: googleAPIKey, input: zip);
+    return province;
   }
 
   openMaps({@required String address}) {

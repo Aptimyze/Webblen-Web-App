@@ -4,17 +4,20 @@ import 'package:webblen_web_app/app/locator.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/models/webblen_post.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
+import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_circle_progress_indicator.dart';
 import 'package:webblen_web_app/ui/widgets/common/zero_state_view.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_posts/home/list_home_posts_model.dart';
 import 'package:webblen_web_app/ui/widgets/posts/post_img_block/post_img_block_view.dart';
 import 'package:webblen_web_app/ui/widgets/posts/post_text_block/post_text_block_view.dart';
 
-class ListHomePosts extends StatelessWidget {
-  final Function(WebblenPost) showPostOptions;
+class ListHomePosts extends StatefulWidget {
+  @override
+  _ListHomePostsState createState() => _ListHomePostsState();
+}
 
-  ListHomePosts({
-    @required this.showPostOptions,
-  });
+class _ListHomePostsState extends State<ListHomePosts> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
@@ -47,23 +50,30 @@ class ListHomePosts extends StatelessWidget {
                       key: PageStorageKey('home-posts'),
                       addAutomaticKeepAlives: true,
                       shrinkWrap: true,
-                      padding: EdgeInsets.only(
-                        top: 4.0,
-                        bottom: 4.0,
-                      ),
-                      itemCount: model.dataResults.length,
+                      itemCount: model.dataResults.length + 1,
                       itemBuilder: (context, index) {
-                        WebblenPost post;
-                        post = WebblenPost.fromMap(model.dataResults[index].data());
-                        return post.imageURL == null
-                            ? PostTextBlockView(
-                                post: post,
-                                showPostOptions: (post) => showPostOptions(post),
-                              )
-                            : PostImgBlockView(
-                                post: post,
-                                showPostOptions: (post) => showPostOptions(post),
-                              );
+                        if (index < model.dataResults.length) {
+                          WebblenPost post;
+                          post = WebblenPost.fromMap(model.dataResults[index].data());
+                          return post.imageURL == null
+                              ? PostTextBlockView(
+                                  post: post,
+                                  showPostOptions: (post) => model.showContentOptions(post),
+                                )
+                              : PostImgBlockView(
+                                  post: post,
+                                  showPostOptions: (post) => model.showContentOptions(post),
+                                );
+                        } else {
+                          if (model.moreDataAvailable) {
+                            model.loadAdditionalData();
+                            return Align(
+                              alignment: Alignment.center,
+                              child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
+                            );
+                          }
+                          return Container();
+                        }
                       },
                     ),
                   ),

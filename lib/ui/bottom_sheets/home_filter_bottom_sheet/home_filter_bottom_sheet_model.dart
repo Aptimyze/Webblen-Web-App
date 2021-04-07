@@ -77,6 +77,7 @@ class HomeFilterBottomSheetModel extends BaseViewModel {
     locationTextController.text = place;
     googlePlacesService.getDetailsFromPlaceID(key: googleAPIKey, placeID: placeID);
     Map<String, dynamic> details = await googlePlacesService.getDetailsFromPlaceID(key: googleAPIKey, placeID: placeID);
+    setPlacesSearchResults(details);
     if (details.isNotEmpty) {
       cityName = details['cityName'];
       areaCode = details['areaCode'];

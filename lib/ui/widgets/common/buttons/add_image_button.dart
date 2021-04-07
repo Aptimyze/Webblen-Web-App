@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -12,7 +12,8 @@ import '../custom_text.dart';
 class ImageButton extends StatelessWidget {
   final VoidCallback onTap;
   final bool isOptional;
-  ImageButton({@required this.onTap, @required this.isOptional});
+  final double uploadProgress;
+  ImageButton({@required this.onTap, @required this.isOptional, @required this.uploadProgress});
 
   @override
   Widget build(BuildContext context) {
@@ -24,34 +25,43 @@ class ImageButton extends StatelessWidget {
           minWidth: 500,
         ),
         color: appImageButtonColor(),
-        child: Expanded(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  FontAwesomeIcons.camera,
-                  color: appIconColorAlt(),
-                  size: 24,
-                ),
-                verticalSpaceTiny,
-                CustomText(
-                  text: '1:1',
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: appIconColorAlt(),
-                ),
-                verticalSpaceTiny,
-                isOptional
-                    ? CustomText(
-                        text: '(optional)',
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: appIconColorAlt(),
-                      )
-                    : Container(),
-              ],
-            ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                FontAwesomeIcons.camera,
+                color: appIconColorAlt(),
+                size: 24,
+              ),
+              verticalSpaceTiny,
+              uploadProgress == null
+                  ? Column(
+                      children: [
+                        CustomText(
+                          text: '1:1',
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: appIconColorAlt(),
+                        ),
+                        verticalSpaceTiny,
+                        isOptional
+                            ? CustomText(
+                                text: '(optional)',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: appIconColorAlt(),
+                              )
+                            : Container(),
+                      ],
+                    )
+                  : CustomText(
+                      text: (uploadProgress * 100).toStringAsFixed(0) + "%",
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: appIconColorAlt(),
+                    ),
+            ],
           ),
         ),
       ),
@@ -61,10 +71,10 @@ class ImageButton extends StatelessWidget {
 
 class ImagePreviewButton extends StatelessWidget {
   final VoidCallback onTap;
-  final File file;
+  final Uint8List imgByteMemory;
   final String imgURL;
 
-  ImagePreviewButton({@required this.onTap, @required this.file, @required this.imgURL});
+  ImagePreviewButton({@required this.onTap, @required this.imgByteMemory, @required this.imgURL});
 
   @override
   Widget build(BuildContext context) {
@@ -77,15 +87,13 @@ class ImagePreviewButton extends StatelessWidget {
             maxHeight: 500,
             maxWidth: 500,
           ),
-          child: Expanded(
-            child: file == null
-                ? FadeInImage.memoryNetwork(
-                    image: imgURL,
-                    fit: BoxFit.cover,
-                    placeholder: kTransparentImage,
-                  )
-                : Image.file(file, fit: BoxFit.contain, filterQuality: FilterQuality.medium),
-          ),
+          child: imgByteMemory == null
+              ? FadeInImage.memoryNetwork(
+                  image: imgURL,
+                  fit: BoxFit.cover,
+                  placeholder: kTransparentImage,
+                )
+              : Image.memory(imgByteMemory, fit: BoxFit.contain, filterQuality: FilterQuality.medium),
         ),
       ),
     ).showCursorOnHover;

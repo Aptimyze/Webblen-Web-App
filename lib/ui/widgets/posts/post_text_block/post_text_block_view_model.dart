@@ -17,8 +17,8 @@ class PostTextBlockViewModel extends BaseViewModel {
   DialogService _dialogService = locator<DialogService>();
 
   bool savedPost = false;
-  String authorImageURL = "";
-  String authorUsername = "";
+  String authorImageURL;
+  String authorUsername;
 
   initialize({@required WebblenPost post}) async {
     setBusy(true);
@@ -31,7 +31,6 @@ class PostTextBlockViewModel extends BaseViewModel {
       } else {
         authorImageURL = res.profilePicURL;
         authorUsername = res.username;
-        //precacheImage(NetworkImage(authorImageURL), context);
       }
       notifyListeners();
       setBusy(false);

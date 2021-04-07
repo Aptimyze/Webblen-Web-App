@@ -18,12 +18,11 @@ class PostImgBlockViewModel extends BaseViewModel {
   DialogService _dialogService = locator<DialogService>();
 
   bool savedPost = false;
-  String authorImageURL = "";
-  String authorUsername = "";
+  String authorImageURL;
+  String authorUsername;
 
   initialize({@required WebblenPost post}) async {
     setBusy(true);
-    //precacheImage(NetworkImage(post.imageURL), context);
     savedPost = await _postDataService.checkIfPostSaved(userID: _webblenBaseViewModel.uid, postID: post.id);
     //Get Post Author Data
     _userDataService.getWebblenUserByID(post.authorID).then((res) {
@@ -32,7 +31,6 @@ class PostImgBlockViewModel extends BaseViewModel {
       } else {
         authorImageURL = res.profilePicURL;
         authorUsername = res.username;
-        //precacheImage(NetworkImage(authorImageURL), context);
       }
       notifyListeners();
       setBusy(false);

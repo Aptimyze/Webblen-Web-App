@@ -90,21 +90,22 @@ class CreateLiveStreamView extends StatelessWidget {
 
   Widget imgBtn(BuildContext context, CreateLiveStreamViewModel model) {
     return ImageButton(
+      uploadProgress: model.uploadProgress,
       onTap: () => model.selectImage(),
       isOptional: false,
     );
   }
 
   Widget imgPreview(BuildContext context, CreateLiveStreamViewModel model) {
-    return model.img == null
+    return model.imgToUploadByteMemory == null
         ? ImagePreviewButton(
             onTap: () => model.selectImage(),
-            file: null,
+            imgByteMemory: null,
             imgURL: model.stream.imageURL,
           )
         : ImagePreviewButton(
             onTap: () => model.selectImage(),
-            file: model.img,
+            imgByteMemory: model.imgToUploadByteMemory,
             imgURL: null,
           );
   }
@@ -176,7 +177,7 @@ class CreateLiveStreamView extends StatelessWidget {
                         ).showCursorOnHover,
 
                   ///POST IMAGE
-                  model.img == null && model.stream.imageURL == null ? imgBtn(context, model) : imgPreview(context, model),
+                  model.imgToUploadByteMemory == null && model.stream.imageURL == null ? imgBtn(context, model) : imgPreview(context, model),
                   verticalSpaceMedium,
 
                   ///POST TAGS
@@ -558,7 +559,7 @@ class CreateLiveStreamView extends StatelessWidget {
                           textSize: 18,
                           height: 40,
                           width: 200,
-                          onPressed: () => model.submitForm(),
+                          onPressed: () => model.showNewContentConfirmationBottomSheet(),
                           backgroundColor: appButtonColor(),
                           textColor: appFontColor(),
                           elevation: 2,

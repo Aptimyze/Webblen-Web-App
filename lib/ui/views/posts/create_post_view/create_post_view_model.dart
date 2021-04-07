@@ -1,4 +1,5 @@
-import 'dart:io';
+import 'dart:html';
+import 'dart:typed_data';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,6 +17,7 @@ import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
 import 'package:webblen_web_app/services/location/location_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 import 'package:webblen_web_app/utils/custom_string_methods.dart';
+import 'package:webblen_web_app/utils/webblen_image_picker.dart';
 
 class CreatePostViewModel extends BaseViewModel {
   DialogService _dialogService = locator<DialogService>();
@@ -35,10 +37,11 @@ class CreatePostViewModel extends BaseViewModel {
   bool textFieldEnabled = true;
 
   ///DATA
+  String id;
   bool isEditing = false;
-  File img;
-  // File img2;
-  // File img3;
+  double uploadProgress;
+  File imgToUpload;
+  Uint8List imgToUploadByteMemory;
 
   WebblenPost post = WebblenPost();
 
@@ -51,7 +54,7 @@ class CreatePostViewModel extends BaseViewModel {
     setBusy(true);
     var routeData = RouteData.of(context);
     // .value will return the raw string value
-    String id = routeData.pathParams['id'].value;
+    id = routeData.pathParams['id'].value;
     //check if editing existing post
     if (id != null) {
       WebblenPost existingPost = await _postDataService.getPostToEditByID(id);
@@ -61,6 +64,26 @@ class CreatePostViewModel extends BaseViewModel {
         isEditing = true;
       }
     }
+
+    // listener for uploader
+    webblenBaseViewModel.addListener(() {
+      bool uploadStatusChanged = false;
+      if (uploadProgress != webblenBaseViewModel.uploadProgress) {
+        uploadStatusChanged = true;
+        uploadProgress = webblenBaseViewModel.uploadProgress;
+      }
+      if (imgToUpload != webblenBaseViewModel.imgToUpload) {
+        uploadStatusChanged = true;
+        imgToUpload = webblenBaseViewModel.imgToUpload;
+      }
+      if (imgToUploadByteMemory != webblenBaseViewModel.imgToUploadByteMemory) {
+        uploadStatusChanged = true;
+        imgToUploadByteMemory = webblenBaseViewModel.imgToUploadByteMemory;
+      }
+      if (uploadStatusChanged) {
+        notifyListeners();
+      }
+    });
 
     //get webblen rates
     newPostTaxRate = await _platformDataService.getNewPostTaxRate();
@@ -105,22 +128,24 @@ class CreatePostViewModel extends BaseViewModel {
     bool success = true;
 
     //get current zip
-    String zip = await _locationService.getCurrentZipcode();
+    String zip = webblenBaseViewModel.areaCode;
+    print(zip);
     if (zip == null) {
       return false;
     }
 
     //get nearest zipcodes
-    post.nearbyZipcodes = await _locationService.findNearestZipcodes(webblenBaseViewModel.areaCode);
+    post.nearbyZipcodes = await _locationService.findNearestZipcodes(zip);
     if (post.nearbyZipcodes == null) {
       return false;
     }
 
     //get city
     post.city = webblenBaseViewModel.cityName;
+    print(post.city);
 
     //get province
-    post.province = await _locationService.getCurrentProvince();
+    post.province = await _locationService.getProvinceFromZip(zip);
     if (post.province == null) {
       return false;
     }
@@ -176,9 +201,8 @@ class CreatePostViewModel extends BaseViewModel {
     String message = postTextController.text.trim();
 
     //generate new post
-    String newPostID = getRandomString(20);
     post = WebblenPost(
-      id: newPostID,
+      id: id,
       parentID: null,
       authorID: webblenBaseViewModel.uid,
       imageURL: null,
@@ -188,7 +212,7 @@ class CreatePostViewModel extends BaseViewModel {
       province: post.province,
       followers: webblenBaseViewModel.user.followers,
       tags: post.tags,
-      webAppLink: "https://app.webblen.io/posts/post?id=$newPostID",
+      webAppLink: "https://app.webblen.io/posts/post?id=$id",
       sharedComs: [],
       savedBy: [],
       postType: PostType.eventPost,
@@ -201,8 +225,8 @@ class CreatePostViewModel extends BaseViewModel {
     );
 
     //upload img if exists
-    if (img != null) {
-      String imageURL = null; //await _firestoreStorageService.uploadImage(img: img, storageBucket: 'images', folderName: 'posts', fileName: post.id);
+    if (imgToUpload != null) {
+      String imageURL = await _firestoreStorageService.uploadImage(imgFile: imgToUpload, storageBucket: 'images', folderName: 'posts', fileName: post.id);
       if (imageURL == null) {
         _dialogService.showDialog(
           title: 'Post Upload Error',
@@ -236,7 +260,7 @@ class CreatePostViewModel extends BaseViewModel {
       id: post.id,
       parentID: post.parentID,
       authorID: webblenBaseViewModel.uid,
-      imageURL: img == null ? post.imageURL : null,
+      imageURL: imgToUploadByteMemory == null ? post.imageURL : null,
       body: message,
       nearbyZipcodes: post.nearbyZipcodes,
       city: post.city,
@@ -256,8 +280,8 @@ class CreatePostViewModel extends BaseViewModel {
     );
 
     //upload img if exists
-    if (img != null) {
-      String imageURL = null; //await _firestoreStorageService.uploadImage(img: img, storageBucket: 'images', folderName: 'posts', fileName: post.id);
+    if (imgToUpload != null) {
+      String imageURL = await _firestoreStorageService.uploadImage(imgFile: imgToUpload, storageBucket: 'images', folderName: 'posts', fileName: post.id);
       if (imageURL == null) {
         _dialogService.showDialog(
           title: 'Post Upload Error',
@@ -283,6 +307,16 @@ class CreatePostViewModel extends BaseViewModel {
 
   submitForm() async {
     setBusy(true);
+    //check uploader
+    if (uploadProgress != null && webblenBaseViewModel.uploadProgress != 1) {
+      _dialogService.showDialog(
+        title: 'Image Uploading',
+        description: 'Your image is still being uploaded. Please wait',
+      );
+      setBusy(false);
+      return;
+    }
+
     //if editing update post, otherwise create new post
     if (isEditing) {
       //update post
@@ -299,34 +333,13 @@ class CreatePostViewModel extends BaseViewModel {
         displayUploadSuccessBottomSheet();
       }
     }
+
     setBusy(false);
   }
 
   ///BOTTOM SHEETS
-  selectImage({BuildContext context}) async {
-    var sheetResponse = await _bottomSheetService.showCustomSheet(
-      barrierDismissible: true,
-      variant: BottomSheetType.imagePicker,
-    );
-    if (sheetResponse != null) {
-      String res = sheetResponse.responseData;
-
-      //disable text fields while fetching image
-      textFieldEnabled = false;
-      notifyListeners();
-
-      //get image from camera or gallery
-      if (res == "camera") {
-        //img = await WebblenImagePicker().retrieveImageFromCamera(ratioX: 1, ratioY: 1);
-      } else if (res == "gallery") {
-        //img = await WebblenImagePicker().retrieveImageFromLibrary(ratioX: 1, ratioY: 1);
-      }
-
-      //wait a bit to re-enable text fields
-      await Future.delayed(Duration(milliseconds: 500));
-      textFieldEnabled = true;
-      notifyListeners();
-    }
+  selectImage() async {
+    WebblenImagePicker().retrieveImageFromLibrary();
   }
 
   showNewContentConfirmationBottomSheet({BuildContext context}) async {
@@ -392,6 +405,7 @@ class CreatePostViewModel extends BaseViewModel {
         title: isEditing ? "Your Post has been Updated" : "Your Post has been Published! 🎉");
 
     if (sheetResponse == null || sheetResponse.responseData == "done") {
+      webblenBaseViewModel.clearUploaderData();
       _navigationService.pushNamedAndRemoveUntil(Routes.WebblenBaseViewRoute);
     }
   }

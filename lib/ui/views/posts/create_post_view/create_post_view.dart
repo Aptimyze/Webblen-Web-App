@@ -66,21 +66,22 @@ class CreatePostView extends StatelessWidget {
 
   Widget imgBtn(BuildContext context, CreatePostViewModel model) {
     return ImageButton(
-      onTap: () => model.selectImage(context: context),
+      uploadProgress: model.uploadProgress,
+      onTap: () => model.selectImage(),
       isOptional: true,
     );
   }
 
   Widget imgPreview(BuildContext context, CreatePostViewModel model) {
-    return model.img == null
+    return model.imgToUploadByteMemory == null
         ? ImagePreviewButton(
-            onTap: () => model.selectImage(context: context),
-            file: null,
+            onTap: () => model.selectImage(),
+            imgByteMemory: null,
             imgURL: model.post.imageURL,
           )
         : ImagePreviewButton(
-            onTap: () => model.selectImage(context: context),
-            file: model.img,
+            onTap: () => model.selectImage(),
+            imgByteMemory: model.imgToUploadByteMemory,
             imgURL: null,
           );
   }
@@ -107,7 +108,7 @@ class CreatePostView extends StatelessWidget {
                   verticalSpaceMedium,
 
                   ///POST IMAGE
-                  model.img == null && model.post.imageURL == null ? imgBtn(context, model) : imgPreview(context, model),
+                  model.imgToUploadByteMemory == null && model.post.imageURL == null ? imgBtn(context, model) : imgPreview(context, model),
                   verticalSpaceMedium,
 
                   ///POST TAGS
@@ -152,7 +153,7 @@ class CreatePostView extends StatelessWidget {
                           textSize: 18,
                           height: 40,
                           width: 200,
-                          onPressed: () => model.submitForm(),
+                          onPressed: () => model.showNewContentConfirmationBottomSheet(context: context),
                           backgroundColor: appButtonColor(),
                           textColor: appFontColor(),
                           elevation: 2,

@@ -152,6 +152,19 @@ class EventDataService {
     return event;
   }
 
+  Future getEventForEditingByID(String id) async {
+    WebblenEvent event;
+    DocumentSnapshot snapshot = await eventsRef.doc(id).get().catchError((e) {
+      return null;
+    });
+    if (snapshot.exists) {
+      event = WebblenEvent.fromMap(snapshot.data());
+    } else if (!snapshot.exists) {
+      return null;
+    }
+    return event;
+  }
+
   ///READ & QUERIES
   Future<List<DocumentSnapshot>> loadEvents({
     @required String areaCode,

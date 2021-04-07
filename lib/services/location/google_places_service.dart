@@ -32,7 +32,7 @@ class GooglePlacesService {
     return predictions;
   }
 
-  Future<String> googleSearchZip({@required String key, @required String input}) async {
+  Future<String> googleGetCityFromZip({@required String key, @required String input}) async {
     String cityName;
     final String requestURL = "https://maps.googleapis.com/maps/api/geocode/json?address=$input&key=$key";
     Response response = await get(requestURL);
@@ -43,6 +43,24 @@ class GooglePlacesService {
         return null;
       }
       cityName = val['results'][0]['address_components'][1]['long_name'].toString();
+      //print(cityName);
+    } else {
+      print('google search zip error code: ${response.statusCode}');
+    }
+    return cityName;
+  }
+
+  Future<String> googleGetProvinceFromZip({@required String key, @required String input}) async {
+    String cityName;
+    final String requestURL = "https://maps.googleapis.com/maps/api/geocode/json?address=$input&key=$key";
+    Response response = await get(requestURL);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> val = jsonDecode(response.body);
+      if (val['error_message'] != null) {
+        print('google search zip error code: ${val['error_message']}');
+        return null;
+      }
+      cityName = val['results'][0]['address_components'][2]['long_name'].toString();
       //print(cityName);
     } else {
       print('google search zip error code: ${response.statusCode}');

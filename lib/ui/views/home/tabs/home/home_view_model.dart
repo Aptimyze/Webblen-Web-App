@@ -67,10 +67,7 @@ class HomeViewModel extends BaseViewModel {
 
   int resultsLimit = 30;
 
-  ///PROMOS
-  double postPromo;
-  double streamPromo;
-  double eventPromo;
+
 
   ///INITIALIZE
 
@@ -89,11 +86,6 @@ class HomeViewModel extends BaseViewModel {
     if (cityName == null && areaCode != null) {
       cityName = await _locationService.getCityFromZip(areaCode);
     }
-
-    //load content promos (if any exists)
-    postPromo = await _platformDataService.getPostPromo();
-    streamPromo = await _platformDataService.getStreamPromo();
-    eventPromo = await _platformDataService.getEventPromo();
 
     notifyListeners();
     setBusy(false);

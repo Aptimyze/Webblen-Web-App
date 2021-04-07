@@ -153,7 +153,7 @@ class CustomTopNavBar extends StatelessWidget {
                             _webblenBaseViewModel.cityName,
                             style: TextStyle(fontWeight: FontWeight.bold),
                             maxFontSize: 20,
-                            minFontSize: 10,
+                            minFontSize: 12,
                             maxLines: 1,
                           ),
                         ),

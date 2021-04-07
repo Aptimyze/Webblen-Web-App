@@ -178,7 +178,7 @@ class PostDataService {
     QuerySnapshot snapshot = await query.get().catchError((e) {
       if (!e.message.contains("insufficient permissions")) {
         _dialogService.showDialog(
-          title: "Error",
+          title: "Insufficient Permissions",
           description: e.message,
         );
       }
@@ -223,7 +223,7 @@ class PostDataService {
     QuerySnapshot snapshot = await query.get().catchError((e) {
       if (!e.message.contains("insufficient permissions")) {
         _dialogService.showDialog(
-          title: "Error",
+          title: "insufficient permissions",
           description: e.message,
         );
       }
@@ -249,7 +249,7 @@ class PostDataService {
     QuerySnapshot snapshot = await query.get().catchError((e) {
       if (!e.message.contains("insufficient permissions")) {
         _dialogService.showDialog(
-          title: "Error",
+          title: "insufficient permissions",
           description: e.message,
         );
       }
@@ -272,7 +272,7 @@ class PostDataService {
     QuerySnapshot snapshot = await query.get().catchError((e) {
       if (!e.message.contains("insufficient permissions")) {
         _dialogService.showDialog(
-          title: "Error",
+          title: "insufficient permissions",
           description: e.message,
         );
       }

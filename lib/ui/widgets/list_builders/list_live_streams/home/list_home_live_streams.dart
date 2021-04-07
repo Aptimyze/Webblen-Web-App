@@ -4,6 +4,7 @@ import 'package:webblen_web_app/app/locator.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
+import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_circle_progress_indicator.dart';
 import 'package:webblen_web_app/ui/widgets/common/zero_state_view.dart';
 import 'package:webblen_web_app/ui/widgets/live_streams/live_stream_block/live_stream_block_view.dart';
 
@@ -55,18 +56,25 @@ class ListHomeLiveStreams extends StatelessWidget {
                       key: PageStorageKey('home-streams'),
                       addAutomaticKeepAlives: true,
                       shrinkWrap: true,
-                      padding: EdgeInsets.only(
-                        top: 4.0,
-                        bottom: 4.0,
-                      ),
-                      itemCount: model.dataResults.length,
+                      itemCount: model.dataResults.length + 1,
                       itemBuilder: (context, index) {
-                        WebblenLiveStream stream;
-                        stream = WebblenLiveStream.fromMap(model.dataResults[index].data());
-                        return LiveStreamBlockView(
-                          stream: stream,
-                          showStreamOptions: (stream) => showStreamOptions(stream),
-                        );
+                        if (index < model.dataResults.length) {
+                          WebblenLiveStream stream;
+                          stream = WebblenLiveStream.fromMap(model.dataResults[index].data());
+                          return LiveStreamBlockView(
+                            stream: stream,
+                            showStreamOptions: (stream) => showStreamOptions(stream),
+                          );
+                        } else {
+                          if (model.moreDataAvailable) {
+                            model.loadAdditionalData();
+                            return Align(
+                              alignment: Alignment.center,
+                              child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
+                            );
+                          }
+                          return Container();
+                        }
                       },
                     ),
                   ),

@@ -1,4 +1,5 @@
-import 'dart:io';
+import 'dart:html';
+import 'dart:typed_data';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -24,11 +25,11 @@ import 'package:webblen_web_app/services/location/location_service.dart';
 import 'package:webblen_web_app/services/stripe/stripe_connect_account_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 import 'package:webblen_web_app/utils/custom_string_methods.dart';
+import 'package:webblen_web_app/utils/webblen_image_picker.dart';
 
 class CreateLiveStreamViewModel extends BaseViewModel {
   DialogService _dialogService = locator<DialogService>();
   NavigationService _navigationService = locator<NavigationService>();
-  SnackbarService _snackbarService = locator<SnackbarService>();
   PlatformDataService _platformDataService = locator<PlatformDataService>();
   UserDataService _userDataService = locator<UserDataService>();
   LocationService _locationService = locator<LocationService>();
@@ -88,11 +89,14 @@ class CreateLiveStreamViewModel extends BaseViewModel {
   bool hasEarningsAccount;
 
   ///STREAM DATA
+  String id;
   bool isEditing = false;
+  double uploadProgress;
+  File imgToUpload;
+  Uint8List imgToUploadByteMemory;
   int ticketToEditIndex;
   int feeToEditIndex;
   int discountToEditIndex;
-  File img;
 
   WebblenLiveStream stream = WebblenLiveStream();
 
@@ -158,32 +162,50 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     twitterUsernameTextController.text = _sharedPreferences.getString('twitterUsername');
     websiteTextController.text = _sharedPreferences.getString('website');
 
-    //check for promos & if editing existing event
-    Map<String, dynamic> args = RouteData.of(context).arguments;
-    if (args != null) {
-      promo = args['promo'] ?? null;
-      String streamID = args['id'] ?? "";
-      if (streamID.isNotEmpty) {
-        stream = await _liveStreamDataService.getStreamByID(streamID);
-        if (stream != null) {
-          titleTextController.text = stream.title;
-          descTextController.text = stream.description;
-          startDateTextController.text = stream.startDate;
-          endDateTextController.text = stream.endDate;
-          fbUsernameTextController.text = stream.fbUsername;
-          instaUsernameTextController.text = stream.instaUsername;
-          twitterUsernameTextController.text = stream.twitterUsername;
-          websiteTextController.text = stream.website;
-          selectedStartDate = dateFormatter.parse(stream.startDate);
-          selectedEndDate = dateFormatter.parse(stream.endDate);
-          isEditing = true;
-          //check if editing with ticket distro
-          if (stream.hasTickets) {
-            ticketDistro = await _ticketDistroDataService.getTicketDistroByID(stream.id);
-          }
+    var routeData = RouteData.of(context);
+    id = routeData.pathParams['id'].value;
+    //check if editing existing post
+    if (id != null) {
+      WebblenLiveStream existingStream = await _liveStreamDataService.getStreamForEditingByID(id);
+      if (existingStream != null) {
+        stream = existingStream;
+        titleTextController.text = stream.title;
+        descTextController.text = stream.description;
+        startDateTextController.text = stream.startDate;
+        endDateTextController.text = stream.endDate;
+        fbUsernameTextController.text = stream.fbUsername;
+        instaUsernameTextController.text = stream.instaUsername;
+        twitterUsernameTextController.text = stream.twitterUsername;
+        websiteTextController.text = stream.website;
+        selectedStartDate = dateFormatter.parse(stream.startDate);
+        selectedEndDate = dateFormatter.parse(stream.endDate);
+        isEditing = true;
+        //check if editing with ticket distro
+        if (stream.hasTickets) {
+          ticketDistro = await _ticketDistroDataService.getTicketDistroByID(stream.id);
         }
       }
     }
+
+    // listener for uploader
+    webblenBaseViewModel.addListener(() {
+      bool uploadStatusChanged = false;
+      if (uploadProgress != webblenBaseViewModel.uploadProgress) {
+        uploadStatusChanged = true;
+        uploadProgress = webblenBaseViewModel.uploadProgress;
+      }
+      if (imgToUpload != webblenBaseViewModel.imgToUpload) {
+        uploadStatusChanged = true;
+        imgToUpload = webblenBaseViewModel.imgToUpload;
+      }
+      if (imgToUploadByteMemory != webblenBaseViewModel.imgToUploadByteMemory) {
+        uploadStatusChanged = true;
+        imgToUploadByteMemory = webblenBaseViewModel.imgToUploadByteMemory;
+      }
+      if (uploadStatusChanged) {
+        notifyListeners();
+      }
+    });
 
     //get webblen rates
     newStreamTaxRate = await _platformDataService.getNewStreamTaxRate();
@@ -200,29 +222,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
 
   ///STREAM IMAGE
   selectImage() async {
-    var sheetResponse = await _bottomSheetService.showCustomSheet(
-      barrierDismissible: true,
-      variant: BottomSheetType.imagePicker,
-    );
-    if (sheetResponse != null) {
-      String res = sheetResponse.responseData;
-
-      //disable text fields while fetching image
-      textFieldEnabled = false;
-      notifyListeners();
-
-      //get image from camera or gallery
-      if (res == "camera") {
-        //img = await WebblenImagePicker().retrieveImageFromCamera(ratioX: 1, ratioY: 1);
-      } else if (res == "gallery") {
-        //img = await WebblenImagePicker().retrieveImageFromLibrary(ratioX: 1, ratioY: 1);
-      }
-
-      //wait a bit to re-enable text fields
-      await Future.delayed(Duration(milliseconds: 500));
-      textFieldEnabled = true;
-      notifyListeners();
-    }
+    WebblenImagePicker().retrieveImageFromLibrary();
   }
 
   ///STREAM TAGS
@@ -233,10 +233,9 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     if (!tags.contains(tag)) {
       //check if tag limit has been reached
       if (tags.length == 3) {
-        _snackbarService.showSnackbar(
-          title: 'Tag Limit Reached',
-          message: 'You can only add up to 3 tags for your stream',
-          duration: Duration(seconds: 5),
+        _dialogService.showDialog(
+          title: "Tag Limit Reached",
+          description: "You can only add up to 3 tags for your stream",
         );
       } else {
         //add tag
@@ -292,7 +291,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     stream.lon = details['lon'];
 
     //set address
-    stream.audienceLocation = details['address'];
+    stream.audienceLocation = details['streetAddress'];
 
     //set city
     stream.city = details['cityName'];
@@ -300,6 +299,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     //get province
     stream.province = details['province'];
 
+    print(stream.toMap());
     notifyListeners();
 
     return success;
@@ -374,17 +374,15 @@ class CreateLiveStreamViewModel extends BaseViewModel {
 
   addTicket() {
     if (ticketNameTextController.text.trim().isEmpty) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Ticket Name Required',
-        message: 'Please add a name for this ticket',
-        duration: Duration(seconds: 3),
+        description: 'Please add a name for this ticket',
       );
       return;
     } else if (ticketQuantityTextController.text.trim().isEmpty) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Ticket Quantity Required',
-        message: 'Please set a quantity for this ticket',
-        duration: Duration(seconds: 3),
+        description: 'Please set a quantity for this ticket',
       );
       return;
     }
@@ -441,10 +439,9 @@ class CreateLiveStreamViewModel extends BaseViewModel {
 
   addFee() {
     if (feeNameTextController.text.trim().isEmpty) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Fee Name Required',
-        message: 'Please add a name for this fee',
-        duration: Duration(seconds: 3),
+        description: 'Please add a name for this fee',
       );
       return;
     }
@@ -499,17 +496,15 @@ class CreateLiveStreamViewModel extends BaseViewModel {
 
   addDiscount() {
     if (discountNameTextController.text.trim().isEmpty) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Discount Code Required',
-        message: 'Please add a code for this discount',
-        duration: Duration(seconds: 3),
+        description: 'Please add a code for this discount',
       );
       return;
     } else if (discountLimitTextController.text.trim().isEmpty) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Discount Limit Required',
-        message: 'Please set a limit for the number of times this discount can be used',
-        duration: Duration(seconds: 5),
+        description: 'Please set a limit for the number of times this discount can be used',
       );
       return;
     }
@@ -634,71 +629,60 @@ class CreateLiveStreamViewModel extends BaseViewModel {
 
   bool formIsValid() {
     bool isValid = false;
-    if (img == null && stream.imageURL == null) {
-      _snackbarService.showSnackbar(
+    if (imgToUpload == null && stream.imageURL == null) {
+      _dialogService.showDialog(
         title: 'Stream Image Error',
-        message: 'Your stream must have an image',
-        duration: Duration(seconds: 3),
+        description: 'Your stream must have an image',
       );
     } else if (!tagsAreValid()) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Tag Error',
-        message: 'Your stream must contain at least 1 tag',
-        duration: Duration(seconds: 3),
+        description: 'Your stream must contain at least 1 tag',
       );
     } else if (!titleIsValid()) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Stream Title Required',
-        message: 'The title for your stream cannot be empty',
-        duration: Duration(seconds: 3),
+        description: 'The title for your stream cannot be empty',
       );
     } else if (!descIsValid()) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Stream Description Required',
-        message: 'The description for your stream cannot be empty',
-        duration: Duration(seconds: 3),
+        description: 'The description for your stream cannot be empty',
       );
     } else if (!audienceLocationIsValid()) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Stream Audiences Location Required',
-        message: 'The target location for your stream cannot be empty',
-        duration: Duration(seconds: 3),
+        description: 'The target location for your stream cannot be empty',
       );
     } else if (!startDateIsValid()) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Stream Start Date Required',
-        message: 'The start date & time for your stream cannot be empty',
-        duration: Duration(seconds: 3),
+        description: 'The start date & time for your stream cannot be empty',
       );
     } else if (!endDateIsValid()) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Stream End Date Error',
-        message: "End date & time must be set after the start date & time",
-        duration: Duration(seconds: 5),
+        description: "End date & time must be set after the start date & time",
       );
     } else if (stream.fbUsername != null && stream.fbUsername.isNotEmpty && !fbUsernameIsValid()) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Facebook Username Error',
-        message: "Facebook username must be valid",
-        duration: Duration(seconds: 3),
+        description: "Facebook username must be valid",
       );
     } else if (stream.instaUsername != null && stream.instaUsername.isNotEmpty && !instaUsernameIsValid()) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Instagram Username Error',
-        message: "Instagram username must be valid",
-        duration: Duration(seconds: 3),
+        description: "Instagram username must be valid",
       );
     } else if (stream.twitterUsername != null && stream.twitterUsername.isNotEmpty && !twitterUsernameIsValid()) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Twitter Username Error',
-        message: "Twitter username must be valid",
-        duration: Duration(seconds: 3),
+        description: "Twitter username must be valid",
       );
     } else if (stream.website != null && stream.website.isNotEmpty && !websiteIsValid()) {
-      _snackbarService.showSnackbar(
-        title: 'Website URL Error',
-        message: "Website URL must be valid",
-        duration: Duration(seconds: 3),
+      _dialogService.showDialog(
+        title: "Website URL Error",
+        description: "Website URL must be valid",
       );
     } else {
       isValid = true;
@@ -710,13 +694,12 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     bool success = true;
 
     //upload img if exists
-    if (img != null) {
-      String imageURL = await _firestoreStorageService.uploadImage(img: img, storageBucket: 'images', folderName: 'streams', fileName: stream.id);
+    if (imgToUpload != null) {
+      String imageURL = await _firestoreStorageService.uploadImage(imgFile: imgToUpload, storageBucket: 'images', folderName: 'streams', fileName: stream.id);
       if (imageURL == null) {
-        _snackbarService.showSnackbar(
-          title: 'Stream Upload Error',
-          message: 'There was an issue uploading your stream. Please try again.',
-          duration: Duration(seconds: 3),
+        _dialogService.showDialog(
+          title: "Website URL Error",
+          description: "Website URL must be valid",
         );
         return false;
       }
@@ -735,10 +718,9 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     }
 
     if (uploadResult is String) {
-      _snackbarService.showSnackbar(
+      _dialogService.showDialog(
         title: 'Stream Upload Error',
-        message: 'There was an issue uploading your stream. Please try again.',
-        duration: Duration(seconds: 3),
+        description: 'There was an issue uploading your stream. Please try again.',
       );
       return false;
     }
@@ -764,7 +746,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
   }
 
   showNewContentConfirmationBottomSheet({BuildContext context}) async {
-    FocusScope.of(context).unfocus();
+    //FocusScope.of(context).unfocus();
 
     //exit function if form is invalid
     if (!formIsValid()) {
@@ -797,10 +779,9 @@ class CreateLiveStreamViewModel extends BaseViewModel {
 
       //get image from camera or gallery
       if (res == "insufficient funds") {
-        _snackbarService.showSnackbar(
+        _dialogService.showDialog(
           title: 'Insufficient Funds',
-          message: 'You do no have enough WBLN to schedule this stream',
-          duration: Duration(seconds: 3),
+          description: 'You do no have enough WBLN to schedule this stream',
         );
       } else if (res == "confirmed") {
         submitForm();

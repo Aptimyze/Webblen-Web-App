@@ -210,41 +210,43 @@ class PostTextBlockView extends StatelessWidget {
       initialiseSpecialViewModelsOnce: true,
       viewModelBuilder: () => PostTextBlockViewModel(),
       onModelReady: (model) => model.initialize(post: post),
-      builder: (context, model, child) => Align(
-        alignment: Alignment.center,
-        child: Container(
-          constraints: BoxConstraints(
-            maxWidth: 500,
-          ),
-          child: GestureDetector(
-            onDoubleTap: () => model.saveUnsavePost(postID: post.id),
-            onLongPress: () {
-              HapticFeedback.lightImpact();
-              showPostOptions(post);
-            },
-            onTap: () => model.navigateToPostView(post.id),
-            child: Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  head(model),
-                  postBody(),
-                  commentCount(model),
-                  verticalSpaceTiny,
-                  commentSaveAndPostTime(model),
-                  postTags(model),
-                  Divider(
-                    thickness: 4.0,
-                    color: appDividerColor(),
+      builder: (context, model, child) => model.isBusy
+          ? Container(height: 100)
+          : Align(
+              alignment: Alignment.center,
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: 500,
+                ),
+                child: GestureDetector(
+                  onDoubleTap: () => model.saveUnsavePost(postID: post.id),
+                  onLongPress: () {
+                    HapticFeedback.lightImpact();
+                    showPostOptions(post);
+                  },
+                  onTap: () => model.navigateToPostView(post.id),
+                  child: Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        head(model),
+                        postBody(),
+                        commentCount(model),
+                        verticalSpaceTiny,
+                        commentSaveAndPostTime(model),
+                        postTags(model),
+                        Divider(
+                          thickness: 4.0,
+                          color: appDividerColor(),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
+                ).showCursorOnHover,
               ),
             ),
-          ).showCursorOnHover,
-        ),
-      ),
     );
   }
 }
