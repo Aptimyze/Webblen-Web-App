@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 
 class RedeemedRewardDataService {
   CollectionReference purchasedRewardsRef = FirebaseFirestore.instance.collection('purchased_rewards');

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked/stacked_annotations.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/views/users/profile/user_profile_view_model.dart';
@@ -14,6 +15,8 @@ import 'package:webblen_web_app/ui/widgets/user/follow_unfollow_button.dart';
 import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 
 class UserProfileView extends StatefulWidget {
+  final String id;
+  UserProfileView(@PathParam() this.id);
   @override
   _UserProfileViewState createState() => _UserProfileViewState();
 }
@@ -146,7 +149,7 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
     return ViewModelBuilder<UserProfileViewModel>.reactive(
       disposeViewModel: false,
       initialiseSpecialViewModelsOnce: true,
-      onModelReady: (model) => model.initialize(context: context, tabController: _tabController),
+      onModelReady: (model) => model.initialize(id: widget.id, tabController: _tabController),
       viewModelBuilder: () => UserProfileViewModel(),
       builder: (context, model, child) => Scaffold(
         appBar: PreferredSize(

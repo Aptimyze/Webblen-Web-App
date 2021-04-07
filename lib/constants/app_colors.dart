@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stacked_themes/stacked_themes.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 
 import 'custom_colors.dart';
 

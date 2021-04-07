@@ -1,13 +1,10 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:html';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
 class WebblenImagePicker {
@@ -21,7 +18,6 @@ class WebblenImagePicker {
     this.ratioY,
   });
 
-  final ImagePicker _imagePicker = ImagePicker();
   WebblenBaseViewModel _webblenBaseViewModel = locator<WebblenBaseViewModel>();
   DialogService _dialogService = locator<DialogService>();
 
@@ -68,15 +64,5 @@ class WebblenImagePicker {
         _webblenBaseViewModel.setImgToUploadByteMemory(imageByteMemory);
       });
     });
-  }
-
-  Future<File> retrieveImageFromCamera({double ratioX, double ratioY}) async {
-    imageCache.clear();
-    File img;
-    final pickedFile = await _imagePicker.getImage(source: ImageSource.camera, imageQuality: 80);
-    if (pickedFile != null) {
-      // img = File(pickedFile.path);
-    }
-    return img;
   }
 }

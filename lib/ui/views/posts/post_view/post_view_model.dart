@@ -1,9 +1,8 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/enums/bottom_sheet_type.dart';
 import 'package:webblen_web_app/models/webblen_notification.dart';
 import 'package:webblen_web_app/models/webblen_post.dart';
@@ -48,11 +47,10 @@ class PostViewModel extends BaseViewModel {
   WebblenPostComment commentToReplyTo;
 
   ///INITIALIZE
-  initialize({@required BuildContext context}) async {
+  initialize(String postID) async {
     setBusy(true);
-    var routeData = RouteData.of(context);
     // .value will return the raw string value
-    String id = routeData.pathParams['id'].value;
+    String id = postID;
     var res = await _postDataService.getPostByID(id);
     if (res is WebblenPost) {
       post = res;

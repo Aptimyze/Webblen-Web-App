@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 // **************************************************************************
-// AutoRouteGenerator
+// StackedRouterGenerator
 // **************************************************************************
 
 // ignore_for_file: public_member_api_docs
 
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:stacked/stacked.dart';
 
 import '../ui/views/auth/auth_view.dart';
 import '../ui/views/base/webblen_base_view.dart';
@@ -63,7 +63,7 @@ class Routes {
   };
 }
 
-class WebblenRouter extends RouterBase {
+class StackedRouter extends RouterBase {
   @override
   List<RouteDef> get routes => _routes;
   final _routes = <RouteDef>[
@@ -80,14 +80,13 @@ class WebblenRouter extends RouterBase {
     RouteDef(Routes._UserFollowingViewRoute, page: UserFollowingView),
   ];
   @override
-  Map<Type, AutoRouteFactory> get pagesMap => _pagesMap;
-  final _pagesMap = <Type, AutoRouteFactory>{
+  Map<Type, StackedRouteFactory> get pagesMap => _pagesMap;
+  final _pagesMap = <Type, StackedRouteFactory>{
     AuthView: (data) {
       return PageRouteBuilder<dynamic>(
         pageBuilder: (context, animation, secondaryAnimation) =>
             const AuthView(),
         settings: data,
-        transitionsBuilder: TransitionsBuilders.fadeIn,
         transitionDuration: const Duration(milliseconds: 0),
       );
     },
@@ -96,75 +95,62 @@ class WebblenRouter extends RouterBase {
         pageBuilder: (context, animation, secondaryAnimation) =>
             WebblenBaseView(),
         settings: data,
-        transitionsBuilder: TransitionsBuilders.fadeIn,
         transitionDuration: const Duration(milliseconds: 0),
       );
     },
     PostView: (data) {
       return PageRouteBuilder<dynamic>(
-        pageBuilder: (context, animation, secondaryAnimation) => PostView(),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            PostView(data.pathParams['id'].value),
         settings: data,
-        transitionsBuilder: TransitionsBuilders.fadeIn,
         transitionDuration: const Duration(milliseconds: 0),
       );
     },
     CreatePostView: (data) {
-      final args = data.getArgs<CreatePostViewArguments>(
-        orElse: () => CreatePostViewArguments(),
-      );
       return PageRouteBuilder<dynamic>(
-        pageBuilder: (context, animation, secondaryAnimation) => CreatePostView(
-          key: args.key,
-          id: args.id,
-          promo: args.promo,
-        ),
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            CreatePostView(data.pathParams['id'].value),
         settings: data,
-        transitionsBuilder: TransitionsBuilders.fadeIn,
         transitionDuration: const Duration(milliseconds: 0),
       );
     },
     LiveStreamDetailsView: (data) {
       return PageRouteBuilder<dynamic>(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            LiveStreamDetailsView(),
+            LiveStreamDetailsView(data.pathParams['id'].value),
         settings: data,
-        transitionsBuilder: TransitionsBuilders.fadeIn,
         transitionDuration: const Duration(milliseconds: 0),
       );
     },
     CreateLiveStreamView: (data) {
       return PageRouteBuilder<dynamic>(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            CreateLiveStreamView(),
+            CreateLiveStreamView(data.pathParams['id'].value),
         settings: data,
-        transitionsBuilder: TransitionsBuilders.fadeIn,
         transitionDuration: const Duration(milliseconds: 0),
       );
     },
     AllSearchResultsView: (data) {
       return PageRouteBuilder<dynamic>(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            AllSearchResultsView(),
+            AllSearchResultsView(data.pathParams['term'].value),
         settings: data,
-        transitionsBuilder: TransitionsBuilders.fadeIn,
         transitionDuration: const Duration(milliseconds: 0),
       );
     },
     UserProfileView: (data) {
       return PageRouteBuilder<dynamic>(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            UserProfileView(),
+            UserProfileView(data.pathParams['id'].value),
         settings: data,
-        transitionsBuilder: TransitionsBuilders.fadeIn,
         transitionDuration: const Duration(milliseconds: 0),
       );
     },
     EditProfileView: (data) {
       return PageRouteBuilder<dynamic>(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            EditProfileView(),
+            EditProfileView(data.pathParams['id'].value),
         settings: data,
-        transitionsBuilder: TransitionsBuilders.fadeIn,
         transitionDuration: const Duration(milliseconds: 0),
       );
     },
@@ -173,7 +159,6 @@ class WebblenRouter extends RouterBase {
         pageBuilder: (context, animation, secondaryAnimation) =>
             UserFollowersView(),
         settings: data,
-        transitionsBuilder: TransitionsBuilders.fadeIn,
         transitionDuration: const Duration(milliseconds: 0),
       );
     },
@@ -182,21 +167,8 @@ class WebblenRouter extends RouterBase {
         pageBuilder: (context, animation, secondaryAnimation) =>
             UserFollowingView(),
         settings: data,
-        transitionsBuilder: TransitionsBuilders.fadeIn,
         transitionDuration: const Duration(milliseconds: 0),
       );
     },
   };
-}
-
-/// ************************************************************************
-/// Arguments holder classes
-/// *************************************************************************
-
-/// CreatePostView arguments holder class
-class CreatePostViewArguments {
-  final Key key;
-  final String id;
-  final double promo;
-  CreatePostViewArguments({this.key, this.id, this.promo});
 }

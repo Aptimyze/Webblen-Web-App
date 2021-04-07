@@ -1,9 +1,7 @@
-import 'package:auto_route/auto_route.dart';
-import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
-import 'package:webblen_web_app/app/router.gr.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
+import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/enums/bottom_sheet_type.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
 import 'package:webblen_web_app/models/webblen_ticket_distro.dart';
@@ -51,12 +49,11 @@ class LiveStreamDetailsViewModel extends BaseViewModel {
   WebblenTicketDistro ticketDistro;
 
   ///INITIALIZE
-  initialize(BuildContext context) async {
+  initialize(String streamID) async {
     setBusy(true);
 
-    var routeData = RouteData.of(context);
     // .value will return the raw string value
-    String id = routeData.pathParams['id'].value;
+    String id = streamID;
 
     //get stream data
     var res = await _streamDataService.getStreamByID(id);

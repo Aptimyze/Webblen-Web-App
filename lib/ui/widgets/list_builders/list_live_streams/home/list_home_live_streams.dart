@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
-import 'package:webblen_web_app/app/locator.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
@@ -23,7 +22,7 @@ class ListHomeLiveStreams extends StatelessWidget {
       disposeViewModel: false,
       initialiseSpecialViewModelsOnce: true,
       onModelReady: (model) => model.initialize(),
-      viewModelBuilder: () => locator<ListHomeLiveStreamsModel>(),
+      viewModelBuilder: () => ListHomeLiveStreamsModel(),
       builder: (context, model, child) => model.isBusy
           ? Container()
           : model.dataResults.isEmpty

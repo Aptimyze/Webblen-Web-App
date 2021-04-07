@@ -1,10 +1,8 @@
-import 'package:injectable/injectable.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
-@singleton
 class RecentSearchViewModel extends BaseViewModel {
   NavigationService _navigationService = locator<NavigationService>();
   WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();

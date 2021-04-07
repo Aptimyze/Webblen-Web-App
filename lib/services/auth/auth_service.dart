@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_facebook_login_web/flutter_facebook_login_web.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class AuthService {
   static FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -98,10 +98,10 @@ class AuthService {
 
   //FACEBOOK AUTH
   Future loginWithFacebook() async {
-    final FacebookLoginWeb facebookSignIn = FacebookLoginWeb();
-    final FacebookLoginResult result = await facebookSignIn.logIn(['email']);
+    final FacebookAuth fbAuth = FacebookAuth.instance;
+    final LoginResult result = await fbAuth.login(permissions: ['email']);
     switch (result.status) {
-      case FacebookLoginStatus.loggedIn:
+      case LoginStatus.success:
         final AuthCredential credential = FacebookAuthProvider.credential(result.accessToken.token);
         FirebaseAuth.instance.signInWithCredential(credential).then((user) {
           if (user != null) {
@@ -111,10 +111,10 @@ class AuthService {
           }
         });
         break;
-      case FacebookLoginStatus.cancelledByUser:
+      case LoginStatus.cancelled:
         return "Cancelled Facebook Sign In";
         break;
-      case FacebookLoginStatus.error:
+      case LoginStatus.failed:
         return "There was an Issue Signing Into Facebook";
         break;
     }

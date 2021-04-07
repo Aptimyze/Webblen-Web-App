@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:injectable/injectable.dart';
 import 'package:stacked/stacked.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/search_result.dart';
 import 'package:webblen_web_app/services/algolia/algolia_search_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
-@singleton
 class CustomTopNavBarModel extends BaseViewModel {
   AlgoliaSearchService _algoliaSearchService = locator<AlgoliaSearchService>();
   WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();

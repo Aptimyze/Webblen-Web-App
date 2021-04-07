@@ -1,12 +1,11 @@
 import 'dart:html';
 import 'dart:typed_data';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
-import 'package:webblen_web_app/app/router.gr.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
+import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/enums/bottom_sheet_type.dart';
 import 'package:webblen_web_app/enums/post_type.dart';
 import 'package:webblen_web_app/models/webblen_post.dart';
@@ -50,11 +49,10 @@ class CreatePostViewModel extends BaseViewModel {
   double promo;
 
   ///INITIALIZE
-  initialize({BuildContext context}) async {
+  initialize(String postID) async {
     setBusy(true);
-    var routeData = RouteData.of(context);
     // .value will return the raw string value
-    id = routeData.pathParams['id'].value;
+    id = postID;
     //check if editing existing post
     if (id != null) {
       WebblenPost existingPost = await _postDataService.getPostToEditByID(id);

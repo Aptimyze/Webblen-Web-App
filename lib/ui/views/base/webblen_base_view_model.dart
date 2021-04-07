@@ -3,13 +3,12 @@ import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:injectable/injectable.dart';
 import 'package:js/js.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:stacked_themes/stacked_themes.dart';
-import 'package:webblen_web_app/app/locator.dart';
-import 'package:webblen_web_app/app/router.gr.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
+import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/enums/bottom_sheet_type.dart';
 import 'package:webblen_web_app/enums/init_error_status.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
@@ -29,7 +28,6 @@ import 'package:webblen_web_app/utils/custom_string_methods.dart';
 import 'package:webblen_web_app/utils/network_status.dart';
 import 'package:webblen_web_app/utils/url_handler.dart';
 
-@lazySingleton
 class WebblenBaseViewModel extends StreamViewModel<WebblenUser> {
   ///SERVICES
   ThemeService _themeService = locator<ThemeService>();

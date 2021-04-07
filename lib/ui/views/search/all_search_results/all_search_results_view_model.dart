@@ -1,8 +1,7 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
 import 'package:webblen_web_app/models/webblen_post.dart';
@@ -46,9 +45,8 @@ class AllSearchResultsViewModel extends BaseViewModel {
 
   int resultsLimit = 15;
 
-  initialize(BuildContext context) async {
-    var routeData = RouteData.of(context);
-    searchTerm = routeData.pathParams['term'].value;
+  initialize(String term) async {
+    searchTerm = term;
     searchTextController.text = searchTerm;
     notifyListeners();
     postScrollController.addListener(() {
@@ -242,9 +240,6 @@ class AllSearchResultsViewModel extends BaseViewModel {
     _navigationService.back();
   }
 
-  navigateToHomePage() {
-    _navigationService.popRepeated(2);
-  }
 //
 // navigateToPage() {
 //   _navigationService.navigateTo(PageRouteName);

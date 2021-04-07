@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
-import 'package:webblen_web_app/app/locator.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/models/webblen_post.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
@@ -25,7 +24,7 @@ class _ListHomePostsState extends State<ListHomePosts> with AutomaticKeepAliveCl
       disposeViewModel: false,
       initialiseSpecialViewModelsOnce: true,
       onModelReady: (model) => model.initialize(),
-      viewModelBuilder: () => locator<ListHomePostsModel>(),
+      viewModelBuilder: () => ListHomePostsModel(),
       builder: (context, model, child) => model.isBusy
           ? Container()
           : model.dataResults.isEmpty
@@ -66,11 +65,13 @@ class _ListHomePostsState extends State<ListHomePosts> with AutomaticKeepAliveCl
                                 );
                         } else {
                           if (model.moreDataAvailable) {
-                            model.loadAdditionalData();
-                            return Align(
-                              alignment: Alignment.center,
-                              child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
-                            );
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              model.loadAdditionalData();
+                              return Align(
+                                alignment: Alignment.center,
+                                child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
+                              );
+                            });
                           }
                           return Container();
                         }

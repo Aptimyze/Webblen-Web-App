@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/enums/bottom_sheet_type.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/auth/auth_service.dart';
@@ -33,15 +32,14 @@ class EditProfileViewModel extends BaseViewModel {
   String initialProfileBio = "";
   String initialWebsiteLink = "";
 
-  initialize(BuildContext context) async {
+  initialize(String uid) async {
     setBusy(true);
-    await getParams(context);
+    await getParams(uid);
     notifyListeners();
     setBusy(false);
   }
 
-  getParams(BuildContext context) async {
-    args = RouteData.of(context).arguments;
+  getParams(String uid) async {
     id = args['id'] ?? "";
     WebblenUser user = await _userDataService.getWebblenUserByID(id);
     initialProfilePicURL = user.profilePicURL ?? "";

@@ -1,10 +1,9 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/enums/bottom_sheet_type.dart';
 import 'package:webblen_web_app/models/webblen_notification.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
@@ -88,14 +87,14 @@ class UserProfileViewModel extends StreamViewModel<WebblenUser> {
   }
 
   ///INITIALIZE
-  initialize({BuildContext context, TabController tabController}) async {
+  initialize({String id, TabController tabController}) async {
     //set busy status
     setBusy(true);
 
     //get user
-    var routeData = RouteData.of(context);
+
     // .value will return the raw string value
-    uid = routeData.pathParams['id'].value;
+    uid = id;
     notifyListeners();
 
     //load additional data on scroll

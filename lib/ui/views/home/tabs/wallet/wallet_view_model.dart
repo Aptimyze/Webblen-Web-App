@@ -1,14 +1,12 @@
-import 'package:injectable/injectable.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/enums/bottom_sheet_type.dart';
 import 'package:webblen_web_app/models/user_stripe_info.dart';
 import 'package:webblen_web_app/services/stripe/stripe_connect_account_service.dart';
 import 'package:webblen_web_app/services/stripe/stripe_payment_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
-@singleton
 class WalletViewModel extends StreamViewModel<UserStripeInfo> {
   NavigationService _navigationService = locator<NavigationService>();
   StripeConnectAccountService _stripeConnectAccountService = locator<StripeConnectAccountService>();

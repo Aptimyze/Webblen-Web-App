@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked/stacked_annotations.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
@@ -16,6 +17,9 @@ import 'package:webblen_web_app/ui/widgets/tags/tag_button.dart';
 import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 
 class LiveStreamDetailsView extends StatelessWidget {
+  final String id;
+  LiveStreamDetailsView(@PathParam() this.id);
+
   final FocusNode focusNode = FocusNode();
 
   Widget sectionDivider({@required String sectionName}) {
@@ -281,7 +285,7 @@ class LiveStreamDetailsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<LiveStreamDetailsViewModel>.reactive(
-      onModelReady: (model) => model.initialize(context),
+      onModelReady: (model) => model.initialize(id),
       viewModelBuilder: () => LiveStreamDetailsViewModel(),
       builder: (context, model, child) => Scaffold(
         appBar: PreferredSize(

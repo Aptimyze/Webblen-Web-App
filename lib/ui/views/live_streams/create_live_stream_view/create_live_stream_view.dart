@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked/stacked_annotations.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
@@ -32,6 +33,9 @@ import 'package:webblen_web_app/ui/widgets/tags/tag_dropdown_field.dart';
 import 'create_live_stream_view_model.dart';
 
 class CreateLiveStreamView extends StatelessWidget {
+  final String id;
+  CreateLiveStreamView(@PathParam() this.id);
+
   Widget selectedTags(CreateLiveStreamViewModel model) {
     return model.stream.tags == null || model.stream.tags.isEmpty
         ? Container()
@@ -602,7 +606,7 @@ class CreateLiveStreamView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<CreateLiveStreamViewModel>.reactive(
-      onModelReady: (model) => model.initialize(context: context),
+      onModelReady: (model) => model.initialize(streamID: id),
       viewModelBuilder: () => CreateLiveStreamViewModel(),
       builder: (context, model, child) => Scaffold(
         appBar: PreferredSize(

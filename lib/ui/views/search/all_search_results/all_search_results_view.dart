@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked/stacked_annotations.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
@@ -16,6 +17,9 @@ import 'package:webblen_web_app/ui/widgets/search/search_field.dart';
 import 'all_search_results_view_model.dart';
 
 class AllSearchResultsView extends StatefulWidget {
+  final String term;
+  AllSearchResultsView(@PathParam() this.term);
+
   @override
   _AllSearchResultsViewState createState() => _AllSearchResultsViewState();
 }
@@ -50,7 +54,7 @@ class _AllSearchResultsViewState extends State<AllSearchResultsView> with Single
           ),
           SizedBox(width: 8),
           GestureDetector(
-            onTap: () => model.navigateToHomePage(),
+            onTap: () => model.navigateToPreviousPage(),
             child: CustomText(
               text: "Cancel",
               textAlign: TextAlign.right,
@@ -116,7 +120,7 @@ class _AllSearchResultsViewState extends State<AllSearchResultsView> with Single
   Widget build(BuildContext context) {
     return ViewModelBuilder<AllSearchResultsViewModel>.reactive(
       disposeViewModel: true,
-      onModelReady: (model) => model.initialize(context),
+      onModelReady: (model) => model.initialize(widget.term),
       viewModelBuilder: () => AllSearchResultsViewModel(),
       builder: (context, model, child) => Scaffold(
         appBar: PreferredSize(

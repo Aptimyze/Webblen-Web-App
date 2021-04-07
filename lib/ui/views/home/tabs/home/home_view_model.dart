@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:injectable/injectable.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
 import 'package:webblen_web_app/models/webblen_post.dart';
@@ -15,7 +14,6 @@ import 'package:webblen_web_app/services/firestore/data/post_data_service.dart';
 import 'package:webblen_web_app/services/location/location_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
-@singleton
 class HomeViewModel extends BaseViewModel {
   ///SERVICES
   PlatformDataService _platformDataService = locator<PlatformDataService>();
@@ -66,8 +64,6 @@ class HomeViewModel extends BaseViewModel {
   bool moreStreamsAvailable = true;
 
   int resultsLimit = 30;
-
-
 
   ///INITIALIZE
 

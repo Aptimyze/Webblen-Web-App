@@ -1,11 +1,10 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:geocoder/geocoder.dart';
 import 'package:js/js.dart';
 import 'package:location/location.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/services/firestore/data/platform_data_service.dart';
 import 'package:webblen_web_app/services/location/google_places_service.dart';
 import 'package:webblen_web_app/services/location/location_js.dart';
@@ -112,11 +111,11 @@ class LocationService {
 
   Future<String> getAddressFromLatLon(double lat, double lon) async {
     String foundAddress;
-    Coordinates coordinates = Coordinates(lat, lon);
-    String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
-    var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates);
-    var address = addresses.first;
-    foundAddress = address.addressLine;
+    // Coordinates coordinates = Coordinates(lat, lon);
+    // String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
+    // var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates);
+    // var address = addresses.first;
+    // foundAddress = address.addressLine;
     return foundAddress;
   }
 
@@ -144,11 +143,11 @@ class LocationService {
 
   Future<String> getProvinceFromLatLon(double lat, double lon) async {
     String province;
-    Coordinates coordinates = Coordinates(lat, lon);
-    String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
-    var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates);
-    var address = addresses.first;
-    province = address.adminArea;
+    // Coordinates coordinates = Coordinates(lat, lon);
+    // String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
+    // var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates);
+    // var address = addresses.first;
+    // province = address.adminArea;
     return province;
   }
 

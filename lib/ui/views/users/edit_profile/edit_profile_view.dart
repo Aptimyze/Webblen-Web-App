@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked/stacked_annotations.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
@@ -11,10 +12,13 @@ import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 import 'edit_profile_view_model.dart';
 
 class EditProfileView extends StatelessWidget {
+  final String id;
+  EditProfileView(@PathParam() this.id);
+
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<EditProfileViewModel>.reactive(
-      onModelReady: (model) => model.initialize(context),
+      onModelReady: (model) => model.initialize(id),
       viewModelBuilder: () => EditProfileViewModel(),
       builder: (context, model, child) => GestureDetector(
         onTap: FocusScope.of(context).unfocus,

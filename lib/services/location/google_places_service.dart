@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 
 import 'location_service.dart';
 
@@ -35,7 +35,7 @@ class GooglePlacesService {
   Future<String> googleGetCityFromZip({@required String key, @required String input}) async {
     String cityName;
     final String requestURL = "https://maps.googleapis.com/maps/api/geocode/json?address=$input&key=$key";
-    Response response = await get(requestURL);
+    Response response = await get(Uri.parse(requestURL));
     if (response.statusCode == 200) {
       Map<String, dynamic> val = jsonDecode(response.body);
       if (val['error_message'] != null) {
@@ -53,7 +53,7 @@ class GooglePlacesService {
   Future<String> googleGetProvinceFromZip({@required String key, @required String input}) async {
     String cityName;
     final String requestURL = "https://maps.googleapis.com/maps/api/geocode/json?address=$input&key=$key";
-    Response response = await get(requestURL);
+    Response response = await get(Uri.parse(requestURL));
     if (response.statusCode == 200) {
       Map<String, dynamic> val = jsonDecode(response.body);
       if (val['error_message'] != null) {

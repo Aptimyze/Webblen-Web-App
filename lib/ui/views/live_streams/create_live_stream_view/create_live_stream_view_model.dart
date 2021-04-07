@@ -1,15 +1,14 @@
 import 'dart:html';
 import 'dart:typed_data';
 
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
-import 'package:webblen_web_app/app/router.gr.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
+import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/constants/time.dart';
 import 'package:webblen_web_app/enums/bottom_sheet_type.dart';
@@ -139,7 +138,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
   double promo;
 
   ///INITIALIZE
-  initialize({BuildContext context}) async {
+  initialize({String streamID}) async {
     setBusy(true);
 
     _sharedPreferences = await SharedPreferences.getInstance();
@@ -162,8 +161,8 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     twitterUsernameTextController.text = _sharedPreferences.getString('twitterUsername');
     websiteTextController.text = _sharedPreferences.getString('website');
 
-    var routeData = RouteData.of(context);
-    id = routeData.pathParams['id'].value;
+    id = streamID;
+
     //check if editing existing post
     if (id != null) {
       WebblenLiveStream existingStream = await _liveStreamDataService.getStreamForEditingByID(id);

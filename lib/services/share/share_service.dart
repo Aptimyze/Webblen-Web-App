@@ -1,7 +1,7 @@
-import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 
 class ShareService {
   DialogService _dialogService = locator<DialogService>();

@@ -1,5 +1,5 @@
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/enums/bottom_sheet_type.dart';
 import 'package:webblen_web_app/ui/bottom_sheets/user_options_bottom_sheets/current_user_options_bottom_sheet/current_user_options_bottom_sheet.dart';
 import 'package:webblen_web_app/ui/bottom_sheets/user_options_bottom_sheets/user_options_bottom_sheet/user_options_bottom_sheet.dart';

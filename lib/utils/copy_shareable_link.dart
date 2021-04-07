@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 
 copyShareableLink({String link}) async {
   DialogService dialogService = locator<DialogService>();

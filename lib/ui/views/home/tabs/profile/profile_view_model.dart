@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:injectable/injectable.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/enums/bottom_sheet_type.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
@@ -18,7 +17,6 @@ import 'package:webblen_web_app/services/share/share_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 import 'package:webblen_web_app/utils/url_handler.dart';
 
-@singleton
 class ProfileViewModel extends BaseViewModel {
   AuthService _authService = locator<AuthService>();
   NavigationService _navigationService = locator<NavigationService>();

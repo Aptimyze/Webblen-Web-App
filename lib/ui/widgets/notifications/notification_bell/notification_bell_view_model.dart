@@ -1,6 +1,6 @@
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/services/firestore/data/notification_data_service.dart';
 
 class NotificationBellViewModel extends StreamViewModel<int> {

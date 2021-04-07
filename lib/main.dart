@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:stacked_themes/stacked_themes.dart';
 import 'package:url_strategy/url_strategy.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
+import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/ui/bottom_sheets/setup_bottom_sheet_ui.dart';
 
-import 'app/router.gr.dart';
 import 'app/theme_config.dart';
 
 void main() async {
@@ -46,7 +46,7 @@ class WebblenWebApp extends StatelessWidget {
         darkTheme: darkTheme,
         themeMode: themeMode,
         initialRoute: Routes.WebblenBaseViewRoute,
-        onGenerateRoute: WebblenRouter().onGenerateRoute,
+        onGenerateRoute: StackedRouter().onGenerateRoute,
         navigatorKey: StackedService.navigatorKey,
       ),
     );

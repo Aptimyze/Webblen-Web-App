@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
 import 'package:webblen_web_app/services/dynamic_links/dynamic_link_service.dart';

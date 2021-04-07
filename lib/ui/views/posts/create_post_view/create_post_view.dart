@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked/stacked_annotations.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/widgets/common/buttons/add_image_button.dart';
@@ -18,9 +19,7 @@ import 'create_post_view_model.dart';
 
 class CreatePostView extends StatelessWidget {
   final String id;
-  final double promo;
-
-  const CreatePostView({Key key, this.id, this.promo}) : super(key: key);
+  CreatePostView(@PathParam() this.id);
 
   Widget selectedTags(CreatePostViewModel model) {
     return model.post.tags == null || model.post.tags.isEmpty
@@ -196,7 +195,7 @@ class CreatePostView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<CreatePostViewModel>.reactive(
-      onModelReady: (model) => model.initialize(context: context),
+      onModelReady: (model) => model.initialize(id),
       viewModelBuilder: () => CreatePostViewModel(),
       builder: (context, model, child) => Scaffold(
         appBar: PreferredSize(

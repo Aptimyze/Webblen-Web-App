@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
-import 'package:webblen_web_app/app/router.gr.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
+import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/models/search_result.dart';
 import 'package:webblen_web_app/services/algolia/algolia_search_service.dart';
 import 'package:webblen_web_app/services/auth/auth_service.dart';

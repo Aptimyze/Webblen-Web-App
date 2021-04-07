@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:webblen_web_app/app/locator.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/webblen_content_gift_pool.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/firestore/common/firestore_storage_service.dart';
