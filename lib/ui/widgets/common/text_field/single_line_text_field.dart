@@ -6,17 +6,17 @@ import 'package:webblen_web_app/ui/widgets/common/text_field/text_field_containe
 class SingleLineTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
-  final int textLimit;
+  final int? textLimit;
   final bool isPassword;
-  final bool enabled;
-  final Function(String) onChanged;
-  final Function() onFieldSubmitted;
-  final TextInputType keyboardType;
+  final bool? enabled;
+  final Function(String)? onChanged;
+  final Function()? onFieldSubmitted;
+  final TextInputType? keyboardType;
   SingleLineTextField(
-      {@required this.controller,
-      @required this.hintText,
-      @required this.textLimit,
-      @required this.isPassword,
+      {required this.controller,
+      required this.hintText,
+      required this.textLimit,
+      required this.isPassword,
       this.enabled,
       this.onChanged,
       this.onFieldSubmitted,
@@ -37,8 +37,8 @@ class SingleLineTextField extends StatelessWidget {
               ],
         style: TextStyle(color: appFontColor()),
         cursorColor: appFontColor(),
-        onChanged: onChanged == null ? null : (val) => onChanged(val),
-        onFieldSubmitted: onFieldSubmitted == null ? null : (val) => onFieldSubmitted(),
+        onChanged: onChanged == null ? null : (val) => onChanged!(val),
+        onFieldSubmitted: onFieldSubmitted == null ? null : (val) => onFieldSubmitted!(),
         keyboardType: keyboardType == null ? TextInputType.text : keyboardType,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(horizontal: 4, vertical: 4),

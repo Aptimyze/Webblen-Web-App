@@ -39,6 +39,11 @@ class UserFollowingView extends StatelessWidget {
             header: "No Recent Accounts Found",
             subHeader: "You are not following anyone",
             refreshData: null,
+            secondaryActionButtonTitle: '',
+            scrollController: null,
+            mainAction: () {},
+            mainActionButtonTitle: '',
+            secondaryAction: () {},
           )
         : listUserResults(model);
   }
@@ -58,7 +63,7 @@ class UserFollowingView extends StatelessWidget {
       onModelReady: (model) => model.initialize(),
       viewModelBuilder: () => UserFollowingViewModel(),
       builder: (context, model, child) => Scaffold(
-        appBar: appBar(model),
+        appBar: appBar(model) as PreferredSizeWidget?,
         body: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: Container(

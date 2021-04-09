@@ -3,9 +3,9 @@ import 'package:webblen_web_app/constants/time.dart';
 import 'package:webblen_web_app/ui/widgets/common/text_field/text_field_container.dart';
 
 class TimeDropdown extends StatelessWidget {
-  final String selectedTime;
-  final Function(String) onChanged;
-  TimeDropdown({@required this.selectedTime, @required this.onChanged});
+  final String? selectedTime;
+  final Function(String?) onChanged;
+  TimeDropdown({required this.selectedTime, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class TimeDropdown extends StatelessWidget {
               child: Text(val),
             );
           }).toList(),
-          onChanged: (val) => onChanged(val),
+          onChanged: (dynamic val) => onChanged(val),
         ),
       ),
     );

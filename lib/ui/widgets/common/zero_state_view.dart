@@ -9,28 +9,28 @@ import 'custom_text.dart';
 class ZeroStateView extends StatelessWidget {
   final String imageAssetName;
   final double imageSize;
-  final double opacity;
+  final double? opacity;
   final String header;
   final String subHeader;
-  final String mainActionButtonTitle;
-  final VoidCallback mainAction;
-  final String secondaryActionButtonTitle;
-  final VoidCallback secondaryAction;
-  final VoidCallback refreshData;
-  final ScrollController scrollController;
+  final String? mainActionButtonTitle;
+  final VoidCallback? mainAction;
+  final String? secondaryActionButtonTitle;
+  final VoidCallback? secondaryAction;
+  final VoidCallback? refreshData;
+  final ScrollController? scrollController;
 
   ZeroStateView({
-    @required this.imageAssetName,
-    @required this.imageSize,
+    required this.imageAssetName,
+    required this.imageSize,
     this.opacity,
-    @required this.header,
-    @required this.subHeader,
-    @required this.mainActionButtonTitle,
-    @required this.mainAction,
-    @required this.secondaryActionButtonTitle,
-    @required this.secondaryAction,
-    @required this.scrollController,
-    @required this.refreshData,
+    required this.header,
+    required this.subHeader,
+    required this.mainActionButtonTitle,
+    required this.mainAction,
+    required this.secondaryActionButtonTitle,
+    required this.secondaryAction,
+    required this.scrollController,
+    required this.refreshData,
   });
 
   Widget customImage() {
@@ -39,7 +39,7 @@ class ZeroStateView extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.0),
         child: Opacity(
-          opacity: opacity != null ? opacity : 1.0,
+          opacity: opacity != null ? opacity! : 1.0,
           child: Image.asset(
             'assets/images/$imageAssetName.png',
             height: imageSize,
@@ -61,7 +61,7 @@ class ZeroStateView extends StatelessWidget {
           imageAssetName == null ? Container() : customImage(),
           verticalSpaceSmall,
           Opacity(
-            opacity: opacity != null ? opacity : 1.0,
+            opacity: opacity != null ? opacity! : 1.0,
             child: CustomText(
               text: header,
               fontSize: 18,
@@ -72,7 +72,7 @@ class ZeroStateView extends StatelessWidget {
           ),
           verticalSpaceTiny,
           Opacity(
-            opacity: opacity != null ? opacity : 1.0,
+            opacity: opacity != null ? opacity! : 1.0,
             child: CustomText(
               text: subHeader,
               fontSize: 14,
@@ -118,7 +118,7 @@ class ZeroStateView extends StatelessWidget {
     return refreshData == null
         ? list()
         : RefreshIndicator(
-            onRefresh: refreshData,
+            onRefresh: refreshData as Future<void> Function(),
             child: list(),
           );
   }

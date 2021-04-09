@@ -12,8 +12,8 @@ import '../custom_text.dart';
 class ImageButton extends StatelessWidget {
   final VoidCallback onTap;
   final bool isOptional;
-  final double uploadProgress;
-  ImageButton({@required this.onTap, @required this.isOptional, @required this.uploadProgress});
+  final double? uploadProgress;
+  ImageButton({required this.onTap, required this.isOptional, required this.uploadProgress});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class ImageButton extends StatelessWidget {
                 size: 24,
               ),
               verticalSpaceTiny,
-              uploadProgress == null
+              uploadProgress == 0
                   ? Column(
                       children: [
                         CustomText(
@@ -56,7 +56,7 @@ class ImageButton extends StatelessWidget {
                       ],
                     )
                   : CustomText(
-                      text: (uploadProgress * 100).toStringAsFixed(0) + "%",
+                      text: (uploadProgress! * 100).toStringAsFixed(0) + "%",
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: appIconColorAlt(),
@@ -71,10 +71,10 @@ class ImageButton extends StatelessWidget {
 
 class ImagePreviewButton extends StatelessWidget {
   final VoidCallback onTap;
-  final Uint8List imgByteMemory;
-  final String imgURL;
+  final Uint8List? imgByteMemory;
+  final String? imgURL;
 
-  ImagePreviewButton({@required this.onTap, @required this.imgByteMemory, @required this.imgURL});
+  ImagePreviewButton({required this.onTap, required this.imgByteMemory, required this.imgURL});
 
   @override
   Widget build(BuildContext context) {
@@ -89,11 +89,11 @@ class ImagePreviewButton extends StatelessWidget {
           ),
           child: imgByteMemory == null
               ? FadeInImage.memoryNetwork(
-                  image: imgURL,
+                  image: imgURL!,
                   fit: BoxFit.cover,
                   placeholder: kTransparentImage,
                 )
-              : Image.memory(imgByteMemory, fit: BoxFit.contain, filterQuality: FilterQuality.medium),
+              : Image.memory(imgByteMemory!, fit: BoxFit.contain, filterQuality: FilterQuality.medium),
         ),
       ),
     ).showCursorOnHover;

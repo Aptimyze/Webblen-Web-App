@@ -10,11 +10,11 @@ import 'package:webblen_web_app/ui/widgets/common/buttons/custom_button.dart';
 import 'current_user_options_bottom_sheet_model.dart';
 
 class CurrentUserOptionsBottomSheet extends StatelessWidget {
-  final SheetRequest request;
-  final Function(SheetResponse) completer;
+  final SheetRequest? request;
+  final Function(SheetResponse)? completer;
 
   const CurrentUserOptionsBottomSheet({
-    Key key,
+    Key? key,
     this.request,
     this.completer,
   }) : super(key: key);
@@ -41,7 +41,7 @@ class CurrentUserOptionsBottomSheet extends StatelessWidget {
               ),
               height: 45,
               width: getValueForScreenType(context: context, mobile: screenWidth(context), tablet: 600, desktop: 700),
-              onPressed: () => completer(SheetResponse(responseData: "saved")),
+              onPressed: () => completer!(SheetResponse(responseData: "saved")),
               backgroundColor: appButtonColor(),
               elevation: 1,
               text: "Saved",
@@ -56,7 +56,7 @@ class CurrentUserOptionsBottomSheet extends StatelessWidget {
               ),
               height: 45,
               width: getValueForScreenType(context: context, mobile: screenWidth(context), tablet: 600, desktop: 700),
-              onPressed: () => completer(SheetResponse(responseData: "edit profile")),
+              onPressed: () => completer!(SheetResponse(responseData: "edit profile")),
               backgroundColor: appButtonColor(),
               elevation: 1,
               text: "Edit Profile",
@@ -71,7 +71,7 @@ class CurrentUserOptionsBottomSheet extends StatelessWidget {
               ),
               height: 45,
               width: getValueForScreenType(context: context, mobile: screenWidth(context), tablet: 600, desktop: 700),
-              onPressed: () => completer(SheetResponse(responseData: "share profile")),
+              onPressed: () => completer!(SheetResponse(responseData: "share profile")),
               backgroundColor: appButtonColor(),
               elevation: 1,
               text: "Share Profile",
@@ -86,7 +86,7 @@ class CurrentUserOptionsBottomSheet extends StatelessWidget {
               ),
               height: 45,
               width: getValueForScreenType(context: context, mobile: screenWidth(context), tablet: 600, desktop: 700),
-              onPressed: () => completer(SheetResponse(responseData: "log out")),
+              onPressed: () => completer!(SheetResponse(responseData: "log out")),
               backgroundColor: appButtonColor(),
               elevation: 1,
               text: "Log Out",

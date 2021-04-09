@@ -19,12 +19,12 @@ class DiscountForm extends StatelessWidget {
   final VoidCallback deleteDiscount;
 
   DiscountForm(
-      {@required this.editingDiscount,
-      @required this.discountNameTextController,
-      @required this.discountLimitTextController,
-      @required this.discountValueTextController,
-      @required this.validateAndSubmitDiscount,
-      @required this.deleteDiscount});
+      {required this.editingDiscount,
+      required this.discountNameTextController,
+      required this.discountLimitTextController,
+      required this.discountValueTextController,
+      required this.validateAndSubmitDiscount,
+      required this.deleteDiscount});
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +103,9 @@ class DiscountForm extends StatelessWidget {
             children: <Widget>[
               CustomButton(
                 text: !editingDiscount ? "Add Discount" : "Update Discount",
+                textSize: 14,
                 textColor: Colors.white,
+                elevation: 1,
                 backgroundColor: CustomColors.darkMountainGreen,
                 height: 30.0,
                 width: 120,

@@ -9,7 +9,7 @@ import 'location_error_view_model.dart';
 
 class LocationErrorView extends StatelessWidget {
   final VoidCallback tryAgainAction;
-  LocationErrorView({@required this.tryAgainAction});
+  LocationErrorView({required this.tryAgainAction});
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<LocationErrorViewModel>.nonReactive(
@@ -40,6 +40,7 @@ class LocationErrorView extends StatelessWidget {
               height: 50,
               width: screenWidth(context),
               onPressed: tryAgainAction,
+              textSize: 14,
             ),
             SizedBox(height: 4),
             CustomButton(
@@ -51,6 +52,7 @@ class LocationErrorView extends StatelessWidget {
               height: 50,
               width: screenWidth(context),
               onPressed: () => model.openAppSettings(),
+              textSize: 14,
             ),
           ],
         ),

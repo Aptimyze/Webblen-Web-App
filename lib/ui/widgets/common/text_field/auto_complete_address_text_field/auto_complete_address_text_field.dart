@@ -11,7 +11,7 @@ class AutoCompleteAddressTextField extends StatelessWidget {
   final String hintText;
   final Function(Map<String, dynamic>) onSelectedAddress;
 
-  AutoCompleteAddressTextField({@required this.initialValue, @required this.hintText, @required this.onSelectedAddress});
+  AutoCompleteAddressTextField({required this.initialValue, required this.hintText, required this.onSelectedAddress});
 
   @override
   Widget build(BuildContext context) {
@@ -40,11 +40,11 @@ class AutoCompleteAddressTextField extends StatelessWidget {
             autofocus: false,
           ),
           suggestionsCallback: (searchTerm) async {
-            Map<String, dynamic> res = await model.googlePlacesService.googleSearchAutoComplete(key: model.googleAPIKey, input: searchTerm);
+            Map<String, dynamic> res = await model.googlePlacesService!.googleSearchAutoComplete(key: model.googleAPIKey, input: searchTerm);
             model.setPlacesSearchResults(res);
             return res.keys.toList();
           },
-          itemBuilder: (context, place) {
+          itemBuilder: (context, dynamic place) {
             return ListTile(
               title: Text(
                 place,
@@ -52,7 +52,7 @@ class AutoCompleteAddressTextField extends StatelessWidget {
               ),
             );
           },
-          onSuggestionSelected: (val) async {
+          onSuggestionSelected: (dynamic val) async {
             Map<String, dynamic> details = await model.getPlaceDetails(val);
             onSelectedAddress(details);
           },

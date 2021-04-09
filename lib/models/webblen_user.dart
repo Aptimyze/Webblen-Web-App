@@ -1,29 +1,29 @@
 class WebblenUser {
   // ignore: non_constant_identifier_names
-  double WBLN;
-  List achievements;
-  double ap;
-  int apLvl;
-  List blockedUsers;
-  String emailAddress;
-  int eventsToLvlUp;
-  String fbAccessToken;
-  List followers;
-  List following;
-  String googleAccessToken;
-  String googleIDToken;
-  String id;
-  bool isAdmin;
-  String profilePicURL;
-  String username;
-  String bio;
-  String website;
-  bool isPrivate;
-  List recentSearchTerms;
-  bool onboarded;
-  String lastSeenZipcode;
-  String lastSeenCity;
-  List associatedTags;
+  double? WBLN;
+  List? achievements;
+  double? ap;
+  int? apLvl;
+  List? blockedUsers;
+  String? emailAddress;
+  int? eventsToLvlUp;
+  String? fbAccessToken;
+  List? followers;
+  List? following;
+  String? googleAccessToken;
+  String? googleIDToken;
+  String? id;
+  bool? isAdmin;
+  String? profilePicURL;
+  String? username;
+  String? bio;
+  String? website;
+  bool? isPrivate;
+  List? recentSearchTerms;
+  bool? onboarded;
+  String? lastSeenZipcode;
+  String? lastSeenCity;
+  List? associatedTags;
 
   WebblenUser({
     // ignore: non_constant_identifier_names
@@ -107,4 +107,13 @@ class WebblenUser {
         'lastSeenCity': this.lastSeenCity,
         'associatedTags': this.associatedTags,
       };
+
+  //checks if obj is valid
+  bool isValid() {
+    bool isValid = true;
+    if (id == null) {
+      isValid = false;
+    }
+    return isValid;
+  }
 }

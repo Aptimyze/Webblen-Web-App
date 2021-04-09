@@ -9,11 +9,11 @@ import 'package:webblen_web_app/ui/widgets/common/buttons/custom_button.dart';
 import 'add_content_bottom_sheet_model.dart';
 
 class AddContentBottomSheet extends StatelessWidget {
-  final SheetRequest request;
-  final Function(SheetResponse) completer;
+  final SheetRequest? request;
+  final Function(SheetResponse)? completer;
 
   const AddContentBottomSheet({
-    Key key,
+    Key? key,
     this.request,
     this.completer,
   }) : super(key: key);
@@ -34,7 +34,7 @@ class AddContentBottomSheet extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CustomButton(
-              onPressed: () => completer(SheetResponse(responseData: "new post")),
+              onPressed: () => completer!(SheetResponse(responseData: "new post")),
               text: "New Post",
               textSize: 16,
               textColor: appFontColor(),
@@ -46,7 +46,7 @@ class AddContentBottomSheet extends StatelessWidget {
             ),
             SizedBox(height: 16),
             CustomButton(
-              onPressed: () => completer(SheetResponse(responseData: "new stream")),
+              onPressed: () => completer!(SheetResponse(responseData: "new stream")),
               text: "New Stream",
               textSize: 16,
               textColor: appFontColor(),
@@ -58,7 +58,7 @@ class AddContentBottomSheet extends StatelessWidget {
             ),
             SizedBox(height: 16),
             CustomButton(
-              onPressed: () => completer(SheetResponse(responseData: "new event")),
+              onPressed: () => completer!(SheetResponse(responseData: "new event")),
               text: "New Event",
               textSize: 16,
               textColor: appFontColor(),

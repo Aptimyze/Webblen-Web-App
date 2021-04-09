@@ -10,11 +10,11 @@ class ListNotifications extends StatelessWidget {
   final VoidCallback refreshData;
   final PageStorageKey pageStorageKey;
   final ScrollController scrollController;
-  ListNotifications({@required this.refreshData, @required this.data, @required this.pageStorageKey, @required this.scrollController});
+  ListNotifications({required this.refreshData, required this.data, required this.pageStorageKey, required this.scrollController});
 
   Widget listCauses() {
     return RefreshIndicator(
-      onRefresh: refreshData,
+      onRefresh: refreshData as Future<void> Function(),
       backgroundColor: appBackgroundColor,
       child: ListView.builder(
         physics: AlwaysScrollableScrollPhysics(),

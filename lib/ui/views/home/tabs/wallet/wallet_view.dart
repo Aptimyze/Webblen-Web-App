@@ -56,7 +56,7 @@ class WalletView extends StatelessWidget {
           color: appBackgroundColor,
           child: SafeArea(
             child: Container(
-              child: model.webblenBaseViewModel.user == null
+              child: model.webblenBaseViewModel!.user == null
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -79,7 +79,7 @@ class WalletView extends StatelessWidget {
                             textSize: 16,
                             height: 30,
                             width: 200,
-                            onPressed: () => model.webblenBaseViewModel.navigateToAuthView(),
+                            onPressed: () => model.webblenBaseViewModel!.navigateToAuthView(),
                             backgroundColor: appBackgroundColor,
                             textColor: appFontColor(),
                             elevation: 1.0,
@@ -111,8 +111,8 @@ class WalletView extends StatelessWidget {
                                                     SizedBox(height: 8.0),
                                                     USDBalanceBlock(
                                                       onPressed: () {},
-                                                      balance: model.userStripeInfo.availableBalance ?? 0.00,
-                                                      pendingBalance: model.userStripeInfo.pendingBalance ?? 0.00,
+                                                      balance: model.userStripeInfo!.availableBalance ?? 0.00,
+                                                      pendingBalance: model.userStripeInfo!.pendingBalance ?? 0.00,
                                                       // onPressed: () => showStripeAcctBottomSheet(
                                                       //     verificationStatus, balance),
                                                     ),
@@ -126,7 +126,7 @@ class WalletView extends StatelessWidget {
                                     Padding(
                                       padding: EdgeInsets.symmetric(horizontal: 16),
                                       child: WebblenBalanceBlock(
-                                        balance: model.webblenBaseViewModel.user.WBLN,
+                                        balance: model.webblenBaseViewModel!.user!.WBLN,
                                         onPressed: () {},
                                         // balance: webblenBalance,
                                         // onPressed: () => showWebblenBottomSheet(webblenBalance),
@@ -264,8 +264,8 @@ class WalletView extends StatelessWidget {
                                                       SizedBox(height: 8.0),
                                                       USDBalanceBlock(
                                                         onPressed: () {},
-                                                        balance: model.userStripeInfo.availableBalance ?? 0.00,
-                                                        pendingBalance: model.userStripeInfo.pendingBalance ?? 0.00,
+                                                        balance: model.userStripeInfo!.availableBalance ?? 0.00,
+                                                        pendingBalance: model.userStripeInfo!.pendingBalance ?? 0.00,
                                                         // onPressed: () => showStripeAcctBottomSheet(
                                                         //     verificationStatus, balance),
                                                       ),
@@ -279,7 +279,7 @@ class WalletView extends StatelessWidget {
                                       Padding(
                                         padding: EdgeInsets.symmetric(horizontal: 16),
                                         child: WebblenBalanceBlock(
-                                          balance: model.webblenBaseViewModel.user.WBLN,
+                                          balance: model.webblenBaseViewModel!.user!.WBLN,
                                           onPressed: () {},
                                           // balance: webblenBalance,
                                           // onPressed: () => showWebblenBottomSheet(webblenBalance),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_hooks/stacked_hooks.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
@@ -14,176 +16,40 @@ import 'package:webblen_web_app/ui/widgets/list_builders/list_posts/home/list_ho
 
 import 'home_view_model.dart';
 
-class HomeView extends StatefulWidget {
-  @override
-  _HomeViewState createState() => _HomeViewState();
-}
-
-class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
-  TabController _tabController;
-
-  Widget tabBar() {
-    return WebblenHomePageTabBar(
-      tabController: _tabController,
-    );
-  }
-
-  Widget body(HomeViewModel model) {
-    return TabBarView(
-      controller: _tabController,
-      children: [
-        ///FOR YOU
-        // ListForYouContent(
-        //   showPostOptions: (post) => model.showContentOptions(content: post),
-        //   showEventOptions: (event) => model.showContentOptions(content: event),
-        //   showStreamOptions: (stream) => model.showContentOptions(content: stream),
-        // ),
-
-        ///POSTS
-        ListHomePosts(),
-
-        ///STREAMS & VIDEO
-        ListHomeLiveStreams(
-          showStreamOptions: (content) => model.showContentOptions(content: content),
-        ),
-
-        ///EVENTS
-        // model.eventResults.isEmpty && !model.loadingEvents
-        //     ? ZeroStateView(
-        //         scrollController: null,
-        //         imageAssetName: "calendar",
-        //         imageSize: 200,
-        //         header: "No Events in ${model.cityName} Found",
-        //         subHeader: model.eventPromo != null
-        //             ? "Schedule an Event for ${model.cityName} Now and Earn ${model.eventPromo.toStringAsFixed(2)} WBLN!"
-        //             : "Schedule an Event for ${model.cityName} Now!",
-        //         mainActionButtonTitle: model.eventPromo != null ? "Earn ${model.eventPromo.toStringAsFixed(2)} WBLN" : "Create Event",
-        //         mainAction: () => model.createEventWithPromo(),
-        //         secondaryActionButtonTitle: null,
-        //         secondaryAction: null,
-        //         refreshData: () async {},
-        //       )
-        //     :
-        ListEvents(
-          refreshData: () async {},
-          dataResults: model.eventResults,
-          pageStorageKey: PageStorageKey('home-events'),
-          scrollController: null,
-          showEventOptions: (event) => model.showContentOptions(content: event),
-        ),
-      ],
-    );
-  }
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(
-      length: 3,
-      vsync: this,
-    );
-  }
-
+class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return ViewModelBuilder<HomeViewModel>.reactive(
       disposeViewModel: false,
-      initialiseSpecialViewModelsOnce: true,
-      onModelReady: (model) => model.initialize(),
       viewModelBuilder: () => locator<HomeViewModel>(),
       builder: (context, model, child) => Container(
         height: screenHeight(context),
         color: appBackgroundColor,
         child: Center(
           child: Container(
-            child: model.isBusy || model.webblenBaseViewModel.isBusy
+            child: model.webblenBaseViewModel.isBusy
                 ? Center(
                     child: CustomCircleProgressIndicator(
                       color: appActiveColor(),
                       size: 32,
                     ),
                   )
-                : model.webblenBaseViewModel.cityName == null
-                    ? Container(
-                        height: screenHeight(context),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              CustomText(
-                                text: "Welcome to Webblen",
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: appFontColor(),
-                              ),
-                              CustomText(
-                                text: "Choose a location and see what's going on",
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                                color: appFontColor(),
-                              ),
-                              verticalSpaceMedium,
-                              CustomButton(
-                                text: "Select a Location",
-                                textSize: 16,
-                                height: 30,
-                                width: 200,
-                                onPressed: () => model.webblenBaseViewModel.openFilter(),
-                                backgroundColor: appBackgroundColor,
-                                textColor: appFontColor(),
-                                elevation: 1.0,
-                                isBusy: false,
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    : ResponsiveBuilder(builder: (context, screenSize) {
-                        if (screenSize.isDesktop) {
-                          return Stack(
-                            children: [
-                              Column(
-                                children: [
-                                  verticalSpaceMedium,
-                                  tabBar(),
-                                  Expanded(
-                                    child: DefaultTabController(
-                                      length: 3,
-                                      child: body(model),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: _FeedController(
-                                  cityName: model.webblenBaseViewModel.cityName,
-                                  index: 0, //_tabController.index,
-                                  navigateToIndex: null, //(index) => _tabController.animateTo(index),
-                                ),
-                              ),
-                            ],
-                          );
-                        } else {
-                          return Column(
-                            children: [
-                              SizedBox(height: 16),
-                              tabBar(),
-                              SizedBox(height: 4),
-                              Expanded(
-                                child: DefaultTabController(
-                                  length: 3,
-                                  child: body(model),
-                                ),
-                              ),
-                            ],
-                          );
-                        }
-                      }),
+                : model.cityName.isEmpty
+                ? _ChooseLocationView(openFilter: () => model.customBottomSheetService.openFilter())
+                : ResponsiveBuilder(
+                    builder: (context, screenSize) {
+                      if (screenSize.isDesktop) {
+                        return _DesktopHomeBody();
+                      } else {
+                        return Column(
+                          children: [
+                            SizedBox(height: 16),
+                            _HomeBody(),
+                          ],
+                        );
+                      }
+                    },
+                  ),
           ),
         ),
       ),
@@ -191,15 +57,201 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
   }
 }
 
+class _ChooseLocationView extends StatelessWidget {
+  final VoidCallback openFilter;
+  _ChooseLocationView({required this.openFilter});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: screenHeight(context),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CustomText(
+              text: "Welcome to Webblen",
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: appFontColor(),
+            ),
+            CustomText(
+              text: "Choose a location and see what's going on",
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: appFontColor(),
+            ),
+            verticalSpaceMedium,
+            CustomButton(
+              text: "Select a Location",
+              textSize: 16,
+              height: 30,
+              width: 200,
+              onPressed: openFilter,
+              backgroundColor: appBackgroundColor,
+              textColor: appFontColor(),
+              elevation: 1.0,
+              isBusy: false,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DesktopHomeBody extends HookViewModelWidget<HomeViewModel> {
+  @override
+  Widget buildViewModelWidget(BuildContext context, HomeViewModel model) {
+    var _tabController = useTabController(initialLength: 3);
+
+    return Stack(
+      children: [
+        Column(
+          children: [
+            verticalSpaceMedium,
+            WebblenHomePageTabBar(
+              tabController: _tabController,
+            ),
+            Expanded(
+              child: DefaultTabController(
+                length: 3,
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    ///FOR YOU
+                    // ListForYouContent(
+                    //   showPostOptions: (post) => model.showContentOptions(content: post),
+                    //   showEventOptions: (event) => model.showContentOptions(content: event),
+                    //   showStreamOptions: (stream) => model.showContentOptions(content: stream),
+                    // ),
+
+                    ///POSTS
+                    ListHomePosts(),
+
+                    ///STREAMS & VIDEO
+                    ListHomeLiveStreams(
+                      showStreamOptions: (content) => model.customBottomSheetService.showContentOptions(content: content),
+                    ),
+
+                    ///EVENTS
+                    // model.eventResults.isEmpty && !model.loadingEvents
+                    //     ? ZeroStateView(
+                    //         scrollController: null,
+                    //         imageAssetName: "calendar",
+                    //         imageSize: 200,
+                    //         header: "No Events in ${model.cityName} Found",
+                    //         subHeader: model.eventPromo != null
+                    //             ? "Schedule an Event for ${model.cityName} Now and Earn ${model.eventPromo.toStringAsFixed(2)} WBLN!"
+                    //             : "Schedule an Event for ${model.cityName} Now!",
+                    //         mainActionButtonTitle: model.eventPromo != null ? "Earn ${model.eventPromo.toStringAsFixed(2)} WBLN" : "Create Event",
+                    //         mainAction: () => model.createEventWithPromo(),
+                    //         secondaryActionButtonTitle: null,
+                    //         secondaryAction: null,
+                    //         refreshData: () async {},
+                    //       )
+                    //     :
+                    ListEvents(
+                      refreshData: () async {},
+                      dataResults: [], //model.eventResults,
+                      pageStorageKey: PageStorageKey('home-events'),
+                      scrollController: null,
+                      showEventOptions: (event) => model.customBottomSheetService.showContentOptions(content: event),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        Align(
+          alignment: Alignment.topLeft,
+          child: _FeedController(
+            cityName: model.cityName,
+            index: 0, //_tabController.index,
+            navigateToIndex: null, //(index) => _tabController.animateTo(index),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HomeBody extends HookViewModelWidget<HomeViewModel> {
+  @override
+  Widget buildViewModelWidget(BuildContext context, HomeViewModel model) {
+    var _tabController = useTabController(initialLength: 3);
+
+    return Column(
+      children: [
+        SizedBox(height: 16),
+        WebblenHomePageTabBar(
+          tabController: _tabController,
+        ),
+        SizedBox(height: 4),
+        Expanded(
+          child: DefaultTabController(
+            length: 3,
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                ///FOR YOU
+                // ListForYouContent(
+                //   showPostOptions: (post) => model.showContentOptions(content: post),
+                //   showEventOptions: (event) => model.showContentOptions(content: event),
+                //   showStreamOptions: (stream) => model.showContentOptions(content: stream),
+                // ),
+
+                ///POSTS
+                ListHomePosts(),
+
+                ///STREAMS & VIDEO
+                ListHomeLiveStreams(
+                  showStreamOptions: (content) => model.customBottomSheetService.showContentOptions(content: content),
+                ),
+
+                ///EVENTS
+                // model.eventResults.isEmpty && !model.loadingEvents
+                //     ? ZeroStateView(
+                //         scrollController: null,
+                //         imageAssetName: "calendar",
+                //         imageSize: 200,
+                //         header: "No Events in ${model.cityName} Found",
+                //         subHeader: model.eventPromo != null
+                //             ? "Schedule an Event for ${model.cityName} Now and Earn ${model.eventPromo.toStringAsFixed(2)} WBLN!"
+                //             : "Schedule an Event for ${model.cityName} Now!",
+                //         mainActionButtonTitle: model.eventPromo != null ? "Earn ${model.eventPromo.toStringAsFixed(2)} WBLN" : "Create Event",
+                //         mainAction: () => model.createEventWithPromo(),
+                //         secondaryActionButtonTitle: null,
+                //         secondaryAction: null,
+                //         refreshData: () async {},
+                //       )
+                //     :
+                ListEvents(
+                  refreshData: () async {},
+                  dataResults: [], //model.eventResults,
+                  pageStorageKey: PageStorageKey('home-events'),
+                  scrollController: null,
+                  showEventOptions: (event) => model.customBottomSheetService.showContentOptions(content: event),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _FeedController extends StatelessWidget {
-  final String cityName;
+  final String? cityName;
   final int index;
-  final Function(int) navigateToIndex;
+  final Function(int)? navigateToIndex;
 
   const _FeedController({
-    @required this.cityName,
-    @required this.index,
-    @required this.navigateToIndex,
+    required this.cityName,
+    required this.index,
+    required this.navigateToIndex,
   });
 
   @override
@@ -211,7 +263,7 @@ class _FeedController extends StatelessWidget {
         maxWidth: MediaQuery.of(context).size.width * 0.3,
       ),
       decoration: BoxDecoration(
-        color: appBackgroundColor,
+        color: Colors.transparent,
         // borderRadius: BorderRadius.circular(16),
         // boxShadow: [
         //   BoxShadow(

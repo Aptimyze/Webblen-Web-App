@@ -16,7 +16,7 @@ class CommentBlockView extends StatelessWidget {
   final Function(WebblenPostComment) deleteComment;
 
   final WebblenPostComment comment;
-  CommentBlockView({@required this.comment, @required this.replyToComment, @required this.deleteComment});
+  CommentBlockView({required this.comment, required this.replyToComment, required this.deleteComment});
 
   List<TextSpan> convertToRichText(String text, CommentBlockViewModel model) {
     List<String> words = text.split(" ");
@@ -60,7 +60,7 @@ class CommentBlockView extends StatelessWidget {
           : Container(
               margin: EdgeInsets.only(bottom: 16.0),
               child: Padding(
-                padding: comment.isReply ? EdgeInsets.only(top: 0.0) : EdgeInsets.fromLTRB(16.0, 8.0, 8.0, 0.0),
+                padding: comment.isReply! ? EdgeInsets.only(top: 0.0) : EdgeInsets.fromLTRB(16.0, 8.0, 8.0, 0.0),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
@@ -70,7 +70,7 @@ class CommentBlockView extends StatelessWidget {
                         children: <Widget>[
                           UserProfilePic(
                             userPicUrl: model.authorProfilePicURL,
-                            size: comment.isReply ? 20 : 35,
+                            size: comment.isReply! ? 20 : 35,
                             isBusy: false,
                           ),
                           SizedBox(
@@ -84,12 +84,12 @@ class CommentBlockView extends StatelessWidget {
                       children: [
                         Container(
                           constraints: BoxConstraints(
-                            maxWidth: comment.isReply ? 250 : 420,
+                            maxWidth: comment.isReply! ? 250 : 420,
                           ),
                           child: RichText(
                             text: TextSpan(
                               style: TextStyle(fontSize: 14.0, color: appFontColor()),
-                              children: convertToRichText(comment.message, model),
+                              children: convertToRichText(comment.message!, model),
                             ),
                           ),
                         ),
@@ -98,7 +98,7 @@ class CommentBlockView extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Text(
-                              TimeCalc().getPastTimeFromMilliseconds(comment.timePostedInMilliseconds),
+                              TimeCalc().getPastTimeFromMilliseconds(comment.timePostedInMilliseconds!),
                               style: TextStyle(color: appFontColorAlt(), fontSize: 12.0, fontWeight: FontWeight.w500),
                             ),
                             SizedBox(width: 8.0),
@@ -125,14 +125,14 @@ class CommentBlockView extends StatelessWidget {
                           ],
                         ),
                         SizedBox(height: 8),
-                        comment.replies.length > 0
+                        comment.replies!.length > 0
                             ? model.showingReplies
                                 ? Padding(
                                     padding: EdgeInsets.only(bottom: 16),
                                     child: GestureDetector(
                                       onTap: () => model.toggleShowReplies(),
                                       child: Text(
-                                        "Hide ${comment.replies.length} replies",
+                                        "Hide ${comment.replies!.length} replies",
                                         style: TextStyle(color: appFontColorAlt(), fontSize: 12.0, fontWeight: FontWeight.bold),
                                       ),
                                     ),
@@ -140,20 +140,21 @@ class CommentBlockView extends StatelessWidget {
                                 : GestureDetector(
                                     onTap: () => model.toggleShowReplies(),
                                     child: Text(
-                                      "- Show ${comment.replies.length} replies",
+                                      "- Show ${comment.replies!.length} replies",
                                       style: TextStyle(color: appFontColorAlt(), fontSize: 12.0, fontWeight: FontWeight.bold),
                                     ),
                                   ).showCursorOnHover
                             : Container(),
-                        comment.replies.length > 0 && model.showingReplies
+                        comment.replies!.length > 0 && model.showingReplies
                             ? ListComments(
                                 refreshData: null,
                                 deleteComment: (val) => deleteComment(val),
-                                results: comment.replies.reversed.toList(growable: true),
+                                results: comment.replies!.reversed.toList(growable: true),
                                 showingReplies: model.showingReplies,
                                 pageStorageKey: null,
                                 scrollController: null,
                                 refreshingData: null,
+                                replyToComment: (WebblenPostComment) {},
                               )
                             : Container(),
                       ],

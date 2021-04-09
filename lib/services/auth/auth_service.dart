@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class AuthService {
@@ -14,39 +13,39 @@ class AuthService {
   }
 
   Future<bool> isAnonymous() async {
-    User user = await firebaseAuth.currentUser;
+    User user = await firebaseAuth.currentUser!;
     return user.isAnonymous;
   }
 
   Future<bool> isLoggedIn() async {
-    User user = await firebaseAuth.currentUser;
+    User? user = await firebaseAuth.currentUser;
     return user != null;
   }
 
-  Future<String> getCurrentUserID() async {
-    User user = await firebaseAuth.currentUser;
+  Future<String?> getCurrentUserID() async {
+    User? user = await firebaseAuth.currentUser;
     return user != null ? user.uid : null;
   }
 
-  Future<String> signOut() async {
+  Future<String?> signOut() async {
     await firebaseAuth.signOut();
-    User user = await firebaseAuth.currentUser;
+    User? user = await firebaseAuth.currentUser;
     return user != null ? user.uid : null;
   }
 
   ///SIGN IN & REGISTRATION
   //Email
-  Future signUpWithEmail({@required String email, @required String password}) async {
+  Future signUpWithEmail({required String email, required String password}) async {
     try {
       UserCredential credential = await firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
-      credential.user.sendEmailVerification();
+      credential.user!.sendEmailVerification();
       return credential.user != null;
     } catch (e) {
-      return e.message;
+      return e.toString();
     }
   }
 
-  Future signInWithEmail({@required String email, @required String password}) async {
+  Future signInWithEmail({required String email, required String password}) async {
     try {
       UserCredential credential = await firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
       if (credential.user != null) {
@@ -58,19 +57,19 @@ class AuthService {
         // }
       }
     } catch (e) {
-      return e.message;
+      return e.toString();
     }
   }
 
   //Phone
-  Future<String> signInWithPhoneNumber({
-    @required String phoneNo,
+  Future<String?> signInWithPhoneNumber({
+    required String phoneNo,
   }) async {
-    String error;
+    String? error;
     final RecaptchaVerifier recaptchaVerifier = RecaptchaVerifier(
       onError: (exception) {
         error = exception.message;
-        return error;
+        return;
       },
       size: RecaptchaVerifierSize.compact,
       theme: RecaptchaVerifierTheme.dark,
@@ -79,7 +78,7 @@ class AuthService {
     return error;
   }
 
-  Future signInWithSMSCode({@required String verificationID, @required String smsCode}) async {
+  Future signInWithSMSCode({required String verificationID, required String smsCode}) async {
     final AuthCredential credential = PhoneAuthProvider.credential(
       verificationId: verificationID,
       smsCode: smsCode,
@@ -102,7 +101,7 @@ class AuthService {
     final LoginResult result = await fbAuth.login(permissions: ['email']);
     switch (result.status) {
       case LoginStatus.success:
-        final AuthCredential credential = FacebookAuthProvider.credential(result.accessToken.token);
+        final AuthCredential credential = FacebookAuthProvider.credential(result.accessToken!.token);
         FirebaseAuth.instance.signInWithCredential(credential).then((user) {
           if (user != null) {
             return user;

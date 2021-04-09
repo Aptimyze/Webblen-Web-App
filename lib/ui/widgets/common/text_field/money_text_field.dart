@@ -6,8 +6,8 @@ import 'package:webblen_web_app/ui/widgets/common/text_field/text_field_containe
 class MoneyTextField extends StatelessWidget {
   final MoneyMaskedTextController controller;
   final String hintText;
-  final int textLimit;
-  MoneyTextField({@required this.controller, @required this.hintText, @required this.textLimit});
+  final int? textLimit;
+  MoneyTextField({required this.controller, required this.hintText, required this.textLimit});
 
   @override
   Widget build(BuildContext context) {

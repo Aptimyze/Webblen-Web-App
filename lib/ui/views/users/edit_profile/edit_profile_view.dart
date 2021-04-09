@@ -12,7 +12,7 @@ import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 import 'edit_profile_view_model.dart';
 
 class EditProfileView extends StatelessWidget {
-  final String id;
+  final String? id;
   EditProfileView(@PathParam() this.id);
 
   @override
@@ -46,7 +46,7 @@ class EditProfileView extends StatelessWidget {
                       ),
                     ),
                   ),
-          ),
+          ) as PreferredSizeWidget?,
           body: Container(
             height: screenHeight(context),
             color: appBackgroundColor,
@@ -113,6 +113,7 @@ class EditProfileView extends StatelessWidget {
                   controller: model.websiteTextController,
                   hintText: "https://mysite.com",
                   isPassword: false,
+                  textLimit: null,
                 ),
               ],
             ),

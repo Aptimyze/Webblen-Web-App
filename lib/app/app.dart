@@ -3,6 +3,8 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:stacked_themes/stacked_themes.dart';
 import 'package:webblen_web_app/services/algolia/algolia_search_service.dart';
 import 'package:webblen_web_app/services/auth/auth_service.dart';
+import 'package:webblen_web_app/services/bottom_sheets/custom_bottom_sheet_service.dart';
+import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/dynamic_links/dynamic_link_service.dart';
 import 'package:webblen_web_app/services/firestore/common/firestore_storage_service.dart';
 import 'package:webblen_web_app/services/firestore/data/activity_data_service.dart';
@@ -17,6 +19,9 @@ import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_preference_data_service.dart';
 import 'package:webblen_web_app/services/location/google_places_service.dart';
 import 'package:webblen_web_app/services/location/location_service.dart';
+import 'package:webblen_web_app/services/reactive/content_filter/reactive_content_filter_service.dart';
+import 'package:webblen_web_app/services/reactive/file_uploader/reactive_file_uploader_service.dart';
+import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
 import 'package:webblen_web_app/services/share/share_service.dart';
 import 'package:webblen_web_app/services/stripe/stripe_connect_account_service.dart';
 import 'package:webblen_web_app/services/stripe/stripe_payment_service.dart';
@@ -24,7 +29,6 @@ import 'package:webblen_web_app/ui/views/auth/auth_view.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/home/home_view_model.dart';
-import 'package:webblen_web_app/ui/views/home/tabs/profile/profile_view_model.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/search/recent_search_view_model.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/wallet/wallet_view_model.dart';
 import 'package:webblen_web_app/ui/views/live_streams/create_live_stream_view/create_live_stream_view.dart';
@@ -71,7 +75,7 @@ import 'package:webblen_web_app/ui/views/users/profile/user_profile_view.dart';
     CustomRoute(
       page: CreatePostView,
       name: "CreatePostViewRoute",
-      path: "/post/new/:id/:promo",
+      path: "/post/publish/:id/:promo",
       //transitionsBuilder: TransitionsBuilders.fadeIn,
       durationInMilliseconds: 0,
     ),
@@ -91,7 +95,7 @@ import 'package:webblen_web_app/ui/views/users/profile/user_profile_view.dart';
     CustomRoute(
       page: CreateLiveStreamView,
       name: "CreateLiveStreamViewRoute",
-      path: "/stream/new/:id/:promo",
+      path: "/stream/publish/:id/:promo",
       //transitionsBuilder: TransitionsBuilders.fadeIn,
       durationInMilliseconds: 0,
     ),
@@ -152,6 +156,8 @@ import 'package:webblen_web_app/ui/views/users/profile/user_profile_view.dart';
     LazySingleton(classType: DialogService),
     LazySingleton(classType: BottomSheetService),
     LazySingleton(classType: SnackbarService),
+    LazySingleton(classType: CustomBottomSheetService),
+    LazySingleton(classType: CustomDialogService),
     LazySingleton(classType: AuthService),
     LazySingleton(classType: FirestoreStorageService),
     LazySingleton(classType: PlatformDataService),
@@ -176,12 +182,16 @@ import 'package:webblen_web_app/ui/views/users/profile/user_profile_view.dart';
     LazySingleton(classType: ActivityDataService),
     LazySingleton(classType: UserPreferenceDataService),
 
+    //REACTIVE LAZY SINGLETONS
+    LazySingleton(classType: ReactiveWebblenUserService),
+    LazySingleton(classType: ReactiveContentFilterService),
+    LazySingleton(classType: ReactiveFileUploaderService),
+
     //SINGLETONS
     Singleton(classType: WebblenBaseViewModel),
     Singleton(classType: HomeViewModel),
     Singleton(classType: RecentSearchViewModel),
     Singleton(classType: WalletViewModel),
-    Singleton(classType: ProfileViewModel),
   ],
 )
 class AppSetup {

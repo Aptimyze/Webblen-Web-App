@@ -1,22 +1,33 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:stacked/stacked.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
+import 'package:webblen_web_app/services/bottom_sheets/custom_bottom_sheet_service.dart';
 import 'package:webblen_web_app/services/firestore/data/post_data_service.dart';
+import 'package:webblen_web_app/services/reactive/content_filter/reactive_content_filter_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
+import 'package:webblen_web_app/utils/custom_string_methods.dart';
 
-class ListHomePostsModel extends BaseViewModel {
+class ListHomePostsModel extends ReactiveViewModel {
   PostDataService _postDataService = locator<PostDataService>();
+  ReactiveContentFilterService _reactiveContentFilterService = locator<ReactiveContentFilterService>();
+  CustomBottomSheetService customBottomSheetService = locator<CustomBottomSheetService>();
   WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();
 
   ///HELPERS
   ScrollController scrollController = ScrollController();
+  String listKey = "initial-home-posts-key";
 
   ///FILTER DATA
-  String cityName;
-  String areaCode;
-  String contentTagFilter;
-  String contentSortBy;
+  String listAreaCode = "";
+  String listTagFilter = "";
+  String listSortByFilter = "Latest";
+
+  String get areaCode => _reactiveContentFilterService.areaCode;
+  String get tagFilter => _reactiveContentFilterService.tagFilter;
+  String get sortByFilter => _reactiveContentFilterService.sortByFilter;
 
   ///DATA
   List<DocumentSnapshot> dataResults = [];
@@ -26,33 +37,16 @@ class ListHomePostsModel extends BaseViewModel {
 
   int resultsLimit = 20;
 
+  @override
+  List<ReactiveServiceMixin> get reactiveServices => [_reactiveContentFilterService];
+
   initialize() async {
     // get content filter
-    cityName = webblenBaseViewModel.cityName;
-    areaCode = webblenBaseViewModel.areaCode;
-    contentTagFilter = webblenBaseViewModel.contentTagFilter;
-    contentSortBy = webblenBaseViewModel.contentSortBy;
+    syncContentFilter();
 
-    // listener for changed filter
-    webblenBaseViewModel.addListener(() {
-      bool filterChanged = false;
-      if (cityName != webblenBaseViewModel.cityName) {
-        filterChanged = true;
-        cityName = webblenBaseViewModel.cityName;
-      }
-      if (areaCode != webblenBaseViewModel.areaCode) {
-        filterChanged = true;
-        areaCode = webblenBaseViewModel.areaCode;
-      }
-      if (contentTagFilter != webblenBaseViewModel.contentTagFilter) {
-        filterChanged = true;
-        contentTagFilter = webblenBaseViewModel.contentTagFilter;
-      }
-      if (contentSortBy != webblenBaseViewModel.contentSortBy) {
-        filterChanged = true;
-        contentSortBy = webblenBaseViewModel.contentSortBy;
-      }
-      if (filterChanged) {
+    _reactiveContentFilterService.addListener(() {
+      if (areaCode != listAreaCode || listTagFilter != tagFilter || listSortByFilter != sortByFilter) {
+        syncContentFilter();
         refreshData();
       }
     });
@@ -60,8 +54,15 @@ class ListHomePostsModel extends BaseViewModel {
     await loadData();
   }
 
+  syncContentFilter() {
+    listAreaCode = areaCode;
+    listTagFilter = listTagFilter;
+    listSortByFilter = sortByFilter;
+    notifyListeners();
+  }
+
   Future<void> refreshData() async {
-    scrollController.jumpTo(scrollController.position.minScrollExtent);
+    //scrollController.jumpTo(scrollController.position.minScrollExtent);
 
     //clear previous data
     dataResults = [];
@@ -78,10 +79,10 @@ class ListHomePostsModel extends BaseViewModel {
 
     //load data with params
     dataResults = await _postDataService.loadPosts(
-      areaCode: webblenBaseViewModel.areaCode,
+      areaCode: areaCode,
       resultsLimit: resultsLimit,
-      tagFilter: webblenBaseViewModel.contentTagFilter,
-      sortBy: webblenBaseViewModel.contentSortBy,
+      tagFilter: tagFilter,
+      sortBy: sortByFilter,
     );
 
     notifyListeners();
@@ -102,10 +103,10 @@ class ListHomePostsModel extends BaseViewModel {
     //load additional posts
     List<DocumentSnapshot> newResults = await _postDataService.loadAdditionalPosts(
       lastDocSnap: dataResults[dataResults.length - 1],
-      areaCode: webblenBaseViewModel.areaCode,
+      areaCode: areaCode,
       resultsLimit: resultsLimit,
-      tagFilter: webblenBaseViewModel.contentTagFilter,
-      sortBy: webblenBaseViewModel.contentSortBy,
+      tagFilter: tagFilter,
+      sortBy: sortByFilter,
     );
 
     //notify if no more posts available
@@ -121,9 +122,10 @@ class ListHomePostsModel extends BaseViewModel {
   }
 
   showContentOptions(dynamic content) async {
-    String val = await webblenBaseViewModel.showContentOptions(content: content);
+    String val = await customBottomSheetService.showContentOptions(content: content);
     if (val == "deleted content") {
       dataResults.removeWhere((doc) => doc.id == content.id);
+      listKey = getRandomString(5);
       notifyListeners();
     }
   }

@@ -9,20 +9,19 @@ import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_top_
 import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_top_nav_bar/custom_top_nav_bar_item.dart';
 import 'package:webblen_web_app/ui/widgets/common/navigation/tab_bar/custom_tab_bar.dart';
 import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_linear_progress_indicator.dart';
-import 'package:webblen_web_app/ui/widgets/common/zero_state_view.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_posts/profile/user/list_user_posts.dart';
 import 'package:webblen_web_app/ui/widgets/user/follow_unfollow_button.dart';
 import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 
 class UserProfileView extends StatefulWidget {
-  final String id;
+  final String? id;
   UserProfileView(@PathParam() this.id);
   @override
   _UserProfileViewState createState() => _UserProfileViewState();
 }
 
 class _UserProfileViewState extends State<UserProfileView> with SingleTickerProviderStateMixin {
-  TabController _tabController;
+  TabController? _tabController;
 
   Widget head(UserProfileViewModel model) {
     return Container(
@@ -62,13 +61,13 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
         children: [
           SizedBox(height: 16),
           UserProfilePic(
-            userPicUrl: model.user.profilePicURL,
+            userPicUrl: model.user!.profilePicURL,
             size: 60,
             isBusy: false,
           ),
           SizedBox(height: 8),
           Text(
-            "@${model.user.username}",
+            "@${model.user!.username}",
             style: TextStyle(
               color: appFontColor(),
               fontWeight: FontWeight.bold,
@@ -102,28 +101,30 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
         ),
 
         //scheduled streams
-        ZeroStateView(
-          imageAssetName: "video_phone",
-          imageSize: 200,
-          header: "@${model.user.username} Has Not Scheduled Any Streams",
-          subHeader: "",
-          mainActionButtonTitle: null,
-          mainAction: null,
-          secondaryActionButtonTitle: null,
-          secondaryAction: null,
-          refreshData: () async {},
-        ),
-        ZeroStateView(
-          imageAssetName: "calendar",
-          imageSize: 200,
-          header: "@${model.user.username} Has Not Scheduled Any Events",
-          subHeader: "",
-          mainActionButtonTitle: null,
-          mainAction: null,
-          secondaryActionButtonTitle: null,
-          secondaryAction: null,
-          refreshData: () async {},
-        ),
+        Container(),
+        Container(),
+        // ZeroStateView(
+        //   imageAssetName: "video_phone",
+        //   imageSize: 200,
+        //   header: "@${model.user!.username} Has Not Scheduled Any Streams",
+        //   subHeader: "",
+        //   mainActionButtonTitle: null,
+        //   mainAction: null,
+        //   secondaryActionButtonTitle: null,
+        //   secondaryAction: null,
+        //   refreshData: () async {},
+        // ),
+        // ZeroStateView(
+        //   imageAssetName: "calendar",
+        //   imageSize: 200,
+        //   header: "@${model.user!.username} Has Not Scheduled Any Events",
+        //   subHeader: "",
+        //   mainActionButtonTitle: null,
+        //   mainAction: null,
+        //   secondaryActionButtonTitle: null,
+        //   secondaryAction: null,
+        //   refreshData: () async {}, scrollController: null,
+        // ),
       ],
     );
   }
@@ -141,7 +142,7 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    _tabController.dispose();
+    _tabController!.dispose();
   }
 
   @override
@@ -157,22 +158,22 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
           child: CustomTopNavBar(
             navBarItems: [
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(0),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(0),
                 iconData: FontAwesomeIcons.home,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(1),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(1),
                 iconData: FontAwesomeIcons.search,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(2),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(2),
                 iconData: FontAwesomeIcons.wallet,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(3),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(3),
                 iconData: FontAwesomeIcons.user,
                 isActive: false,
               ),

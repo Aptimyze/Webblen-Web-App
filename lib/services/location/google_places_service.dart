@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 
@@ -10,7 +9,7 @@ import 'location_service.dart';
 class GooglePlacesService {
   LocationService _locationService = locator<LocationService>();
 
-  Future googleSearchAutoComplete({@required String key, @required String input}) async {
+  Future<Map<String, dynamic>> googleSearchAutoComplete({required String? key, required String input}) async {
     Map<String, dynamic> predictions = {};
     List<dynamic> response = [];
 
@@ -32,8 +31,8 @@ class GooglePlacesService {
     return predictions;
   }
 
-  Future<String> googleGetCityFromZip({@required String key, @required String input}) async {
-    String cityName;
+  Future<String?> googleGetCityFromZip({required String? key, required String? input}) async {
+    String? cityName;
     final String requestURL = "https://maps.googleapis.com/maps/api/geocode/json?address=$input&key=$key";
     Response response = await get(Uri.parse(requestURL));
     if (response.statusCode == 200) {
@@ -50,8 +49,8 @@ class GooglePlacesService {
     return cityName;
   }
 
-  Future<String> googleGetProvinceFromZip({@required String key, @required String input}) async {
-    String cityName;
+  Future<String?> googleGetProvinceFromZip({required String? key, required String input}) async {
+    String? cityName;
     final String requestURL = "https://maps.googleapis.com/maps/api/geocode/json?address=$input&key=$key";
     Response response = await get(Uri.parse(requestURL));
     if (response.statusCode == 200) {
@@ -68,7 +67,7 @@ class GooglePlacesService {
     return cityName;
   }
 
-  Future<Map<String, dynamic>> getDetailsFromPlaceID({@required String key, @required String placeID}) async {
+  Future<Map<String, dynamic>> getDetailsFromPlaceID({required String? key, required String? placeID}) async {
     Map<String, dynamic> details = {};
     Map<String, dynamic> coordinates = await getLatLonFromGooglePlaceID(key: key, placeID: placeID);
     if (coordinates.isNotEmpty) {
@@ -77,12 +76,13 @@ class GooglePlacesService {
       details['lon'] = coordinates['lon'];
       details['streetAddress'] = locDetails['formattedAddress'];
       details['cityName'] = locDetails['city'];
+      details['province'] = locDetails['administrativeLevels']['level1short'];
       details['areaCode'] = locDetails['zipcode'];
     }
     return details;
   }
 
-  Future<Map<String, dynamic>> getLatLonFromGooglePlaceID({@required String key, @required String placeID}) async {
+  Future<Map<String, dynamic>> getLatLonFromGooglePlaceID({required String? key, required String? placeID}) async {
     Map<String, dynamic> coordinates = {};
 
     final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
@@ -100,7 +100,7 @@ class GooglePlacesService {
     return coordinates;
   }
 
-  Future<Map<String, dynamic>> getLocationDetailsFromLatLon({@required String key, @required double lat, @required double lon}) async {
+  Future<Map<String, dynamic>> getLocationDetailsFromLatLon({required String? key, required double? lat, required double? lon}) async {
     Map<String, dynamic> details = {};
 
     final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(

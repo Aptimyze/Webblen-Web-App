@@ -8,13 +8,13 @@ import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
 class EventVenueSizeSlider extends StatefulWidget {
   final String initialValue;
   final Function(String) onChanged;
-  EventVenueSizeSlider({@required this.initialValue, @required this.onChanged});
+  EventVenueSizeSlider({required this.initialValue, required this.onChanged});
   @override
   _EventVenueSizeSliderState createState() => _EventVenueSizeSliderState();
 }
 
 class _EventVenueSizeSliderState extends State<EventVenueSizeSlider> {
-  double sliderVal = 1;
+  double? sliderVal = 1;
 
   @override
   void initState() {
@@ -36,8 +36,8 @@ class _EventVenueSizeSliderState extends State<EventVenueSizeSlider> {
 
   @override
   Widget build(BuildContext context) {
-    String sizeName = venueSizeAndDescriptions.keys.toList()[sliderVal.toInt() - 1];
-    String sizeDescription = venueSizeAndDescriptions.values.toList()[sliderVal.toInt() - 1];
+    String sizeName = venueSizeAndDescriptions.keys.toList()[sliderVal!.toInt() - 1];
+    String sizeDescription = venueSizeAndDescriptions.values.toList()[sliderVal!.toInt() - 1];
 
     return Container(
       child: Column(

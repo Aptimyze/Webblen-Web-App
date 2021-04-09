@@ -11,15 +11,15 @@ import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/firestore/data/platform_data_service.dart';
 
 class DynamicLinkService {
-  PlatformDataService _platformDataService = locator<PlatformDataService>();
+  PlatformDataService? _platformDataService = locator<PlatformDataService>();
 
   String webblenShareContentPrefix = 'https://app.webblen.io/shared_link';
   String androidPackageName = 'com.webblen.events.webblen';
   String iosBundleID = 'com.webblen.events';
   String iosAppStoreID = '1196159158';
 
-  Future<String> createProfileLink({@required WebblenUser user}) async {
-    String key = await _platformDataService.getGoogleApiKey();
+  Future<String?> createProfileLink({required WebblenUser user}) async {
+    String? key = await _platformDataService!.getGoogleApiKey();
     String kDynamicLinkURL = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=$key';
 
     // Construct the link which will open when the Dynamic Link is used
@@ -54,8 +54,8 @@ class DynamicLinkService {
     }
   }
 
-  Future<String> createPostLink({@required String authorUsername, @required WebblenPost post}) async {
-    String key = await _platformDataService.getGoogleApiKey();
+  Future<String?> createPostLink({required String? authorUsername, required WebblenPost post}) async {
+    String? key = await _platformDataService!.getGoogleApiKey();
     String kDynamicLinkURL = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=$key';
 
     // Construct the link which will open when the Dynamic Link is used
@@ -107,8 +107,8 @@ class DynamicLinkService {
     }
   }
 
-  Future<String> createEventLink({@required String authorUsername, @required WebblenEvent event}) async {
-    String key = await _platformDataService.getGoogleApiKey();
+  Future<String?> createEventLink({required String? authorUsername, required WebblenEvent event}) async {
+    String? key = await _platformDataService!.getGoogleApiKey();
     String kDynamicLinkURL = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=$key';
 
     // Construct the link which will open when the Dynamic Link is used
@@ -143,8 +143,8 @@ class DynamicLinkService {
     }
   }
 
-  Future<String> createLiveStreamLink({@required String authorUsername, @required WebblenLiveStream stream}) async {
-    String key = await _platformDataService.getGoogleApiKey();
+  Future<String?> createLiveStreamLink({required String? authorUsername, required WebblenLiveStream stream}) async {
+    String? key = await _platformDataService!.getGoogleApiKey();
     String kDynamicLinkURL = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=$key';
 
     // Construct the link which will open when the Dynamic Link is used

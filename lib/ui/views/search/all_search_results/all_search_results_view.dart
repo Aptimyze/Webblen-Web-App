@@ -17,7 +17,7 @@ import 'package:webblen_web_app/ui/widgets/search/search_field.dart';
 import 'all_search_results_view_model.dart';
 
 class AllSearchResultsView extends StatefulWidget {
-  final String term;
+  final String? term;
   AllSearchResultsView(@PathParam() this.term);
 
   @override
@@ -25,7 +25,7 @@ class AllSearchResultsView extends StatefulWidget {
 }
 
 class _AllSearchResultsViewState extends State<AllSearchResultsView> with SingleTickerProviderStateMixin {
-  TabController _tabController;
+  TabController? _tabController;
 
   Widget noResultsFound(AllSearchResultsViewModel model) {
     return Container(
@@ -50,7 +50,7 @@ class _AllSearchResultsViewState extends State<AllSearchResultsView> with Single
             heroTag: 'search',
             onTap: () => model.navigateToPreviousPage(),
             enabled: false,
-            textEditingController: model.searchTextController,
+            textEditingController: model.searchTextController, onChanged: (String ) {  }, onFieldSubmitted: (String ) {  },
           ),
           SizedBox(width: 8),
           GestureDetector(
@@ -78,7 +78,7 @@ class _AllSearchResultsViewState extends State<AllSearchResultsView> with Single
                 refreshData: model.refreshStreams,
                 dataResults: model.streamResults,
                 pageStorageKey: PageStorageKey('stream-results'),
-                scrollController: model.streamScrollController,
+                scrollController: model.streamScrollController, showStreamOptions: (WebblenLiveStream ) {  },
               )
             : noResultsFound(model),
         model.eventResults.isNotEmpty
@@ -86,7 +86,7 @@ class _AllSearchResultsViewState extends State<AllSearchResultsView> with Single
                 refreshData: model.refreshEvents,
                 dataResults: model.eventResults,
                 pageStorageKey: PageStorageKey('event-results'),
-                scrollController: model.eventScrollController,
+                scrollController: model.eventScrollController, showStreamOptions: (WebblenLiveStream ) {  },
               )
             : noResultsFound(model),
         model.userResults.isNotEmpty
@@ -128,22 +128,22 @@ class _AllSearchResultsViewState extends State<AllSearchResultsView> with Single
           child: CustomTopNavBar(
             navBarItems: [
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(0),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(0),
                 iconData: FontAwesomeIcons.home,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(1),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(1),
                 iconData: FontAwesomeIcons.search,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(2),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(2),
                 iconData: FontAwesomeIcons.wallet,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(3),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(3),
                 iconData: FontAwesomeIcons.user,
                 isActive: false,
               ),

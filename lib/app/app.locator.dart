@@ -12,6 +12,8 @@ import 'package:stacked_themes/stacked_themes.dart';
 
 import '../services/algolia/algolia_search_service.dart';
 import '../services/auth/auth_service.dart';
+import '../services/bottom_sheets/custom_bottom_sheet_service.dart';
+import '../services/dialogs/custom_dialog_service.dart';
 import '../services/dynamic_links/dynamic_link_service.dart';
 import '../services/firestore/common/firestore_storage_service.dart';
 import '../services/firestore/data/activity_data_service.dart';
@@ -26,12 +28,14 @@ import '../services/firestore/data/user_data_service.dart';
 import '../services/firestore/data/user_preference_data_service.dart';
 import '../services/location/google_places_service.dart';
 import '../services/location/location_service.dart';
+import '../services/reactive/content_filter/reactive_content_filter_service.dart';
+import '../services/reactive/file_uploader/reactive_file_uploader_service.dart';
+import '../services/reactive/webblen_user/reactive_webblen_user_service.dart';
 import '../services/share/share_service.dart';
 import '../services/stripe/stripe_connect_account_service.dart';
 import '../services/stripe/stripe_payment_service.dart';
 import '../ui/views/base/webblen_base_view_model.dart';
 import '../ui/views/home/tabs/home/home_view_model.dart';
-import '../ui/views/home/tabs/profile/profile_view_model.dart';
 import '../ui/views/home/tabs/search/recent_search_view_model.dart';
 import '../ui/views/home/tabs/wallet/wallet_view_model.dart';
 
@@ -43,6 +47,8 @@ void setupLocator() {
   locator.registerLazySingleton(() => DialogService());
   locator.registerLazySingleton(() => BottomSheetService());
   locator.registerLazySingleton(() => SnackbarService());
+  locator.registerLazySingleton(() => CustomBottomSheetService());
+  locator.registerLazySingleton(() => CustomDialogService());
   locator.registerLazySingleton(() => AuthService());
   locator.registerLazySingleton(() => FirestoreStorageService());
   locator.registerLazySingleton(() => PlatformDataService());
@@ -62,9 +68,11 @@ void setupLocator() {
   locator.registerLazySingleton(() => ShareService());
   locator.registerLazySingleton(() => ActivityDataService());
   locator.registerLazySingleton(() => UserPreferenceDataService());
+  locator.registerLazySingleton(() => ReactiveWebblenUserService());
+  locator.registerLazySingleton(() => ReactiveContentFilterService());
+  locator.registerLazySingleton(() => ReactiveFileUploaderService());
   locator.registerSingleton(WebblenBaseViewModel());
   locator.registerSingleton(HomeViewModel());
   locator.registerSingleton(RecentSearchViewModel());
   locator.registerSingleton(WalletViewModel());
-  locator.registerSingleton(ProfileViewModel());
 }

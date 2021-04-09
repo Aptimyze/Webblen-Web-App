@@ -6,8 +6,8 @@ import 'package:webblen_web_app/ui/widgets/common/text_field/text_field_containe
 class NumberTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
-  final bool enabled;
-  NumberTextField({@required this.controller, @required this.hintText, this.enabled});
+  final bool? enabled;
+  NumberTextField({required this.controller, required this.hintText, this.enabled});
 
   @override
   Widget build(BuildContext context) {

@@ -9,7 +9,7 @@ import 'network_error_view_model.dart';
 
 class NetworkErrorView extends StatelessWidget {
   final VoidCallback tryAgainAction;
-  NetworkErrorView({@required this.tryAgainAction});
+  NetworkErrorView({required this.tryAgainAction});
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<NetworkErrorViewModel>.nonReactive(
@@ -40,6 +40,7 @@ class NetworkErrorView extends StatelessWidget {
               height: 50,
               width: screenWidth(context),
               onPressed: tryAgainAction,
+              textSize: 14,
             ),
           ],
         ),

@@ -3,18 +3,19 @@ import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/ui/widgets/common/buttons/custom_button.dart';
 
 class FollowUnfollowButton extends StatelessWidget {
-  final bool isFollowing;
+  final bool? isFollowing;
   final VoidCallback followUnfollowAction;
 
   FollowUnfollowButton({
-    @required this.isFollowing,
-    @required this.followUnfollowAction,
+    required this.isFollowing,
+    required this.followUnfollowAction,
   });
 
   @override
   Widget build(BuildContext context) {
     return isFollowing == null || isFollowing == false
         ? CustomButton(
+            elevation: 1,
             isBusy: false,
             text: "Follow",
             textColor: appFontColor(),
@@ -22,6 +23,7 @@ class FollowUnfollowButton extends StatelessWidget {
             height: 30.0,
             width: 100,
             onPressed: followUnfollowAction,
+            textSize: 14,
           )
         : CustomButton(
             isBusy: false,
@@ -32,6 +34,7 @@ class FollowUnfollowButton extends StatelessWidget {
             height: 30.0,
             width: 100,
             onPressed: followUnfollowAction,
+            textSize: 14,
           );
   }
 }

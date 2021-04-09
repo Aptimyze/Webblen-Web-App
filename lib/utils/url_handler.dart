@@ -5,7 +5,7 @@ import 'package:webblen_web_app/app/app.locator.dart';
 import 'custom_string_methods.dart';
 
 class UrlHandler {
-  DialogService _dialogService = locator<DialogService>();
+  DialogService? _dialogService = locator<DialogService>();
 
   launchInWebViewOrVC(String val) async {
     String url;
@@ -28,7 +28,7 @@ class UrlHandler {
         //statusBarBrightness: Brightness.light,
       );
     } else {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: "URL Error",
         description: "There was an issue launching this url",
         buttonTitle: "Ok",

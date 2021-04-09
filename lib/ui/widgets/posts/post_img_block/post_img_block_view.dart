@@ -13,8 +13,8 @@ import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 import 'package:webblen_web_app/utils/time_calc.dart';
 
 class PostImgBlockView extends StatelessWidget {
-  final WebblenPost post;
-  final Function(WebblenPost) showPostOptions;
+  final WebblenPost? post;
+  final Function(WebblenPost?)? showPostOptions;
   PostImgBlockView({
     this.post,
     this.showPostOptions,
@@ -27,7 +27,7 @@ class PostImgBlockView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           GestureDetector(
-            onTap: () => model.navigateToUserView(post.authorID),
+            onTap: () => model.navigateToUserView(post!.authorID),
             child: Row(
               children: <Widget>[
                 UserProfilePic(
@@ -38,7 +38,7 @@ class PostImgBlockView extends StatelessWidget {
                 SizedBox(
                   width: 10.0,
                 ),
-                post.city == null
+                post!.city == null
                     ? Text(
                         "@${model.authorUsername}",
                         style: TextStyle(
@@ -67,7 +67,7 @@ class PostImgBlockView extends StatelessWidget {
                                 color: appFontColorAlt(),
                               ),
                               Text(
-                                ' ${post.city}, ${post.province}',
+                                ' ${post!.city}, ${post!.province}',
                                 style: TextStyle(
                                   color: appFontColorAlt(),
                                   fontSize: 12,
@@ -82,7 +82,7 @@ class PostImgBlockView extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(Icons.more_horiz),
-            onPressed: () => showPostOptions(post),
+            onPressed: () => showPostOptions!(post),
           ),
         ],
       ),
@@ -95,8 +95,8 @@ class PostImgBlockView extends StatelessWidget {
       imageScale: 1,
       fadeInCurve: Curves.ease,
       fit: BoxFit.cover,
-      image: post.imageURL,
-      key: Key(post.id),
+      image: post!.imageURL!,
+      key: Key(post!.id!),
     );
   }
 
@@ -110,7 +110,7 @@ class PostImgBlockView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               GestureDetector(
-                onTap: () => model.saveUnsavePost(postID: post.id),
+                onTap: () => model.saveUnsavePost(postID: post!.id),
                 child: Icon(
                   model.savedPost ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart,
                   size: 18,
@@ -120,7 +120,7 @@ class PostImgBlockView extends StatelessWidget {
             ],
           ),
           Text(
-            TimeCalc().getPastTimeFromMilliseconds(post.postDateTimeInMilliseconds),
+            TimeCalc().getPastTimeFromMilliseconds(post!.postDateTimeInMilliseconds!),
             style: TextStyle(
               color: Colors.grey,
             ),
@@ -131,7 +131,7 @@ class PostImgBlockView extends StatelessWidget {
   }
 
   Widget commentCount(PostImgBlockViewModel model) {
-    return post.commentCount == 0
+    return post!.commentCount == 0
         ? Container()
         : Padding(
             padding: EdgeInsets.only(left: 16.0, top: 12.0, right: 16.0),
@@ -139,7 +139,7 @@ class PostImgBlockView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  post.commentCount == 1 ? "${post.commentCount} comment" : "${post.commentCount} comments",
+                  post!.commentCount == 1 ? "${post!.commentCount} comment" : "${post!.commentCount} comments",
                   style: TextStyle(
                     fontSize: 14,
                     color: appFontColorAlt(),
@@ -169,7 +169,7 @@ class PostImgBlockView extends StatelessWidget {
               ),
             ),
             TextSpan(
-              text: post.body.trim(),
+              text: post!.body!.trim(),
               style: TextStyle(
                 color: appFontColor(),
                 fontSize: 14.0,
@@ -183,7 +183,7 @@ class PostImgBlockView extends StatelessWidget {
   }
 
   Widget postTags(PostImgBlockViewModel model) {
-    return post.tags == null || post.tags.isEmpty
+    return post!.tags == null || post!.tags!.isEmpty
         ? Container()
         : Container(
             margin: EdgeInsets.only(left: 16, right: 16),
@@ -197,11 +197,11 @@ class PostImgBlockView extends StatelessWidget {
                 top: 4.0,
                 bottom: 4.0,
               ),
-              itemCount: post.tags.length,
+              itemCount: post!.tags!.length,
               itemBuilder: (context, index) {
                 return TagButton(
                   onTap: null,
-                  tag: post.tags[index],
+                  tag: post!.tags![index],
                 );
               },
             ),
@@ -214,7 +214,7 @@ class PostImgBlockView extends StatelessWidget {
       fireOnModelReadyOnce: true,
       initialiseSpecialViewModelsOnce: true,
       viewModelBuilder: () => PostImgBlockViewModel(),
-      onModelReady: (model) => model.initialize(post: post),
+      onModelReady: (model) => model.initialize(post: post!),
       builder: (context, model, child) => model.isBusy
           ? Container(height: 100)
           : Align(
@@ -224,12 +224,12 @@ class PostImgBlockView extends StatelessWidget {
                   maxWidth: 500,
                 ),
                 child: GestureDetector(
-                  onDoubleTap: () => model.saveUnsavePost(postID: post.id),
+                  onDoubleTap: () => model.saveUnsavePost(postID: post!.id),
                   onLongPress: () {
                     HapticFeedback.lightImpact();
-                    showPostOptions(post);
+                    showPostOptions!(post);
                   },
-                  onTap: () => model.navigateToPostView(post.id),
+                  onTap: () => model.navigateToPostView(post!.id),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,

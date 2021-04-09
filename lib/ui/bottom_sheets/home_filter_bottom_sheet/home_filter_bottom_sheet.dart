@@ -1,33 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
+import 'package:webblen_web_app/ui/widgets/common/buttons/custom_button.dart';
 import 'package:webblen_web_app/ui/widgets/common/text_field/text_field_container.dart';
 
 import 'home_filter_bottom_sheet_model.dart';
 
-class HomeFilterBottomSheet extends StatelessWidget {
-  final SheetRequest request;
-  final Function(SheetResponse) completer;
+class HomeFilterBottomSheet extends HookWidget {
+  final SheetRequest? request;
+  final Function(SheetResponse)? completer;
 
   const HomeFilterBottomSheet({
-    Key key,
+    Key? key,
     this.request,
     this.completer,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final location = useTextEditingController();
+    final tag = useTextEditingController();
+
     return ViewModelBuilder<HomeFilterBottomSheetModel>.reactive(
-      onModelReady: (model) => model.initialize(
-        request.customData['currentSortBy'],
-        request.customData['currentCityName'],
-        request.customData['currentAreaCode'],
-        request.customData['currentTagFilter'],
-      ),
+      onModelReady: (model) => model.initialize(),
       viewModelBuilder: () => HomeFilterBottomSheetModel(),
       builder: (context, model, child) => Align(
         alignment: Alignment.bottomCenter,
@@ -46,7 +46,7 @@ class HomeFilterBottomSheet extends StatelessWidget {
             children: [
               Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
                     "Preferences",
@@ -69,18 +69,19 @@ class HomeFilterBottomSheet extends StatelessWidget {
                   TextFieldContainer(
                     height: 38,
                     child: DropdownButton(
-                        isExpanded: true,
-                        underline: Container(),
-                        value: model.sortBy,
-                        items: model.sortByList.map((String val) {
-                          return DropdownMenuItem<String>(
-                            value: val,
-                            child: Text(val),
-                          );
-                        }).toList(),
-                        onChanged: (val) => model.setSortByFilter(val)),
+                      isExpanded: true,
+                      underline: Container(),
+                      value: model.tempSortByFilter,
+                      items: model.sortByList.map((String val) {
+                        return DropdownMenuItem<String>(
+                          value: val,
+                          child: Text(val),
+                        );
+                      }).toList(),
+                      onChanged: (dynamic val) => model.updateSortByFilter(val),
+                    ),
                   ).showCursorOnHover,
-                  SizedBox(height: 32),
+                  SizedBox(height: 10),
                   Text(
                     "Location:",
                     style: TextStyle(
@@ -96,23 +97,23 @@ class HomeFilterBottomSheet extends StatelessWidget {
                       hideOnLoading: true,
                       direction: AxisDirection.up,
                       textFieldConfiguration: TextFieldConfiguration(
-                        controller: model.locationTextController,
+                        controller: location,
                         cursorColor: Colors.black,
                         decoration: InputDecoration(
-                          hintText: model.cityName == null || model.cityName.isEmpty ? "Search Location" : model.cityName,
+                          hintText: model.tempCityName.isEmpty ? "Search Location" : model.tempCityName,
                           border: InputBorder.none,
                         ),
                         autofocus: false,
                       ),
                       suggestionsCallback: (searchTerm) async {
-                        if (searchTerm == null || searchTerm.trim().isEmpty) {
-                          return null;
+                        if (searchTerm.trim().isNotEmpty) {
+                          Map<String, dynamic> res = await model.googlePlacesService.googleSearchAutoComplete(key: model.googleAPIKey, input: searchTerm);
+                          model.setPlacesSearchResults(res);
+                          return model.placeSearchResults.keys.toList();
                         }
-                        Map<String, dynamic> res = await model.googlePlacesService.googleSearchAutoComplete(key: model.googleAPIKey, input: searchTerm);
-                        model.setPlacesSearchResults(res);
-                        return model.placeSearchResults.keys.toList();
+                        return [];
                       },
-                      itemBuilder: (context, place) {
+                      itemBuilder: (context, dynamic place) {
                         return ListTile(
                           title: Text(
                             place,
@@ -120,22 +121,28 @@ class HomeFilterBottomSheet extends StatelessWidget {
                           ),
                         ).showCursorOnHover;
                       },
-                      onSuggestionSelected: (val) => model.getPlaceDetails(val),
+                      onSuggestionSelected: (dynamic val) {
+                        location.text = val;
+                        model.getPlaceDetails(val);
+                      },
                     ),
                   ),
                   SizedBox(height: 8),
                   GestureDetector(
-                    onTap: () => model.clearLocationFilter(),
+                    onTap: () {
+                      location.text = "";
+                      model.clearLocationFilter();
+                    },
                     child: Text(
                       "Remove Location Filter",
                       style: TextStyle(
                         color: appTextButtonColor(),
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 14,
                       ),
                     ),
                   ).showCursorOnHover,
-                  SizedBox(height: 32),
+                  SizedBox(height: 16),
                   Text(
                     "Filter By Tag:",
                     style: TextStyle(
@@ -146,70 +153,72 @@ class HomeFilterBottomSheet extends StatelessWidget {
                   ),
                   SizedBox(height: 4),
                   TextFieldContainer(
-                    height: 38,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        top: 10,
-                      ),
-                      child: TypeAheadField(
-                        hideOnLoading: true,
-                        noItemsFoundBuilder: (BuildContext context) {
-                          return Text(
-                            'No Results Found',
-                            style: TextStyle(color: appFontColorAlt(), fontSize: 14.0, fontWeight: FontWeight.w500),
-                          );
-                        },
-                        direction: AxisDirection.up,
-                        textFieldConfiguration: TextFieldConfiguration(
-                          controller: model.tagTextController,
-                          cursorColor: Colors.black,
-                          decoration: InputDecoration(
-                            hintText: "Search for Tag",
-                            border: InputBorder.none,
-                          ),
-                          autofocus: false,
+                    child: TypeAheadField(
+                      hideOnLoading: true,
+                      noItemsFoundBuilder: (BuildContext context) {
+                        return Text(
+                          'No Results Found',
+                          style: TextStyle(color: appFontColorAlt(), fontSize: 14.0, fontWeight: FontWeight.w500),
+                        );
+                      },
+                      direction: AxisDirection.up,
+                      textFieldConfiguration: TextFieldConfiguration(
+                        controller: tag,
+                        cursorColor: Colors.black,
+                        decoration: InputDecoration(
+                          hintText: "Search for Tag",
+                          border: InputBorder.none,
                         ),
-                        suggestionsCallback: (searchTerm) async {
-                          return await model.algoliaSearchService.queryTags(searchTerm);
-                        },
-                        itemBuilder: (context, tag) {
-                          return ListTile(
-                            title: Text(
-                              tag,
-                              style: TextStyle(color: appFontColor(), fontSize: 14.0, fontWeight: FontWeight.w500),
-                            ),
-                          ).showCursorOnHover;
-                        },
-                        onSuggestionSelected: (val) => model.setTagFilter(val),
+                        autofocus: false,
                       ),
+                      suggestionsCallback: (searchTerm) async {
+                        return await model.algoliaSearchService!.queryTags(searchTerm);
+                      },
+                      itemBuilder: (context, dynamic tag) {
+                        return ListTile(
+                          title: Text(
+                            tag,
+                            style: TextStyle(color: appFontColor(), fontSize: 14.0, fontWeight: FontWeight.w500),
+                          ),
+                        ).showCursorOnHover;
+                      },
+                      onSuggestionSelected: (dynamic val) {
+                        tag.text = val;
+                        model.setTagFilter(val);
+                      },
                     ),
                   ),
                   SizedBox(height: 8),
                   GestureDetector(
-                    onTap: () => model.clearTagFilter(),
+                    onTap: () {
+                      tag.text = "";
+                      model.clearTagFilter();
+                    },
                     child: Text(
                       "Clear Tag Filter",
                       style: TextStyle(
                         color: appTextButtonColor(),
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 14,
                       ),
                     ),
                   ).showCursorOnHover,
                   SizedBox(height: 32),
-                  FlatButton(
-                    minWidth: screenWidth(context),
-                    onPressed: () => completer(SheetResponse(responseData: model.returnPreferences())),
-                    child: Text(
-                      "Apply",
-                      style: TextStyle(
-                        color: appFontColor(),
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    color: appButtonColorAlt(),
+                  CustomButton(
+                    text: "Apply",
+                    textSize: 16,
+                    height: 30,
+                    width: 300,
+                    onPressed: () {
+                      model.updatePreferences();
+                      completer!(SheetResponse());
+                    },
+                    backgroundColor: appButtonColor(),
+                    textColor: appFontColor(),
+                    elevation: 2,
+                    isBusy: false,
                   ),
+                  verticalSpaceMedium,
                 ],
               ),
             ],

@@ -11,7 +11,7 @@ import 'list_current_user_posts_model.dart';
 
 class ListCurrentUserPosts extends StatelessWidget {
   final ScrollController scrollController;
-  ListCurrentUserPosts({@required this.scrollController});
+  ListCurrentUserPosts({required this.scrollController});
 
   @override
   Widget build(BuildContext context) {
@@ -21,54 +21,55 @@ class ListCurrentUserPosts extends StatelessWidget {
       builder: (context, model, child) => model.isBusy
           ? Container()
           : model.dataResults.isEmpty
-              ? ZeroStateView(
-                  imageAssetName: "umbrella_chair",
-                  imageSize: 200,
-                  header: "You Do Not Have Any Posts",
-                  subHeader: "Create a New Post to Share with the Community",
-                  mainActionButtonTitle: "Create Post",
-                  mainAction: null,
-                  secondaryActionButtonTitle: null,
-                  secondaryAction: null,
-                  refreshData: model.refreshData,
-                )
-              : Container(
-                  height: screenHeight(context),
-                  color: appBackgroundColor,
-                  child: RefreshIndicator(
-                    onRefresh: model.refreshData,
-                    child: ListView.builder(
-                      controller: scrollController,
-                      key: PageStorageKey('current-user-posts'),
-                      addAutomaticKeepAlives: true,
-                      shrinkWrap: true,
-                      padding: EdgeInsets.only(
-                        top: 4.0,
-                        bottom: 4.0,
-                      ),
-                      itemCount: model.dataResults.length,
-                      itemBuilder: (context, index) {
-                        WebblenPost post;
-                        post = WebblenPost.fromMap(model.dataResults[index].data());
-                        // if (model.dataResults[index] is WebblenPost) {
-                        //   post = model.dataResults[index];
-                        // } else {
-                        //   post = WebblenPost.fromMap(model.dataResults[index].data());
-                        // }
-
-                        return post.imageURL == null
-                            ? PostTextBlockView(
-                                post: post,
-                                showPostOptions: (post) => model.showContentOptions(post),
-                              )
-                            : PostImgBlockView(
-                                post: post,
-                                showPostOptions: (post) => model.showContentOptions(post),
-                              );
-                      },
-                    ),
+          ? ZeroStateView(
+              imageAssetName: "umbrella_chair",
+              imageSize: 200,
+              header: "You Do Not Have Any Posts",
+              subHeader: "Create a New Post to Share with the Community",
+              mainActionButtonTitle: "Create Post",
+              mainAction: null,
+              secondaryActionButtonTitle: null,
+              secondaryAction: null,
+              refreshData: model.refreshData,
+              scrollController: scrollController,
+            )
+          : Container(
+              height: screenHeight(context),
+              color: appBackgroundColor,
+              child: RefreshIndicator(
+                onRefresh: model.refreshData,
+                child: ListView.builder(
+                  controller: scrollController,
+                  key: PageStorageKey('current-user-posts'),
+                  addAutomaticKeepAlives: true,
+                  shrinkWrap: true,
+                  padding: EdgeInsets.only(
+                    top: 4.0,
+                    bottom: 4.0,
                   ),
+                  itemCount: model.dataResults.length,
+                  itemBuilder: (context, index) {
+                    WebblenPost post;
+                    post = WebblenPost.fromMap(model.dataResults[index].data()!);
+                    // if (model.dataResults[index] is WebblenPost) {
+                    //   post = model.dataResults[index];
+                    // } else {
+                    //   post = WebblenPost.fromMap(model.dataResults[index].data());
+                    // }
+
+                    return post.imageURL == null
+                        ? PostTextBlockView(
+                            post: post,
+                            showPostOptions: (post) => model.showContentOptions(post),
+                          )
+                        : PostImgBlockView(
+                            post: post,
+                            showPostOptions: (post) => model.showContentOptions(post),
+                          );
+                  },
                 ),
+              ),
+            ),
     );
   }
 }

@@ -7,12 +7,14 @@ import 'package:webblen_web_app/models/webblen_live_stream.dart';
 import 'package:webblen_web_app/models/webblen_post.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/algolia/algolia_search_service.dart';
+import 'package:webblen_web_app/services/bottom_sheets/custom_bottom_sheet_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
 class AllSearchResultsViewModel extends BaseViewModel {
-  NavigationService _navigationService = locator<NavigationService>();
-  AlgoliaSearchService _algoliaSearchService = locator<AlgoliaSearchService>();
-  WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  NavigationService? _navigationService = locator<NavigationService>();
+  AlgoliaSearchService? _algoliaSearchService = locator<AlgoliaSearchService>();
+  WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  CustomBottomSheetService customBottomSheetService = locator<CustomBottomSheetService>();
 
   ///HELPERS
   TextEditingController searchTextController = TextEditingController();
@@ -22,7 +24,7 @@ class AllSearchResultsViewModel extends BaseViewModel {
   ScrollController userScrollController = ScrollController();
 
   ///DATA RESULTS
-  String searchTerm;
+  String? searchTerm;
   List<WebblenPost> postResults = [];
   bool loadingAdditionalPosts = false;
   bool morePostsAvailable = true;
@@ -45,9 +47,9 @@ class AllSearchResultsViewModel extends BaseViewModel {
 
   int resultsLimit = 15;
 
-  initialize(String term) async {
+  initialize(String? term) async {
     searchTerm = term;
-    searchTextController.text = searchTerm;
+    searchTextController.text = searchTerm!;
     notifyListeners();
     postScrollController.addListener(() {
       double triggerFetchMoreSize = 0.9 * postScrollController.position.maxScrollExtent;
@@ -89,7 +91,7 @@ class AllSearchResultsViewModel extends BaseViewModel {
   }
 
   loadPosts() async {
-    postResults = await _algoliaSearchService.queryPosts(searchTerm: searchTerm, resultsLimit: resultsLimit);
+    postResults = await _algoliaSearchService!.queryPosts(searchTerm: searchTerm, resultsLimit: resultsLimit);
     postResultsPageNum += 1;
     notifyListeners();
   }
@@ -100,7 +102,7 @@ class AllSearchResultsViewModel extends BaseViewModel {
     }
     loadingAdditionalPosts = true;
     notifyListeners();
-    List<WebblenPost> newResults = await _algoliaSearchService.queryAdditionalPosts(
+    List<WebblenPost> newResults = await _algoliaSearchService!.queryAdditionalPosts(
       searchTerm: searchTerm,
       resultsLimit: resultsLimit,
       pageNum: streamResultsPageNum,
@@ -123,7 +125,7 @@ class AllSearchResultsViewModel extends BaseViewModel {
   }
 
   loadStreams() async {
-    streamResults = await _algoliaSearchService.queryStreams(searchTerm: searchTerm, resultsLimit: resultsLimit);
+    streamResults = await _algoliaSearchService!.queryStreams(searchTerm: searchTerm, resultsLimit: resultsLimit);
     streamResultsPageNum += 1;
     notifyListeners();
   }
@@ -134,7 +136,7 @@ class AllSearchResultsViewModel extends BaseViewModel {
     }
     loadingAdditionalStreams = true;
     notifyListeners();
-    List<WebblenLiveStream> newResults = await _algoliaSearchService.queryAdditionalStreams(
+    List<WebblenLiveStream> newResults = await _algoliaSearchService!.queryAdditionalStreams(
       searchTerm: searchTerm,
       resultsLimit: resultsLimit,
       pageNum: streamResultsPageNum,
@@ -156,7 +158,7 @@ class AllSearchResultsViewModel extends BaseViewModel {
   }
 
   loadEvents() async {
-    eventResults = await _algoliaSearchService.queryEvents(searchTerm: searchTerm, resultsLimit: resultsLimit);
+    eventResults = await _algoliaSearchService!.queryEvents(searchTerm: searchTerm, resultsLimit: resultsLimit);
     eventResultsPageNum += 1;
     notifyListeners();
   }
@@ -167,7 +169,7 @@ class AllSearchResultsViewModel extends BaseViewModel {
     }
     loadingAdditionalEvents = true;
     notifyListeners();
-    List<WebblenEvent> newResults = await _algoliaSearchService.queryAdditionalEvents(
+    List<WebblenEvent> newResults = await _algoliaSearchService!.queryAdditionalEvents(
       searchTerm: searchTerm,
       resultsLimit: resultsLimit,
       pageNum: streamResultsPageNum,
@@ -189,7 +191,7 @@ class AllSearchResultsViewModel extends BaseViewModel {
   }
 
   loadUsers() async {
-    userResults = await _algoliaSearchService.queryUsers(searchTerm: searchTerm, resultsLimit: resultsLimit);
+    userResults = await _algoliaSearchService!.queryUsers(searchTerm: searchTerm, resultsLimit: resultsLimit);
     userResultsPageNum += 1;
     notifyListeners();
   }
@@ -200,7 +202,7 @@ class AllSearchResultsViewModel extends BaseViewModel {
     }
     loadingAdditionalUsers = true;
     notifyListeners();
-    List<WebblenUser> newResults = await _algoliaSearchService.queryAdditionalUsers(
+    List<WebblenUser> newResults = await _algoliaSearchService!.queryAdditionalUsers(
       searchTerm: searchTerm,
       resultsLimit: resultsLimit,
       pageNum: userResultsPageNum,
@@ -216,8 +218,8 @@ class AllSearchResultsViewModel extends BaseViewModel {
   }
 
   //show content options
-  showContentOptions({@required dynamic content}) async {
-    var actionPerformed = await webblenBaseViewModel.showContentOptions(content: content);
+  showContentOptions({required dynamic content}) async {
+    var actionPerformed = await customBottomSheetService.showContentOptions(content: content);
     if (actionPerformed == "deleted content") {
       if (content is WebblenPost) {
         //deleted post
@@ -237,7 +239,7 @@ class AllSearchResultsViewModel extends BaseViewModel {
 
   ///NAVIGATION
   navigateToPreviousPage() {
-    _navigationService.back();
+    _navigationService!.back();
   }
 
 //

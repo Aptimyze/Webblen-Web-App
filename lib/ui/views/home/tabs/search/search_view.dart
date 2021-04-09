@@ -15,7 +15,7 @@ import 'package:webblen_web_app/ui/widgets/search/search_field.dart';
 import 'package:webblen_web_app/ui/widgets/search/search_result_view.dart';
 
 class SearchView extends StatelessWidget {
-  final String term;
+  final String? term;
   SearchView({this.term});
 
   Widget head(BuildContext context, SearchViewModel model) {
@@ -110,6 +110,11 @@ class SearchView extends StatelessWidget {
               header: "No Recent Searches Found",
               subHeader: "Search for anything you'd like",
               refreshData: null,
+              scrollController: null,
+              mainAction: () {},
+              secondaryActionButtonTitle: '',
+              secondaryAction: () {},
+              mainActionButtonTitle: '',
             )
           : ListView(
               shrinkWrap: true,
@@ -167,7 +172,7 @@ class SearchView extends StatelessWidget {
         usersHeader(),
         ListUsersSearchResults(
           results: model.userResults,
-          usersFollowing: model.webblenBaseViewModel.user == null ? [] : model.webblenBaseViewModel.user.following,
+          usersFollowing: model.webblenBaseViewModel!.user == null ? [] : model.webblenBaseViewModel!.user!.following,
           scrollController: null,
           isScrollable: false,
           onSearchTermSelected: (val) => model.navigateToUserView(val),

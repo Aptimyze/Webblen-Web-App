@@ -20,65 +20,67 @@ class _ListHomePostsState extends State<ListHomePosts> with AutomaticKeepAliveCl
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return ViewModelBuilder<ListHomePostsModel>.reactive(
-      disposeViewModel: false,
-      initialiseSpecialViewModelsOnce: true,
+      // disposeViewModel: false,
+      // initialiseSpecialViewModelsOnce: true,
       onModelReady: (model) => model.initialize(),
       viewModelBuilder: () => ListHomePostsModel(),
       builder: (context, model, child) => model.isBusy
           ? Container()
           : model.dataResults.isEmpty
-              ? ZeroStateView(
-                  imageAssetName: "umbrella_chair",
-                  imageSize: 200,
-                  header: "You Have No Posts",
-                  subHeader: "Create a New Post to Share with the Community",
-                  mainActionButtonTitle: "Create Post",
-                  mainAction: () => model.webblenBaseViewModel.navigateToCreatePostPage(),
-                  secondaryActionButtonTitle: null,
-                  secondaryAction: null,
-                  refreshData: model.refreshData,
-                )
-              : Container(
-                  height: screenHeight(context),
-                  color: appBackgroundColor,
-                  child: RefreshIndicator(
-                    onRefresh: model.refreshData,
-                    child: ListView.builder(
-                      controller: model.scrollController,
-                      key: PageStorageKey('home-posts'),
-                      addAutomaticKeepAlives: true,
-                      shrinkWrap: true,
-                      itemCount: model.dataResults.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index < model.dataResults.length) {
-                          WebblenPost post;
-                          post = WebblenPost.fromMap(model.dataResults[index].data());
-                          return post.imageURL == null
-                              ? PostTextBlockView(
-                                  post: post,
-                                  showPostOptions: (post) => model.showContentOptions(post),
-                                )
-                              : PostImgBlockView(
-                                  post: post,
-                                  showPostOptions: (post) => model.showContentOptions(post),
-                                );
-                        } else {
-                          if (model.moreDataAvailable) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              model.loadAdditionalData();
-                              return Align(
-                                alignment: Alignment.center,
-                                child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
-                              );
-                            });
-                          }
-                          return Container();
-                        }
-                      },
-                    ),
-                  ),
+          ? ZeroStateView(
+              imageAssetName: "umbrella_chair",
+              imageSize: 200,
+              header: "You Have No Posts",
+              subHeader: "Create a New Post to Share with the Community",
+              mainActionButtonTitle: "Create Post",
+              mainAction: () => model.webblenBaseViewModel.navigateToCreatePostPage(),
+              secondaryActionButtonTitle: null,
+              secondaryAction: null,
+              refreshData: model.refreshData,
+              scrollController: null,
+            )
+          : Container(
+              height: screenHeight(context),
+              color: appBackgroundColor,
+              child: RefreshIndicator(
+                onRefresh: model.refreshData,
+                child: ListView.builder(
+                  controller: model.scrollController,
+                  key: PageStorageKey(model.listKey),
+                  addAutomaticKeepAlives: true,
+                  shrinkWrap: true,
+                  itemCount: model.dataResults.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index < model.dataResults.length) {
+                      WebblenPost post;
+                      post = WebblenPost.fromMap(model.dataResults[index].data()!);
+                      return post.imageURL == null
+                          ? PostTextBlockView(
+                              post: post,
+                              showPostOptions: (post) => model.showContentOptions(post),
+                            )
+                          : PostImgBlockView(
+                              post: post,
+                              showPostOptions: (post) => model.showContentOptions(post),
+                            );
+                    } else {
+                      if (model.moreDataAvailable) {
+                        WidgetsBinding.instance!.addPostFrameCallback((_) {
+                          model.loadAdditionalData();
+                        });
+                        return Align(
+                          alignment: Alignment.center,
+                          child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
+                        );
+                      }
+                      return Container();
+                    }
+                  },
                 ),
+              ),
+            ),
     );
   }
 }

@@ -3,9 +3,9 @@ import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
 
 class CustomTopNavBarItem extends StatelessWidget {
-  final VoidCallback onTap;
-  final bool isActive;
-  final IconData iconData;
+  final VoidCallback? onTap;
+  final bool? isActive;
+  final IconData? iconData;
 
   CustomTopNavBarItem({this.onTap, this.isActive, this.iconData});
   @override
@@ -22,7 +22,7 @@ class CustomTopNavBarItem extends StatelessWidget {
           children: [
             Icon(
               iconData,
-              color: isActive ? appIconColor() : appInActiveColorAlt(),
+              color: isActive! ? appIconColor() : appInActiveColorAlt(),
               size: 20,
             ),
           ],

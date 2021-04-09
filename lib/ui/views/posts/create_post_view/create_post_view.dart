@@ -11,6 +11,7 @@ import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
 import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_top_nav_bar/custom_top_nav_bar.dart';
 import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_top_nav_bar/custom_top_nav_bar_item.dart';
 import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_circle_progress_indicator.dart';
+import 'package:webblen_web_app/ui/widgets/common/text_field/auto_complete_address_text_field/auto_complete_address_text_field.dart';
 import 'package:webblen_web_app/ui/widgets/common/text_field/multi_line_text_field.dart';
 import 'package:webblen_web_app/ui/widgets/tags/tag_button.dart';
 import 'package:webblen_web_app/ui/widgets/tags/tag_dropdown_field.dart';
@@ -18,19 +19,19 @@ import 'package:webblen_web_app/ui/widgets/tags/tag_dropdown_field.dart';
 import 'create_post_view_model.dart';
 
 class CreatePostView extends StatelessWidget {
-  final String id;
+  final String? id;
   CreatePostView(@PathParam() this.id);
 
   Widget selectedTags(CreatePostViewModel model) {
-    return model.post.tags == null || model.post.tags.isEmpty
+    return model.post.tags == null || model.post.tags!.isEmpty
         ? Container()
         : Container(
             height: 30,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: model.post.tags.length,
+              itemCount: model.post.tags!.length,
               itemBuilder: (BuildContext context, int index) {
-                return RemovableTagButton(onTap: () => model.removeTagAtIndex(index), tag: model.post.tags[index]);
+                return RemovableTagButton(onTap: () => model.removeTagAtIndex(index), tag: model.post.tags![index]);
               },
             ),
           );
@@ -72,7 +73,7 @@ class CreatePostView extends StatelessWidget {
   }
 
   Widget imgPreview(BuildContext context, CreatePostViewModel model) {
-    return model.imgToUploadByteMemory == null
+    return model.fileToUploadByteMemory.isEmpty
         ? ImagePreviewButton(
             onTap: () => model.selectImage(),
             imgByteMemory: null,
@@ -80,7 +81,7 @@ class CreatePostView extends StatelessWidget {
           )
         : ImagePreviewButton(
             onTap: () => model.selectImage(),
-            imgByteMemory: model.imgToUploadByteMemory,
+            imgByteMemory: model.fileToUploadByteMemory,
             imgURL: null,
           );
   }
@@ -107,7 +108,7 @@ class CreatePostView extends StatelessWidget {
                   verticalSpaceMedium,
 
                   ///POST IMAGE
-                  model.imgToUploadByteMemory == null && model.post.imageURL == null ? imgBtn(context, model) : imgPreview(context, model),
+                  model.fileToUploadByteMemory.isEmpty && model.post.imageURL == null ? imgBtn(context, model) : imgPreview(context, model),
                   verticalSpaceMedium,
 
                   ///POST TAGS
@@ -129,7 +130,7 @@ class CreatePostView extends StatelessWidget {
                         TagDropdownField(
                           enabled: model.textFieldEnabled,
                           controller: model.tagTextController,
-                          onTagSelected: (tag) => model.addTag(tag),
+                          onTagSelected: (tag) => model.addTag(tag!),
                         ),
                         verticalSpaceMedium,
 
@@ -145,8 +146,23 @@ class CreatePostView extends StatelessWidget {
                           hintText: "Don't be shy...",
                           initialValue: null,
                           maxLines: null,
+                          onChanged: (val) => model.setPostMessage(val),
                         ),
                         verticalSpaceMedium,
+
+                        ///POST AUDIENCE LOCATION
+                        textFieldHeader(
+                          "Post Location",
+                          "Where would you like this post to be seen?",
+                        ),
+                        verticalSpaceSmall,
+                        AutoCompleteAddressTextField(
+                          initialValue: model.post.city != null && model.post.province != null ? "${model.post.city}, ${model.post.province}" : "",
+                          hintText: "Location",
+                          onSelectedAddress: (val) => model.setPostLocation(val),
+                        ),
+                        verticalSpaceMedium,
+
                         CustomButton(
                           text: "Done",
                           textSize: 18,
@@ -195,7 +211,7 @@ class CreatePostView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<CreatePostViewModel>.reactive(
-      onModelReady: (model) => model.initialize(id),
+      onModelReady: (model) => model.initialize(postID: id!),
       viewModelBuilder: () => CreatePostViewModel(),
       builder: (context, model, child) => Scaffold(
         appBar: PreferredSize(
@@ -227,12 +243,26 @@ class CreatePostView extends StatelessWidget {
         ),
         body: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
-          child: Container(
-            height: screenHeight(context),
-            width: screenWidth(context),
-            color: appBackgroundColor,
-            child: form(context, model),
-          ),
+          child: model.initializing
+              ? Container(
+                  height: screenHeight(context),
+                  width: screenWidth(context),
+                  color: appBackgroundColor,
+                  child: Align(
+                    child: Center(
+                      child: CustomCircleProgressIndicator(
+                        size: 10,
+                        color: appActiveColor(),
+                      ),
+                    ),
+                  ),
+                )
+              : Container(
+                  height: screenHeight(context),
+                  width: screenWidth(context),
+                  color: appBackgroundColor,
+                  child: form(context, model),
+                ),
         ),
       ),
     );

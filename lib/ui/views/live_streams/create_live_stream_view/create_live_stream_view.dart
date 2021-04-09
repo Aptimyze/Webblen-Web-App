@@ -33,25 +33,25 @@ import 'package:webblen_web_app/ui/widgets/tags/tag_dropdown_field.dart';
 import 'create_live_stream_view_model.dart';
 
 class CreateLiveStreamView extends StatelessWidget {
-  final String id;
+  final String? id;
   CreateLiveStreamView(@PathParam() this.id);
 
   Widget selectedTags(CreateLiveStreamViewModel model) {
-    return model.stream.tags == null || model.stream.tags.isEmpty
+    return model.stream.tags == null || model.stream.tags!.isEmpty
         ? Container()
         : Container(
             height: 30,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: model.stream.tags.length,
+              itemCount: model.stream.tags!.length,
               itemBuilder: (BuildContext context, int index) {
-                return RemovableTagButton(onTap: () => model.removeTagAtIndex(index), tag: model.stream.tags[index]);
+                return RemovableTagButton(onTap: () => model.removeTagAtIndex(index), tag: model.stream.tags![index]);
               },
             ),
           );
   }
 
-  Widget textFieldHeader({@required String header, @required String subHeader, @required bool required}) {
+  Widget textFieldHeader({required String header, required String subHeader, required bool required}) {
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -101,7 +101,7 @@ class CreateLiveStreamView extends StatelessWidget {
   }
 
   Widget imgPreview(BuildContext context, CreateLiveStreamViewModel model) {
-    return model.imgToUploadByteMemory == null
+    return model.fileToUploadByteMemory.isEmpty
         ? ImagePreviewButton(
             onTap: () => model.selectImage(),
             imgByteMemory: null,
@@ -109,12 +109,12 @@ class CreateLiveStreamView extends StatelessWidget {
           )
         : ImagePreviewButton(
             onTap: () => model.selectImage(),
-            imgByteMemory: model.imgToUploadByteMemory,
+            imgByteMemory: model.fileToUploadByteMemory,
             imgURL: null,
           );
   }
 
-  Widget formSectionDivider({@required String sectionName}) {
+  Widget formSectionDivider({required String sectionName}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -154,7 +154,7 @@ class CreateLiveStreamView extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   verticalSpaceMedium,
-                  model.hasEarningsAccount
+                  model.hasEarningsAccount!
                       ? Container()
                       : GestureDetector(
                           onTap: () => model.navigateBackToWalletPage(),
@@ -181,7 +181,7 @@ class CreateLiveStreamView extends StatelessWidget {
                         ).showCursorOnHover,
 
                   ///POST IMAGE
-                  model.imgToUploadByteMemory == null && model.stream.imageURL == null ? imgBtn(context, model) : imgPreview(context, model),
+                  model.fileToUpload.relativePath!.isEmpty && model.stream.imageURL == null ? imgBtn(context, model) : imgPreview(context, model),
                   verticalSpaceMedium,
 
                   ///POST TAGS
@@ -204,7 +204,7 @@ class CreateLiveStreamView extends StatelessWidget {
                         TagDropdownField(
                           enabled: model.textFieldEnabled,
                           controller: model.tagTextController,
-                          onTagSelected: (tag) => model.addTag(tag),
+                          onTagSelected: (tag) => model.addTag(tag!),
                         ),
                         verticalSpaceMedium,
 
@@ -250,7 +250,7 @@ class CreateLiveStreamView extends StatelessWidget {
                         verticalSpaceSmall,
                         EventPrivacyDropdown(
                           privacy: model.stream.privacy,
-                          onChanged: (val) => model.onSelectedPrivacyFromDropdown(val),
+                          onChanged: (val) => model.onSelectedPrivacyFromDropdown(val!),
                         ),
 
                         formSectionDivider(sectionName: "AUDIENCE LOCATION, DATE, & TIME"),
@@ -263,7 +263,7 @@ class CreateLiveStreamView extends StatelessWidget {
                         ),
                         verticalSpaceSmall,
                         AutoCompleteAddressTextField(
-                          initialValue: model.stream.audienceLocation,
+                          initialValue: model.stream.audienceLocation == null ? "" : model.stream.audienceLocation!,
                           hintText: "Location",
                           onSelectedAddress: (val) => model.setStreamAudienceLocation(val),
                         ),
@@ -289,7 +289,7 @@ class CreateLiveStreamView extends StatelessWidget {
                         verticalSpaceSmall,
                         TimeDropdown(
                           selectedTime: model.stream.startTime,
-                          onChanged: (val) => model.onSelectedTimeFromDropdown(selectedStartTime: true, time: val),
+                          onChanged: (val) => model.onSelectedTimeFromDropdown(selectedStartTime: true, time: val!),
                         ),
                         verticalSpaceMedium,
 
@@ -313,7 +313,7 @@ class CreateLiveStreamView extends StatelessWidget {
                         verticalSpaceSmall,
                         TimeDropdown(
                           selectedTime: model.stream.endTime,
-                          onChanged: (val) => model.onSelectedTimeFromDropdown(selectedStartTime: false, time: val),
+                          onChanged: (val) => model.onSelectedTimeFromDropdown(selectedStartTime: false, time: val!),
                         ),
                         verticalSpaceMedium,
 
@@ -326,11 +326,11 @@ class CreateLiveStreamView extends StatelessWidget {
                         verticalSpaceSmall,
                         TimezoneDropdown(
                           selectedTimezone: model.stream.timezone,
-                          onChanged: (val) => model.onSelectedTimezoneFromDropdown(val),
+                          onChanged: (val) => model.onSelectedTimezoneFromDropdown(val!),
                         ),
 
                         ///EVENT TICKETING, FEES, AND DISCOUNTS
-                        model.hasEarningsAccount == null || !model.hasEarningsAccount
+                        model.hasEarningsAccount == null || !model.hasEarningsAccount!
                             ? Container()
                             : Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -345,7 +345,7 @@ class CreateLiveStreamView extends StatelessWidget {
                                   verticalSpaceSmall,
 
                                   //list tickets
-                                  model.ticketDistro.tickets.isEmpty
+                                  model.ticketDistro!.tickets!.isEmpty
                                       ? Container()
                                       : ListTicketsForEditing(
                                           ticketDistro: model.ticketDistro,
@@ -353,8 +353,8 @@ class CreateLiveStreamView extends StatelessWidget {
                                         ),
 
                                   //list fees
-                                  model.ticketDistro.fees.isEmpty || model.ticketDistro.tickets.isEmpty ? Container() : verticalSpaceSmall,
-                                  model.ticketDistro.fees.isEmpty || model.ticketDistro.tickets.isEmpty
+                                  model.ticketDistro!.fees!.isEmpty || model.ticketDistro!.tickets!.isEmpty ? Container() : verticalSpaceSmall,
+                                  model.ticketDistro!.fees!.isEmpty || model.ticketDistro!.tickets!.isEmpty
                                       ? Container()
                                       : ListFeesForEditing(
                                           ticketDistro: model.ticketDistro,
@@ -362,8 +362,8 @@ class CreateLiveStreamView extends StatelessWidget {
                                         ),
 
                                   //list discount codes
-                                  model.ticketDistro.discountCodes.isEmpty || model.ticketDistro.discountCodes.isEmpty ? Container() : verticalSpaceSmall,
-                                  model.ticketDistro.discountCodes.isEmpty || model.ticketDistro.discountCodes.isEmpty
+                                  model.ticketDistro!.discountCodes!.isEmpty || model.ticketDistro!.discountCodes!.isEmpty ? Container() : verticalSpaceSmall,
+                                  model.ticketDistro!.discountCodes!.isEmpty || model.ticketDistro!.discountCodes!.isEmpty
                                       ? Container()
                                       : ListDiscountsForEditing(
                                           ticketDistro: model.ticketDistro,
@@ -384,74 +384,74 @@ class CreateLiveStreamView extends StatelessWidget {
 
                                       //fee form
                                       : model.showFeeForm
-                                          ? FeeForm(
-                                              editingFee: model.feeToEditIndex != null ? true : false,
-                                              feeNameTextController: model.feeNameTextController,
-                                              feePriceTextController: model.feePriceTextController,
-                                              validateAndSubmitFee: () => model.addFee(),
-                                              deleteFee: () => model.deleteFee(),
-                                            )
+                                      ? FeeForm(
+                                          editingFee: model.feeToEditIndex != null ? true : false,
+                                          feeNameTextController: model.feeNameTextController,
+                                          feePriceTextController: model.feePriceTextController,
+                                          validateAndSubmitFee: () => model.addFee(),
+                                          deleteFee: () => model.deleteFee(),
+                                        )
 
-                                          //discount form
-                                          : model.showDiscountCodeForm
-                                              ? DiscountForm(
-                                                  editingDiscount: model.discountToEditIndex != null ? true : false,
-                                                  discountNameTextController: model.discountNameTextController,
-                                                  discountLimitTextController: model.discountLimitTextController,
-                                                  discountValueTextController: model.discountValueTextController,
-                                                  validateAndSubmitDiscount: () => model.addDiscount(),
-                                                  deleteDiscount: () => model.deleteDiscount(),
-                                                )
+                                      //discount form
+                                      : model.showDiscountCodeForm
+                                      ? DiscountForm(
+                                          editingDiscount: model.discountToEditIndex != null ? true : false,
+                                          discountNameTextController: model.discountNameTextController,
+                                          discountLimitTextController: model.discountLimitTextController,
+                                          discountValueTextController: model.discountValueTextController,
+                                          validateAndSubmitDiscount: () => model.addDiscount(),
+                                          deleteDiscount: () => model.deleteDiscount(),
+                                        )
 
-                                              //new ticket, fee, and discount buttons
-                                              : Container(
-                                                  child: Row(
-                                                    children: [
-                                                      CustomIconButton(
-                                                        height: 40,
-                                                        width: 40,
-                                                        icon: Icon(
-                                                          FontAwesomeIcons.ticketAlt,
-                                                          size: 16,
-                                                          color: appIconColor(),
-                                                        ),
-                                                        onPressed: () => model.toggleTicketForm(ticketIndex: null),
-                                                        centerContent: true,
-                                                        backgroundColor: appButtonColorAlt(),
-                                                      ),
-                                                      horizontalSpaceSmall,
-                                                      model.ticketDistro.tickets.isEmpty
-                                                          ? Container()
-                                                          : CustomIconButton(
-                                                              height: 40,
-                                                              width: 40,
-                                                              icon: Icon(
-                                                                FontAwesomeIcons.dollarSign,
-                                                                size: 16,
-                                                                color: appIconColor(),
-                                                              ),
-                                                              onPressed: () => model.toggleFeeForm(feeIndex: null),
-                                                              centerContent: true,
-                                                              backgroundColor: appButtonColorAlt(),
-                                                            ),
-                                                      horizontalSpaceSmall,
-                                                      model.ticketDistro.tickets.isEmpty
-                                                          ? Container()
-                                                          : CustomIconButton(
-                                                              height: 40,
-                                                              width: 40,
-                                                              icon: Icon(
-                                                                FontAwesomeIcons.percent,
-                                                                size: 16,
-                                                                color: appIconColor(),
-                                                              ),
-                                                              onPressed: () => model.toggleDiscountsForm(discountIndex: null),
-                                                              centerContent: true,
-                                                              backgroundColor: appButtonColorAlt(),
-                                                            ),
-                                                    ],
-                                                  ),
+                                      //new ticket, fee, and discount buttons
+                                      : Container(
+                                          child: Row(
+                                            children: [
+                                              CustomIconButton(
+                                                height: 40,
+                                                width: 40,
+                                                icon: Icon(
+                                                  FontAwesomeIcons.ticketAlt,
+                                                  size: 16,
+                                                  color: appIconColor(),
                                                 ),
+                                                onPressed: () => model.toggleTicketForm(ticketIndex: null),
+                                                centerContent: true,
+                                                backgroundColor: appButtonColorAlt(),
+                                              ),
+                                              horizontalSpaceSmall,
+                                              model.ticketDistro!.tickets!.isEmpty
+                                                  ? Container()
+                                                  : CustomIconButton(
+                                                      height: 40,
+                                                      width: 40,
+                                                      icon: Icon(
+                                                        FontAwesomeIcons.dollarSign,
+                                                        size: 16,
+                                                        color: appIconColor(),
+                                                      ),
+                                                      onPressed: () => model.toggleFeeForm(feeIndex: null),
+                                                      centerContent: true,
+                                                      backgroundColor: appButtonColorAlt(),
+                                                    ),
+                                              horizontalSpaceSmall,
+                                              model.ticketDistro!.tickets!.isEmpty
+                                                  ? Container()
+                                                  : CustomIconButton(
+                                                      height: 40,
+                                                      width: 40,
+                                                      icon: Icon(
+                                                        FontAwesomeIcons.percent,
+                                                        size: 16,
+                                                        color: appIconColor(),
+                                                      ),
+                                                      onPressed: () => model.toggleDiscountsForm(discountIndex: null),
+                                                      centerContent: true,
+                                                      backgroundColor: appButtonColorAlt(),
+                                                    ),
+                                            ],
+                                          ),
+                                        ),
                                 ],
                               ),
 
@@ -614,22 +614,22 @@ class CreateLiveStreamView extends StatelessWidget {
           child: CustomTopNavBar(
             navBarItems: [
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(0),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(0),
                 iconData: FontAwesomeIcons.home,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(1),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(1),
                 iconData: FontAwesomeIcons.search,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(2),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(2),
                 iconData: FontAwesomeIcons.wallet,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(3),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(3),
                 iconData: FontAwesomeIcons.user,
                 isActive: false,
               ),

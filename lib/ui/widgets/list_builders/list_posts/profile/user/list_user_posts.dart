@@ -10,64 +10,65 @@ import 'package:webblen_web_app/ui/widgets/posts/post_img_block/post_img_block_v
 import 'package:webblen_web_app/ui/widgets/posts/post_text_block/post_text_block_view.dart';
 
 class ListUserPosts extends StatelessWidget {
-  final WebblenUser user;
+  final WebblenUser? user;
   final ScrollController scrollController;
 
   ListUserPosts({
-    @required this.user,
-    @required this.scrollController,
+    required this.user,
+    required this.scrollController,
   });
 
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ListUserPostsModel>.reactive(
-      onModelReady: (model) => model.initialize(id: user.id),
+      onModelReady: (model) => model.initialize(id: user!.id),
       viewModelBuilder: () => ListUserPostsModel(),
       builder: (context, model, child) => model.isBusy
           ? Container()
           : model.dataResults.isEmpty
-              ? ZeroStateView(
-                  imageAssetName: "umbrella_chair",
-                  imageSize: 200,
-                  header: "@${user.username} Does Not Have Any Posts",
-                  subHeader: "Maybe someday they will? Check back later",
-                  mainActionButtonTitle: null,
-                  mainAction: null,
-                  secondaryActionButtonTitle: null,
-                  secondaryAction: null,
-                  refreshData: model.refreshData,
-                )
-              : Container(
-                  height: screenHeight(context),
-                  color: appBackgroundColor,
-                  child: RefreshIndicator(
-                    onRefresh: model.refreshData,
-                    child: ListView.builder(
-                      controller: scrollController,
-                      key: PageStorageKey('user-posts'),
-                      addAutomaticKeepAlives: true,
-                      shrinkWrap: true,
-                      padding: EdgeInsets.only(
-                        top: 4.0,
-                        bottom: 4.0,
-                      ),
-                      itemCount: model.dataResults.length,
-                      itemBuilder: (context, index) {
-                        WebblenPost post;
-                        post = WebblenPost.fromMap(model.dataResults[index].data());
-                        return post.imageURL == null
-                            ? PostTextBlockView(
-                                post: post,
-                                showPostOptions: (post) => model.showContentOptions(post),
-                              )
-                            : PostImgBlockView(
-                                post: post,
-                                showPostOptions: (post) => model.showContentOptions(post),
-                              );
-                      },
-                    ),
+          ? ZeroStateView(
+              imageAssetName: "umbrella_chair",
+              imageSize: 200,
+              header: "@${user!.username} Does Not Have Any Posts",
+              subHeader: "Maybe someday they will? Check back later",
+              mainActionButtonTitle: null,
+              mainAction: null,
+              secondaryActionButtonTitle: null,
+              secondaryAction: null,
+              refreshData: model.refreshData,
+              scrollController: scrollController,
+            )
+          : Container(
+              height: screenHeight(context),
+              color: appBackgroundColor,
+              child: RefreshIndicator(
+                onRefresh: model.refreshData,
+                child: ListView.builder(
+                  controller: scrollController,
+                  key: PageStorageKey('user-posts'),
+                  addAutomaticKeepAlives: true,
+                  shrinkWrap: true,
+                  padding: EdgeInsets.only(
+                    top: 4.0,
+                    bottom: 4.0,
                   ),
+                  itemCount: model.dataResults.length,
+                  itemBuilder: (context, index) {
+                    WebblenPost post;
+                    post = WebblenPost.fromMap(model.dataResults[index].data()!);
+                    return post.imageURL == null
+                        ? PostTextBlockView(
+                            post: post,
+                            showPostOptions: (post) => model.showContentOptions(post),
+                          )
+                        : PostImgBlockView(
+                            post: post,
+                            showPostOptions: (post) => model.showContentOptions(post),
+                          );
+                  },
                 ),
+              ),
+            ),
     );
   }
 }

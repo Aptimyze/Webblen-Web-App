@@ -5,7 +5,7 @@ class LiveStreamGifterContainer extends StatelessWidget {
   final String username;
   final double amountGifted;
 
-  LiveStreamGifterContainer({@required this.imgURL, @required this.username, @required this.amountGifted});
+  LiveStreamGifterContainer({required this.imgURL, required this.username, required this.amountGifted});
 
   @override
   Widget build(BuildContext context) {

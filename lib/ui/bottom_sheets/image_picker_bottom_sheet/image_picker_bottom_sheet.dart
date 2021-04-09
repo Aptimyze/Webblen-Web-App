@@ -8,11 +8,11 @@ import 'package:webblen_web_app/ui/widgets/common/buttons/custom_button.dart';
 import 'image_picker_bottom_sheet_model.dart';
 
 class ImagePickerBottomSheet extends StatelessWidget {
-  final SheetRequest request;
-  final Function(SheetResponse) completer;
+  final SheetRequest? request;
+  final Function(SheetResponse)? completer;
 
   const ImagePickerBottomSheet({
-    Key key,
+    Key? key,
     this.request,
     this.completer,
   }) : super(key: key);
@@ -35,7 +35,7 @@ class ImagePickerBottomSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomButton(
-                onPressed: () => completer(SheetResponse(responseData: "camera")),
+                onPressed: () => completer!(SheetResponse(responseData: "camera")),
                 text: "Camera",
                 textSize: 16,
                 textColor: appFontColor(),
@@ -47,7 +47,7 @@ class ImagePickerBottomSheet extends StatelessWidget {
               ),
               SizedBox(height: 16),
               CustomButton(
-                onPressed: () => completer(SheetResponse(responseData: "gallery")),
+                onPressed: () => completer!(SheetResponse(responseData: "gallery")),
                 text: "Gallery",
                 textSize: 16,
                 textColor: appFontColor(),

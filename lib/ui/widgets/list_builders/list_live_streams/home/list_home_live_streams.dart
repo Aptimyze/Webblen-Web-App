@@ -13,7 +13,7 @@ class ListHomeLiveStreams extends StatelessWidget {
   final Function(WebblenLiveStream) showStreamOptions;
 
   ListHomeLiveStreams({
-    @required this.showStreamOptions,
+    required this.showStreamOptions,
   });
 
   @override
@@ -26,58 +26,58 @@ class ListHomeLiveStreams extends StatelessWidget {
       builder: (context, model, child) => model.isBusy
           ? Container()
           : model.dataResults.isEmpty
-              ? ZeroStateView(
-                  scrollController: model.scrollController,
-                  imageAssetName: "video_phone",
-                  imageSize: 200,
-                  header: "No Streams in ${model.webblenBaseViewModel.cityName} Found",
-                  subHeader: model.webblenBaseViewModel.streamPromo != null
-                      ? "Schedule a Stream for ${model.cityName} Now and Earn ${model.webblenBaseViewModel.streamPromo.toStringAsFixed(2)} WBLN!"
-                      : "Schedule a Stream for ${model.cityName} Now!",
-                  mainActionButtonTitle: model.webblenBaseViewModel.streamPromo != null
-                      ? "Earn ${model.webblenBaseViewModel.streamPromo.toStringAsFixed(2)} WBLN"
-                      : "Create Stream",
-                  mainAction: () => model.webblenBaseViewModel.navigateToCreateStreamPage(
-                    id: null,
-                    addPromo: model.webblenBaseViewModel.streamPromo != null,
-                  ),
-                  secondaryActionButtonTitle: null,
-                  secondaryAction: null,
-                  refreshData: model.refreshData,
-                )
-              : Container(
-                  height: screenHeight(context),
-                  color: appBackgroundColor,
-                  child: RefreshIndicator(
-                    onRefresh: model.refreshData,
-                    child: ListView.builder(
-                      controller: model.scrollController,
-                      key: PageStorageKey('home-streams'),
-                      addAutomaticKeepAlives: true,
-                      shrinkWrap: true,
-                      itemCount: model.dataResults.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index < model.dataResults.length) {
-                          WebblenLiveStream stream;
-                          stream = WebblenLiveStream.fromMap(model.dataResults[index].data());
-                          return LiveStreamBlockView(
-                            stream: stream,
-                            showStreamOptions: (stream) => showStreamOptions(stream),
-                          );
-                        } else {
-                          if (model.moreDataAvailable) {
-                            model.loadAdditionalData();
-                            return Align(
-                              alignment: Alignment.center,
-                              child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
-                            );
-                          }
-                          return Container();
-                        }
-                      },
-                    ),
-                  ),
+          ? ZeroStateView(
+              scrollController: model.scrollController,
+              imageAssetName: "video_phone",
+              imageSize: 200,
+              header: "No Streams in ${model.webblenBaseViewModel!.cityName} Found",
+              subHeader: model.webblenBaseViewModel!.streamPromo != null
+                  ? "Schedule a Stream for ${model.cityName} Now and Earn ${model.webblenBaseViewModel!.streamPromo!.toStringAsFixed(2)} WBLN!"
+                  : "Schedule a Stream for ${model.cityName} Now!",
+              mainActionButtonTitle: model.webblenBaseViewModel!.streamPromo != null
+                  ? "Earn ${model.webblenBaseViewModel!.streamPromo!.toStringAsFixed(2)} WBLN"
+                  : "Create Stream",
+              mainAction: () => model.webblenBaseViewModel!.navigateToCreateStreamPage(
+                id: null,
+                addPromo: model.webblenBaseViewModel!.streamPromo != null,
+              ),
+              secondaryActionButtonTitle: null,
+              secondaryAction: null,
+              refreshData: model.refreshData,
+            )
+          : Container(
+              height: screenHeight(context),
+              color: appBackgroundColor,
+              child: RefreshIndicator(
+                onRefresh: model.refreshData,
+                child: ListView.builder(
+                  controller: model.scrollController,
+                  key: PageStorageKey(model.listKey),
+                  addAutomaticKeepAlives: true,
+                  shrinkWrap: true,
+                  itemCount: model.dataResults.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index < model.dataResults.length) {
+                      WebblenLiveStream stream;
+                      stream = WebblenLiveStream.fromMap(model.dataResults[index].data()!);
+                      return LiveStreamBlockView(
+                        stream: stream,
+                        showStreamOptions: (stream) => showStreamOptions(stream),
+                      );
+                    } else {
+                      if (model.moreDataAvailable) {
+                        model.loadAdditionalData();
+                        return Align(
+                          alignment: Alignment.center,
+                          child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
+                        );
+                      }
+                      return Container();
+                    }
+                  },
                 ),
+              ),
+            ),
     );
   }
 }

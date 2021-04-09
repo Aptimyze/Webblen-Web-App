@@ -4,9 +4,9 @@ import 'package:flutter/widgets.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 
 class USDBalanceBlock extends StatelessWidget {
-  final double balance;
-  final double pendingBalance;
-  final VoidCallback onPressed;
+  final double? balance;
+  final double? pendingBalance;
+  final VoidCallback? onPressed;
   USDBalanceBlock({this.balance, this.pendingBalance, this.onPressed});
 
   @override
@@ -46,12 +46,12 @@ class USDBalanceBlock extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      "\$${balance.toStringAsFixed(2)}",
+                      "\$${balance!.toStringAsFixed(2)}",
                       style: TextStyle(fontSize: 18.0, color: appFontColor(), fontWeight: FontWeight.w500),
                     ),
                     SizedBox(height: 2),
                     Text(
-                      '\$${pendingBalance.toStringAsFixed(2)} pending',
+                      '\$${pendingBalance!.toStringAsFixed(2)} pending',
                       style: TextStyle(
                         fontSize: 12.0,
                         color: appFontColorAlt(),

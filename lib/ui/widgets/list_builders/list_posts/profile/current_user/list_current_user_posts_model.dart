@@ -1,12 +1,16 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stacked/stacked.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
+import 'package:webblen_web_app/services/bottom_sheets/custom_bottom_sheet_service.dart';
 import 'package:webblen_web_app/services/firestore/data/post_data_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
 class ListCurrentUserPostsModel extends BaseViewModel {
-  PostDataService _postDataService = locator<PostDataService>();
-  WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  PostDataService? _postDataService = locator<PostDataService>();
+  WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  CustomBottomSheetService customBottomSheetService = locator<CustomBottomSheetService>();
 
   ///HELPERS
   // ScrollController scrollController = ScrollController();
@@ -40,8 +44,8 @@ class ListCurrentUserPostsModel extends BaseViewModel {
     setBusy(true);
 
     //load data with params
-    dataResults = await _postDataService.loadPostsByUserID(
-      id: webblenBaseViewModel.uid,
+    dataResults = await _postDataService!.loadPostsByUserID(
+      id: webblenBaseViewModel!.uid,
       resultsLimit: resultsLimit,
     );
     notifyListeners();
@@ -60,8 +64,8 @@ class ListCurrentUserPostsModel extends BaseViewModel {
     notifyListeners();
 
     //load additional posts
-    List<DocumentSnapshot> newResults = await _postDataService.loadAdditionalPostsByUserID(
-      id: webblenBaseViewModel.uid,
+    List<DocumentSnapshot> newResults = await _postDataService!.loadAdditionalPostsByUserID(
+      id: webblenBaseViewModel!.uid,
       resultsLimit: resultsLimit,
       lastDocSnap: dataResults[dataResults.length - 1],
     );
@@ -79,7 +83,7 @@ class ListCurrentUserPostsModel extends BaseViewModel {
   }
 
   showContentOptions(dynamic content) async {
-    String val = await webblenBaseViewModel.showContentOptions(content: content);
+    String val = await customBottomSheetService.showContentOptions(content: content);
     if (val == "deleted content") {
       dataResults.removeWhere((doc) => doc.id == content.id);
       notifyListeners();

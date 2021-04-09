@@ -5,10 +5,10 @@ import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/webblen_notification.dart';
 
 class NotificationDataService {
-  SnackbarService _snackbarService = locator<SnackbarService>();
+  SnackbarService? _snackbarService = locator<SnackbarService>();
   CollectionReference notifsRef = FirebaseFirestore.instance.collection("webblen_notifications");
 
-  Future<int> getNumberOfUnreadNotifications(String uid) async {
+  Future<int> getNumberOfUnreadNotifications(String? uid) async {
     int num = 0;
     QuerySnapshot snapshot = await notifsRef.where('receiverUID', isEqualTo: uid).where('read', isEqualTo: false).get();
     if (snapshot.docs.isNotEmpty) {
@@ -29,9 +29,9 @@ class NotificationDataService {
   }
 
   Future sendNotification({
-    @required WebblenNotification notif,
+    required WebblenNotification notif,
   }) async {
-    String notifID = notif.receiverUID + "-" + notif.timePostedInMilliseconds.toString();
+    String notifID = notif.receiverUID! + "-" + notif.timePostedInMilliseconds.toString();
     await notifsRef.doc(notifID).set(notif.toMap()).catchError((e) {
       return e.message;
     });
@@ -40,13 +40,13 @@ class NotificationDataService {
   ///QUERY DATA
   //Load Notifications
   Future<List<DocumentSnapshot>> loadNotifications({
-    @required String uid,
-    @required int resultsLimit,
+    required String uid,
+    required int resultsLimit,
   }) async {
     List<DocumentSnapshot> docs = [];
     QuerySnapshot snapshot =
         await notifsRef.where('receiverUID', isEqualTo: uid).orderBy('expDateInMilliseconds', descending: true).limit(15).get().catchError((e) {
-      _snackbarService.showSnackbar(
+      _snackbarService!.showSnackbar(
         title: 'Error',
         message: e.message,
         duration: Duration(seconds: 5),
@@ -60,9 +60,9 @@ class NotificationDataService {
 
   //Load Additional Notifications
   Future<List<DocumentSnapshot>> loadAdditionalNotifications({
-    @required String uid,
-    @required DocumentSnapshot lastDocSnap,
-    @required int resultsLimit,
+    required String uid,
+    required DocumentSnapshot lastDocSnap,
+    required int resultsLimit,
   }) async {
     List<DocumentSnapshot> docs = [];
     QuerySnapshot snapshot = await notifsRef
@@ -72,7 +72,7 @@ class NotificationDataService {
         .limit(15)
         .get()
         .catchError((e) {
-      _snackbarService.showSnackbar(
+      _snackbarService!.showSnackbar(
         title: 'Error',
         message: e.message,
         duration: Duration(seconds: 5),

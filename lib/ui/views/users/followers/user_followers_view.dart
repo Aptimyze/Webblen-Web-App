@@ -39,6 +39,11 @@ class UserFollowersView extends StatelessWidget {
             header: "No Recent Accounts Found",
             subHeader: "You currently do not have followers",
             refreshData: null,
+            mainActionButtonTitle: '',
+            secondaryAction: () {},
+            secondaryActionButtonTitle: '',
+            scrollController: null,
+            mainAction: () {},
           )
         : listUserResults(model);
   }
@@ -58,7 +63,7 @@ class UserFollowersView extends StatelessWidget {
       onModelReady: (model) => model.initialize(),
       viewModelBuilder: () => UserFollowersViewModel(),
       builder: (context, model, child) => Scaffold(
-        appBar: appBar(model),
+        appBar: appBar(model) as PreferredSizeWidget?,
         body: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: Container(

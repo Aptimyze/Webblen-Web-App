@@ -5,13 +5,13 @@ import 'package:webblen_web_app/enums/notifcation_type.dart';
 
 class NotificationBlockModel extends BaseViewModel {
   // AuthService _authService = locator<AuthService>();
-  NavigationService _navigationService = locator<NavigationService>();
+  NavigationService? _navigationService = locator<NavigationService>();
   // UserDataService _userDataService = locator<UserDataService>();
   // BottomSheetService _bottomSheetService = locator<BottomSheetService>();
 
-  onTap({String notifType, Map<dynamic, dynamic> data}) {
+  onTap({String? notifType, Map<dynamic, dynamic>? data}) {
     if (notifType == NotificationType.post || notifType == NotificationType.postComment || notifType == NotificationType.postCommentReply) {
-      navigateToPostView(data['id']);
+      navigateToPostView(data!['id']);
     }
   }
 
@@ -20,7 +20,7 @@ class NotificationBlockModel extends BaseViewModel {
     //_navigationService.navigateTo(Routes.CauseViewRoute, arguments: {'id': id});
   }
 
-  navigateToPostView(String id) {
+  navigateToPostView(String? id) {
     //_navigationService.navigateTo(Routes.PostViewRoute, arguments: PostViewArguments(id: id));
   }
 

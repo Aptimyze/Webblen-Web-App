@@ -15,7 +15,7 @@ import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 import 'package:webblen_web_app/utils/time_calc.dart';
 
 class PostView extends StatelessWidget {
-  final String id;
+  final String? id;
   PostView(@PathParam() this.id);
   //final FocusNode focusNode = FocusNode();
 
@@ -26,24 +26,24 @@ class PostView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           GestureDetector(
-            onTap: () => model.navigateToUserView(model.author.id),
+            onTap: () => model.navigateToUserView(model.author!.id),
             child: Row(
               children: <Widget>[
                 UserProfilePic(
                   isBusy: false,
-                  userPicUrl: model.author.profilePicURL,
+                  userPicUrl: model.author!.profilePicURL,
                   size: 35,
                 ),
                 horizontalSpaceSmall,
                 Text(
-                  "@${model.author.username}",
+                  "@${model.author!.username}",
                   style: TextStyle(color: appFontColor(), fontSize: 16.0, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
           ),
           IconButton(
-            onPressed: () => model.webblenBaseViewModel.showContentOptions(content: model.post),
+            onPressed: () => model.customBottomSheetService.showContentOptions(content: model.post),
             icon: Icon(
               FontAwesomeIcons.ellipsisH,
               size: 16,
@@ -66,11 +66,11 @@ class PostView extends StatelessWidget {
   Widget postMessage(PostViewModel model) {
     List<TextSpan> linkifiedText = [];
 
-    if (model.post.imageURL == null) {
-      linkifiedText = linkify(text: model.post.body.trim(), fontSize: 18);
+    if (model.post!.imageURL == null) {
+      linkifiedText = linkify(text: model.post!.body!.trim(), fontSize: 18);
     } else {
       TextSpan usernameTextSpan = TextSpan(
-        text: '@${model.author.username} ',
+        text: '@${model.author!.username} ',
         style: TextStyle(
           color: appFontColor(),
           fontSize: 14,
@@ -78,7 +78,7 @@ class PostView extends StatelessWidget {
         ),
       );
       linkifiedText.add(usernameTextSpan);
-      linkifiedText.addAll(linkify(text: model.post.body.trim(), fontSize: 14));
+      linkifiedText.addAll(linkify(text: model.post!.body!.trim(), fontSize: 14));
     }
 
     return Padding(
@@ -107,7 +107,7 @@ class PostView extends StatelessWidget {
               ),
               horizontalSpaceSmall,
               Text(
-                model.post.commentCount.toString(),
+                model.post!.commentCount.toString(),
                 style: TextStyle(
                   fontSize: 18,
                   color: appFontColor(),
@@ -116,7 +116,7 @@ class PostView extends StatelessWidget {
             ],
           ),
           Text(
-            TimeCalc().getPastTimeFromMilliseconds(model.post.postDateTimeInMilliseconds),
+            TimeCalc().getPastTimeFromMilliseconds(model.post!.postDateTimeInMilliseconds!),
             style: TextStyle(
               color: appFontColorAlt(),
             ),
@@ -127,7 +127,7 @@ class PostView extends StatelessWidget {
   }
 
   Widget postBody(BuildContext context, PostViewModel model) {
-    return model.post.imageURL == null
+    return model.post!.imageURL == null
         ? Container(
             padding: EdgeInsets.symmetric(vertical: 4.0),
             child: Column(
@@ -157,7 +157,7 @@ class PostView extends StatelessWidget {
                 verticalSpaceSmall,
                 postHead(model),
                 verticalSpaceSmall,
-                postImg(context, model.post.imageURL),
+                postImg(context, model.post!.imageURL!),
                 verticalSpaceSmall,
                 postCommentCountAndTime(model),
                 verticalSpaceSmall,
@@ -201,22 +201,22 @@ class PostView extends StatelessWidget {
           child: CustomTopNavBar(
             navBarItems: [
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(0),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(0),
                 iconData: FontAwesomeIcons.home,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(1),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(1),
                 iconData: FontAwesomeIcons.search,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(2),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(2),
                 iconData: FontAwesomeIcons.wallet,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(3),
+                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(3),
                 iconData: FontAwesomeIcons.user,
                 isActive: false,
               ),
@@ -231,57 +231,58 @@ class PostView extends StatelessWidget {
             child: model.isBusy
                 ? Container()
                 : model.post == null
-                    ? Container()
-                    : Stack(
-                        children: [
-                          RefreshIndicator(
-                            backgroundColor: appBackgroundColor,
-                            onRefresh: () async {},
-                            child: ListView(
-                              physics: AlwaysScrollableScrollPhysics(),
-                              controller: model.postScrollController,
-                              shrinkWrap: true,
-                              children: [
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Container(
-                                    constraints: BoxConstraints(
-                                      maxWidth: 500,
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        postBody(context, model),
-                                        postComments(context, model),
-                                        SizedBox(height: 80),
-                                      ],
-                                    ),
-                                  ),
+                ? Container()
+                : Stack(
+                    children: [
+                      RefreshIndicator(
+                        backgroundColor: appBackgroundColor,
+                        onRefresh: () async {},
+                        child: ListView(
+                          physics: AlwaysScrollableScrollPhysics(),
+                          controller: model.postScrollController,
+                          shrinkWrap: true,
+                          children: [
+                            Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                constraints: BoxConstraints(
+                                  maxWidth: 500,
                                 ),
-                              ],
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Container(
-                              constraints: BoxConstraints(
-                                maxWidth: 500,
-                              ),
-                              child: CommentTextFieldView(
-                                onSubmitted: model.isReplying
-                                    ? (val) => model.replyToComment(
-                                          context: context,
-                                          commentData: val,
-                                        )
-                                    : (val) => model.submitComment(context: context, commentData: val),
-                                focusNode: model.focusNode,
-                                commentTextController: model.commentTextController,
-                                isReplying: model.isReplying,
-                                replyReceiverUsername: model.isReplying ? model.commentToReplyTo.username : null,
+                                child: Column(
+                                  children: [
+                                    postBody(context, model),
+                                    postComments(context, model),
+                                    SizedBox(height: 80),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Container(
+                          constraints: BoxConstraints(
+                            maxWidth: 500,
+                          ),
+                          child: CommentTextFieldView(
+                            onSubmitted: model.isReplying
+                                ? (val) => model.replyToComment(
+                                      context: context,
+                                      commentData: val,
+                                    )
+                                : (val) => model.submitComment(context: context, commentData: val),
+                            focusNode: model.focusNode,
+                            commentTextController: model.commentTextController,
+                            isReplying: model.isReplying,
+                            replyReceiverUsername: model.isReplying ? model.commentToReplyTo!.username : null,
+                            contentID: '',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
           ),
         ),
       ),

@@ -8,11 +8,11 @@ import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
 class CustomTopNavBar extends StatelessWidget {
-  final List<Widget> navBarItems;
+  final List<Widget>? navBarItems;
 
   CustomTopNavBar({this.navBarItems});
 
-  final WebblenBaseViewModel _webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  final WebblenBaseViewModel? _webblenBaseViewModel = locator<WebblenBaseViewModel>();
 
   Widget desktopNavBar(BuildContext context) {
     return Container(
@@ -28,7 +28,7 @@ class CustomTopNavBar extends StatelessWidget {
             child: Row(
               children: [
                 GestureDetector(
-                  onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
+                  onTap: () => _webblenBaseViewModel!.navigateToHomeWithIndex(0),
                   child: SizedBox(
                     height: 40,
                     child: Image.asset(
@@ -39,7 +39,7 @@ class CustomTopNavBar extends StatelessWidget {
                 ).showCursorOnHover,
                 horizontalSpaceSmall,
                 GestureDetector(
-                  onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
+                  onTap: () => _webblenBaseViewModel!.navigateToHomeWithIndex(0),
                   child: SizedBox(
                     height: 30,
                     child: Image.asset(
@@ -55,7 +55,7 @@ class CustomTopNavBar extends StatelessWidget {
             width: thirdScreenWidth(context) - 16,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: navBarItems,
+              children: navBarItems!,
             ),
           ),
         ],
@@ -77,7 +77,7 @@ class CustomTopNavBar extends StatelessWidget {
             child: Row(
               children: [
                 GestureDetector(
-                  onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
+                  onTap: () => _webblenBaseViewModel!.navigateToHomeWithIndex(0),
                   child: SizedBox(
                     height: 40,
                     child: Image.asset(
@@ -88,8 +88,8 @@ class CustomTopNavBar extends StatelessWidget {
                 ).showCursorOnHover,
                 horizontalSpaceSmall,
                 GestureDetector(
-                  onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
-                  child: _webblenBaseViewModel.cityName == null
+                  onTap: () => _webblenBaseViewModel!.navigateToHomeWithIndex(0),
+                  child: _webblenBaseViewModel!.cityName == null
                       ? SizedBox(
                           height: 30,
                           child: Image.asset(
@@ -98,7 +98,7 @@ class CustomTopNavBar extends StatelessWidget {
                           ),
                         )
                       : AutoSizeText(
-                          _webblenBaseViewModel.cityName,
+                          _webblenBaseViewModel!.cityName!,
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         ),
                 ).showCursorOnHover,
@@ -109,7 +109,7 @@ class CustomTopNavBar extends StatelessWidget {
             width: 300,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: navBarItems,
+              children: navBarItems!,
             ),
           ),
         ],
@@ -131,7 +131,7 @@ class CustomTopNavBar extends StatelessWidget {
             child: Row(
               children: [
                 GestureDetector(
-                  onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
+                  onTap: () => _webblenBaseViewModel!.navigateToHomeWithIndex(0),
                   child: SizedBox(
                     height: 40,
                     child: Image.asset(
@@ -142,15 +142,15 @@ class CustomTopNavBar extends StatelessWidget {
                 ).showCursorOnHover,
                 horizontalSpaceSmall,
                 GestureDetector(
-                  onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
-                  child: _webblenBaseViewModel.cityName == null
+                  onTap: () => _webblenBaseViewModel!.navigateToHomeWithIndex(0),
+                  child: _webblenBaseViewModel!.cityName == null
                       ? Container()
                       : Container(
                           constraints: BoxConstraints(
                             maxWidth: 250,
                           ),
                           child: AutoSizeText(
-                            _webblenBaseViewModel.cityName,
+                            _webblenBaseViewModel!.cityName!,
                             style: TextStyle(fontWeight: FontWeight.bold),
                             maxFontSize: 20,
                             minFontSize: 12,
@@ -165,7 +165,7 @@ class CustomTopNavBar extends StatelessWidget {
             width: 200,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: navBarItems,
+              children: navBarItems!,
             ),
           ),
         ],

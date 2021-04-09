@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:html';
 import 'dart:typed_data';
 
@@ -15,30 +16,35 @@ import 'package:webblen_web_app/enums/bottom_sheet_type.dart';
 import 'package:webblen_web_app/extensions/custom_date_time_extensions.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
 import 'package:webblen_web_app/models/webblen_ticket_distro.dart';
+import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/firestore/common/firestore_storage_service.dart';
 import 'package:webblen_web_app/services/firestore/data/live_stream_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/platform_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/ticket_distro_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
 import 'package:webblen_web_app/services/location/location_service.dart';
+import 'package:webblen_web_app/services/reactive/file_uploader/reactive_file_uploader_service.dart';
+import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
 import 'package:webblen_web_app/services/stripe/stripe_connect_account_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 import 'package:webblen_web_app/utils/custom_string_methods.dart';
 import 'package:webblen_web_app/utils/webblen_image_picker.dart';
 
-class CreateLiveStreamViewModel extends BaseViewModel {
-  DialogService _dialogService = locator<DialogService>();
-  NavigationService _navigationService = locator<NavigationService>();
-  PlatformDataService _platformDataService = locator<PlatformDataService>();
-  UserDataService _userDataService = locator<UserDataService>();
-  LocationService _locationService = locator<LocationService>();
-  FirestoreStorageService _firestoreStorageService = locator<FirestoreStorageService>();
-  LiveStreamDataService _liveStreamDataService = locator<LiveStreamDataService>();
-  BottomSheetService _bottomSheetService = locator<BottomSheetService>();
-  TicketDistroDataService _ticketDistroDataService = locator<TicketDistroDataService>();
-  StripeConnectAccountService _stripeConnectAccountService = locator<StripeConnectAccountService>();
-  WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();
-  SharedPreferences _sharedPreferences;
+class CreateLiveStreamViewModel extends ReactiveViewModel {
+  DialogService? _dialogService = locator<DialogService>();
+  NavigationService? _navigationService = locator<NavigationService>();
+  PlatformDataService? _platformDataService = locator<PlatformDataService>();
+  UserDataService? _userDataService = locator<UserDataService>();
+  LocationService? _locationService = locator<LocationService>();
+  FirestoreStorageService? _firestoreStorageService = locator<FirestoreStorageService>();
+  LiveStreamDataService? _liveStreamDataService = locator<LiveStreamDataService>();
+  BottomSheetService? _bottomSheetService = locator<BottomSheetService>();
+  TicketDistroDataService? _ticketDistroDataService = locator<TicketDistroDataService>();
+  StripeConnectAccountService? _stripeConnectAccountService = locator<StripeConnectAccountService>();
+  WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
+  ReactiveFileUploaderService _reactiveFileUploaderService = locator<ReactiveFileUploaderService>();
+  late SharedPreferences _sharedPreferences;
 
   ///STREAM DETAILS CONTROLLERS
   TextEditingController tagTextController = TextEditingController();
@@ -85,17 +91,22 @@ class CreateLiveStreamViewModel extends BaseViewModel {
   bool textFieldEnabled = true;
 
   ///USER DATA
-  bool hasEarningsAccount;
+  bool? hasEarningsAccount;
+  bool get isLoggedIn => _reactiveWebblenUserService.userLoggedIn;
+  WebblenUser get user => _reactiveWebblenUserService.user;
+
+  ///FILE DATA
+  bool get uploadingFile => _reactiveFileUploaderService.uploadingFile;
+  double get uploadProgress => _reactiveFileUploaderService.uploadProgress;
+  File get fileToUpload => _reactiveFileUploaderService.fileToUpload;
+  Uint8List get fileToUploadByteMemory => _reactiveFileUploaderService.fileToUploadByteMemory;
 
   ///STREAM DATA
-  String id;
+  String? id;
   bool isEditing = false;
-  double uploadProgress;
-  File imgToUpload;
-  Uint8List imgToUploadByteMemory;
-  int ticketToEditIndex;
-  int feeToEditIndex;
-  int discountToEditIndex;
+  int? ticketToEditIndex;
+  int? feeToEditIndex;
+  int? discountToEditIndex;
 
   WebblenLiveStream stream = WebblenLiveStream();
 
@@ -112,10 +123,10 @@ class CreateLiveStreamViewModel extends BaseViewModel {
   DateFormat timeFormatter = DateFormat('h:mm a');
   DateFormat dateTimeFormatter = DateFormat('MMM dd, yyyy h:mm a');
   DateTime selectedStartDate = DateTime.now();
-  DateTime selectedEndDate;
+  DateTime? selectedEndDate;
 
   ///TICKETING
-  WebblenTicketDistro ticketDistro = WebblenTicketDistro(tickets: [], fees: [], discountCodes: []);
+  WebblenTicketDistro? ticketDistro = WebblenTicketDistro(tickets: [], fees: [], discountCodes: []);
   GlobalKey ticketFormKey = GlobalKey<FormState>();
   GlobalKey feeFormKey = GlobalKey<FormState>();
   GlobalKey discountFormKey = GlobalKey<FormState>();
@@ -124,30 +135,34 @@ class CreateLiveStreamViewModel extends BaseViewModel {
   bool showFeeForm = false;
   bool showDiscountCodeForm = false;
 
-  String ticketName;
-  String ticketPrice;
-  String ticketQuantity;
-  String feeName;
-  String feeAmount;
-  String discountCodeName;
-  String discountCodeQuantity;
-  String discountCodePercentage;
+  String? ticketName;
+  String? ticketPrice;
+  String? ticketQuantity;
+  String? feeName;
+  String? feeAmount;
+  String? discountCodeName;
+  String? discountCodeQuantity;
+  String? discountCodePercentage;
 
   ///WEBBLEN CURRENCY
-  double newStreamTaxRate;
-  double promo;
+  double? newStreamTaxRate;
+  double? promo;
+
+  ///REACTIVE SERVICES
+  @override
+  List<ReactiveServiceMixin> get reactiveServices => [_reactiveWebblenUserService, _reactiveFileUploaderService];
 
   ///INITIALIZE
-  initialize({String streamID}) async {
+  initialize({String? streamID}) async {
     setBusy(true);
 
     _sharedPreferences = await SharedPreferences.getInstance();
 
-    //generate new event
-    stream = WebblenLiveStream().generateNewWebblenLiveStream(hostID: webblenBaseViewModel.user.id);
+    //generate new stream
+    stream = WebblenLiveStream().generateNewWebblenLiveStream(hostID: user.id, suggestedUIDs: user.followers == null ? [] : user.followers!);
 
     //check if user has earnings account
-    hasEarningsAccount = await _stripeConnectAccountService.isStripeConnectAccountSetup(webblenBaseViewModel.user.id);
+    hasEarningsAccount = await _stripeConnectAccountService!.isStripeConnectAccountSetup(webblenBaseViewModel!.user!.id);
 
     //set timezone
     stream.timezone = getCurrentTimezone();
@@ -156,58 +171,58 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     notifyListeners();
 
     //set previously used social accounts
-    fbUsernameTextController.text = _sharedPreferences.getString('fbUsername');
-    instaUsernameTextController.text = _sharedPreferences.getString('instaUsername');
-    twitterUsernameTextController.text = _sharedPreferences.getString('twitterUsername');
-    websiteTextController.text = _sharedPreferences.getString('website');
+    fbUsernameTextController.text = _sharedPreferences.getString('fbUsername')!;
+    instaUsernameTextController.text = _sharedPreferences.getString('instaUsername')!;
+    twitterUsernameTextController.text = _sharedPreferences.getString('twitterUsername')!;
+    websiteTextController.text = _sharedPreferences.getString('website')!;
 
     id = streamID;
 
     //check if editing existing post
-    if (id != null) {
-      WebblenLiveStream existingStream = await _liveStreamDataService.getStreamForEditingByID(id);
+    if (id != "new") {
+      WebblenLiveStream? existingStream = await (_liveStreamDataService!.getStreamForEditingByID(id) as FutureOr<WebblenLiveStream?>);
       if (existingStream != null) {
         stream = existingStream;
-        titleTextController.text = stream.title;
-        descTextController.text = stream.description;
-        startDateTextController.text = stream.startDate;
-        endDateTextController.text = stream.endDate;
-        fbUsernameTextController.text = stream.fbUsername;
-        instaUsernameTextController.text = stream.instaUsername;
-        twitterUsernameTextController.text = stream.twitterUsername;
-        websiteTextController.text = stream.website;
-        selectedStartDate = dateFormatter.parse(stream.startDate);
-        selectedEndDate = dateFormatter.parse(stream.endDate);
+        titleTextController.text = stream.title!;
+        descTextController.text = stream.description!;
+        startDateTextController.text = stream.startDate!;
+        endDateTextController.text = stream.endDate!;
+        fbUsernameTextController.text = stream.fbUsername!;
+        instaUsernameTextController.text = stream.instaUsername!;
+        twitterUsernameTextController.text = stream.twitterUsername!;
+        websiteTextController.text = stream.website!;
+        selectedStartDate = dateFormatter.parse(stream.startDate!);
+        selectedEndDate = dateFormatter.parse(stream.endDate!);
         isEditing = true;
         //check if editing with ticket distro
-        if (stream.hasTickets) {
-          ticketDistro = await _ticketDistroDataService.getTicketDistroByID(stream.id);
+        if (stream.hasTickets!) {
+          ticketDistro = await _ticketDistroDataService!.getTicketDistroByID(stream.id);
         }
       }
     }
 
     // listener for uploader
-    webblenBaseViewModel.addListener(() {
-      bool uploadStatusChanged = false;
-      if (uploadProgress != webblenBaseViewModel.uploadProgress) {
-        uploadStatusChanged = true;
-        uploadProgress = webblenBaseViewModel.uploadProgress;
-      }
-      if (imgToUpload != webblenBaseViewModel.imgToUpload) {
-        uploadStatusChanged = true;
-        imgToUpload = webblenBaseViewModel.imgToUpload;
-      }
-      if (imgToUploadByteMemory != webblenBaseViewModel.imgToUploadByteMemory) {
-        uploadStatusChanged = true;
-        imgToUploadByteMemory = webblenBaseViewModel.imgToUploadByteMemory;
-      }
-      if (uploadStatusChanged) {
-        notifyListeners();
-      }
-    });
+    // webblenBaseViewModel!.addListener(() {
+    //   bool uploadStatusChanged = false;
+    //   if (uploadProgress != webblenBaseViewModel!.uploadProgress) {
+    //     uploadStatusChanged = true;
+    //     uploadProgress = webblenBaseViewModel!.uploadProgress;
+    //   }
+    //   if (imgToUpload != webblenBaseViewModel!.imgToUpload) {
+    //     uploadStatusChanged = true;
+    //     imgToUpload = webblenBaseViewModel!.imgToUpload;
+    //   }
+    //   if (imgToUploadByteMemory != webblenBaseViewModel!.imgToUploadByteMemory) {
+    //     uploadStatusChanged = true;
+    //     imgToUploadByteMemory = webblenBaseViewModel!.imgToUploadByteMemory;
+    //   }
+    //   if (uploadStatusChanged) {
+    //     notifyListeners();
+    //   }
+    // });
 
     //get webblen rates
-    newStreamTaxRate = await _platformDataService.getNewStreamTaxRate();
+    newStreamTaxRate = await _platformDataService!.getNewStreamTaxRate();
     if (newStreamTaxRate == null) {
       newStreamTaxRate = 0.05;
     }
@@ -226,13 +241,13 @@ class CreateLiveStreamViewModel extends BaseViewModel {
 
   ///STREAM TAGS
   addTag(String tag) {
-    List tags = stream.tags == null ? [] : stream.tags.toList(growable: true);
+    List tags = stream.tags == null ? [] : stream.tags!.toList(growable: true);
 
     //check if tag already listed
     if (!tags.contains(tag)) {
       //check if tag limit has been reached
       if (tags.length == 3) {
-        _dialogService.showDialog(
+        _dialogService!.showDialog(
           title: "Tag Limit Reached",
           description: "You can only add up to 3 tags for your stream",
         );
@@ -247,7 +262,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
   }
 
   removeTagAtIndex(int index) {
-    List tags = stream.tags == null ? [] : stream.tags.toList(growable: true);
+    List tags = stream.tags == null ? [] : stream.tags!.toList(growable: true);
     tags.removeAt(index);
     stream.tags = tags;
     notifyListeners();
@@ -278,7 +293,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     }
 
     //set nearest zipcodes
-    stream.nearbyZipcodes = await _locationService.findNearestZipcodes(details['areaCode']);
+    stream.nearbyZipcodes = await _locationService!.findNearestZipcodes(details['areaCode']);
     if (stream.nearbyZipcodes == null) {
       return false;
     }
@@ -305,12 +320,12 @@ class CreateLiveStreamViewModel extends BaseViewModel {
   }
 
   ///EVENT DATA & TIME
-  selectDate({@required bool selectingStartDate}) async {
+  selectDate({required bool selectingStartDate}) async {
     //set selectable dates
     Map<String, dynamic> customData = selectingStartDate
         ? {'minSelectedDate': DateTime.now().subtract(Duration(days: 1)), 'selectedDate': selectedStartDate}
         : {'minSelectedDate': selectedStartDate, 'selectedDate': selectedEndDate ?? selectedStartDate};
-    var sheetResponse = await _bottomSheetService.showCustomSheet(
+    var sheetResponse = await _bottomSheetService!.showCustomSheet(
       title: selectingStartDate ? "Start Date" : "End Date",
       customData: customData,
       barrierDismissible: true,
@@ -337,7 +352,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     }
   }
 
-  onSelectedTimeFromDropdown({@required bool selectedStartTime, @required String time}) {
+  onSelectedTimeFromDropdown({required bool selectedStartTime, required String time}) {
     if (selectedStartTime) {
       stream.startTime = time;
     } else {
@@ -353,7 +368,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
 
   ///STREAM TICKETING, FEES, AND DISCOUNTS
   //tickets
-  toggleTicketForm({@required int ticketIndex}) {
+  toggleTicketForm({required int? ticketIndex}) {
     if (ticketIndex == null) {
       if (showTicketForm) {
         showTicketForm = false;
@@ -362,7 +377,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
       }
     } else {
       showTicketForm = true;
-      Map<String, dynamic> ticket = ticketDistro.tickets[ticketIndex];
+      Map<String, dynamic> ticket = ticketDistro!.tickets![ticketIndex];
       ticketNameTextController.text = ticket['ticketName'];
       ticketQuantityTextController.text = ticket['ticketQuantity'];
       ticketPriceTextController.text = ticket['ticketPrice'];
@@ -373,13 +388,13 @@ class CreateLiveStreamViewModel extends BaseViewModel {
 
   addTicket() {
     if (ticketNameTextController.text.trim().isEmpty) {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Ticket Name Required',
         description: 'Please add a name for this ticket',
       );
       return;
     } else if (ticketQuantityTextController.text.trim().isEmpty) {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Ticket Quantity Required',
         description: 'Please set a quantity for this ticket',
       );
@@ -397,10 +412,10 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     ticketPriceTextController.text = "\$0.00";
 
     if (ticketToEditIndex != null) {
-      ticketDistro.tickets[ticketToEditIndex] = eventTicket;
+      ticketDistro!.tickets![ticketToEditIndex!] = eventTicket;
       ticketToEditIndex = null;
     } else {
-      ticketDistro.tickets.add(eventTicket);
+      ticketDistro!.tickets!.add(eventTicket);
     }
     showTicketForm = false;
     notifyListeners();
@@ -412,14 +427,14 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     ticketPriceTextController.text = "\$0.00";
     showTicketForm = false;
     if (ticketToEditIndex != null) {
-      ticketDistro.tickets.removeAt(ticketToEditIndex);
+      ticketDistro!.tickets!.removeAt(ticketToEditIndex!);
       ticketToEditIndex = null;
     }
     notifyListeners();
   }
 
   //fees
-  toggleFeeForm({@required int feeIndex}) {
+  toggleFeeForm({required int? feeIndex}) {
     if (feeIndex == null) {
       if (showFeeForm) {
         showFeeForm = false;
@@ -428,7 +443,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
       }
     } else {
       showFeeForm = true;
-      Map<String, dynamic> fee = ticketDistro.fees[feeIndex];
+      Map<String, dynamic> fee = ticketDistro!.fees![feeIndex];
       feeNameTextController.text = fee['feeName'];
       feePriceTextController.text = fee['feePrice'];
       feeToEditIndex = feeIndex;
@@ -438,7 +453,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
 
   addFee() {
     if (feeNameTextController.text.trim().isEmpty) {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Fee Name Required',
         description: 'Please add a name for this fee',
       );
@@ -454,10 +469,10 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     feePriceTextController.text = "\$0.00";
 
     if (feeToEditIndex != null) {
-      ticketDistro.fees[feeToEditIndex] = eventFee;
+      ticketDistro!.fees![feeToEditIndex!] = eventFee;
       feeToEditIndex = null;
     } else {
-      ticketDistro.fees.add(eventFee);
+      ticketDistro!.fees!.add(eventFee);
     }
     showFeeForm = false;
     notifyListeners();
@@ -468,14 +483,14 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     feePriceTextController.text = "\$0.00";
     showFeeForm = false;
     if (feeToEditIndex != null) {
-      ticketDistro.fees.removeAt(feeToEditIndex);
+      ticketDistro!.fees!.removeAt(feeToEditIndex!);
       feeToEditIndex = null;
     }
     notifyListeners();
   }
 
   //discounts
-  toggleDiscountsForm({@required int discountIndex}) {
+  toggleDiscountsForm({required int? discountIndex}) {
     if (discountIndex == null) {
       if (showDiscountCodeForm) {
         showDiscountCodeForm = false;
@@ -484,7 +499,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
       }
     } else {
       showDiscountCodeForm = true;
-      Map<String, dynamic> discount = ticketDistro.discountCodes[discountIndex];
+      Map<String, dynamic> discount = ticketDistro!.discountCodes![discountIndex];
       discountNameTextController.text = discount['discountName'];
       discountLimitTextController.text = discount['discountLimit'];
       discountValueTextController.text = discount['discountValue'];
@@ -495,13 +510,13 @@ class CreateLiveStreamViewModel extends BaseViewModel {
 
   addDiscount() {
     if (discountNameTextController.text.trim().isEmpty) {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Discount Code Required',
         description: 'Please add a code for this discount',
       );
       return;
     } else if (discountLimitTextController.text.trim().isEmpty) {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Discount Limit Required',
         description: 'Please set a limit for the number of times this discount can be used',
       );
@@ -519,10 +534,10 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     discountValueTextController.text = "\$0.00";
 
     if (discountToEditIndex != null) {
-      ticketDistro.discountCodes[discountToEditIndex] = eventDiscount;
+      ticketDistro!.discountCodes![discountToEditIndex!] = eventDiscount;
       discountToEditIndex = null;
     } else {
-      ticketDistro.discountCodes.add(eventDiscount);
+      ticketDistro!.discountCodes!.add(eventDiscount);
     }
     showDiscountCodeForm = false;
     notifyListeners();
@@ -534,7 +549,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     discountValueTextController.text = "\$0.00";
     showDiscountCodeForm = false;
     if (discountToEditIndex != null) {
-      ticketDistro.discountCodes.removeAt(discountToEditIndex);
+      ticketDistro!.discountCodes!.removeAt(discountToEditIndex!);
       discountToEditIndex = null;
     }
     notifyListeners();
@@ -568,7 +583,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
 
   ///FORM VALIDATION
   bool tagsAreValid() {
-    if (stream.tags == null || stream.tags.isEmpty) {
+    if (stream.tags == null || stream.tags!.isEmpty) {
       return false;
     } else {
       return true;
@@ -590,7 +605,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
   bool startDateIsValid() {
     bool isValid = isValidString(stream.startDate);
     if (isValid) {
-      String eventStartDateAndTime = stream.startDate + " " + stream.startTime;
+      String eventStartDateAndTime = stream.startDate! + " " + stream.startTime!;
       stream.startDateTimeInMilliseconds = dateTimeFormatter.parse(eventStartDateAndTime).millisecondsSinceEpoch;
       notifyListeners();
     }
@@ -600,10 +615,10 @@ class CreateLiveStreamViewModel extends BaseViewModel {
   bool endDateIsValid() {
     bool isValid = isValidString(stream.endDate);
     if (isValid) {
-      String eventEndDateAndTime = stream.endDate + " " + stream.endTime;
+      String eventEndDateAndTime = stream.endDate! + " " + stream.endTime!;
       stream.endDateTimeInMilliseconds = dateTimeFormatter.parse(eventEndDateAndTime).millisecondsSinceEpoch;
       notifyListeners();
-      if (stream.endDateTimeInMilliseconds < stream.startDateTimeInMilliseconds) {
+      if (stream.endDateTimeInMilliseconds! < stream.startDateTimeInMilliseconds!) {
         isValid = false;
       }
     }
@@ -611,75 +626,75 @@ class CreateLiveStreamViewModel extends BaseViewModel {
   }
 
   bool fbUsernameIsValid() {
-    return isValidUsername(stream.fbUsername);
+    return isValidUsername(stream.fbUsername!);
   }
 
   bool instaUsernameIsValid() {
-    return isValidUsername(stream.instaUsername);
+    return isValidUsername(stream.instaUsername!);
   }
 
   bool twitterUsernameIsValid() {
-    return isValidUsername(stream.twitterUsername);
+    return isValidUsername(stream.twitterUsername!);
   }
 
   bool websiteIsValid() {
-    return isValidUrl(stream.website);
+    return isValidUrl(stream.website!);
   }
 
   bool formIsValid() {
     bool isValid = false;
-    if (imgToUpload == null && stream.imageURL == null) {
-      _dialogService.showDialog(
+    if (fileToUpload.relativePath!.isEmpty && stream.imageURL == null) {
+      _dialogService!.showDialog(
         title: 'Stream Image Error',
         description: 'Your stream must have an image',
       );
     } else if (!tagsAreValid()) {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Tag Error',
         description: 'Your stream must contain at least 1 tag',
       );
     } else if (!titleIsValid()) {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Stream Title Required',
         description: 'The title for your stream cannot be empty',
       );
     } else if (!descIsValid()) {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Stream Description Required',
         description: 'The description for your stream cannot be empty',
       );
     } else if (!audienceLocationIsValid()) {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Stream Audiences Location Required',
         description: 'The target location for your stream cannot be empty',
       );
     } else if (!startDateIsValid()) {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Stream Start Date Required',
         description: 'The start date & time for your stream cannot be empty',
       );
     } else if (!endDateIsValid()) {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Stream End Date Error',
         description: "End date & time must be set after the start date & time",
       );
-    } else if (stream.fbUsername != null && stream.fbUsername.isNotEmpty && !fbUsernameIsValid()) {
-      _dialogService.showDialog(
+    } else if (stream.fbUsername != null && stream.fbUsername!.isNotEmpty && !fbUsernameIsValid()) {
+      _dialogService!.showDialog(
         title: 'Facebook Username Error',
         description: "Facebook username must be valid",
       );
-    } else if (stream.instaUsername != null && stream.instaUsername.isNotEmpty && !instaUsernameIsValid()) {
-      _dialogService.showDialog(
+    } else if (stream.instaUsername != null && stream.instaUsername!.isNotEmpty && !instaUsernameIsValid()) {
+      _dialogService!.showDialog(
         title: 'Instagram Username Error',
         description: "Instagram username must be valid",
       );
-    } else if (stream.twitterUsername != null && stream.twitterUsername.isNotEmpty && !twitterUsernameIsValid()) {
-      _dialogService.showDialog(
+    } else if (stream.twitterUsername != null && stream.twitterUsername!.isNotEmpty && !twitterUsernameIsValid()) {
+      _dialogService!.showDialog(
         title: 'Twitter Username Error',
         description: "Twitter username must be valid",
       );
-    } else if (stream.website != null && stream.website.isNotEmpty && !websiteIsValid()) {
-      _dialogService.showDialog(
+    } else if (stream.website != null && stream.website!.isNotEmpty && !websiteIsValid()) {
+      _dialogService!.showDialog(
         title: "Website URL Error",
         description: "Website URL must be valid",
       );
@@ -693,10 +708,11 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     bool success = true;
 
     //upload img if exists
-    if (imgToUpload != null) {
-      String imageURL = await _firestoreStorageService.uploadImage(imgFile: imgToUpload, storageBucket: 'images', folderName: 'streams', fileName: stream.id);
-      if (imageURL == null) {
-        _dialogService.showDialog(
+    if (fileToUploadByteMemory.isNotEmpty) {
+      String imageURL =
+          await _firestoreStorageService!.uploadImage(imgFile: fileToUpload, storageBucket: 'images', folderName: 'streams', fileName: stream.id!);
+      if (imageURL.isEmpty) {
+        _dialogService!.showDialog(
           title: "Website URL Error",
           description: "Website URL must be valid",
         );
@@ -706,18 +722,18 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     }
 
     //set suggested uids for event
-    stream.suggestedUIDs = stream.suggestedUIDs == null ? webblenBaseViewModel.user.followers : stream.suggestedUIDs;
+    stream.suggestedUIDs = stream.suggestedUIDs == null ? user.followers : stream.suggestedUIDs;
 
     //upload stream data
     var uploadResult;
     if (isEditing) {
-      uploadResult = await _liveStreamDataService.updateStream(stream: stream);
+      uploadResult = await _liveStreamDataService!.updateStream(stream: stream);
     } else {
-      uploadResult = await _liveStreamDataService.createStream(stream: stream);
+      uploadResult = await _liveStreamDataService!.createStream(stream: stream);
     }
 
     if (uploadResult is String) {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Stream Upload Error',
         description: 'There was an issue uploading your stream. Please try again.',
       );
@@ -725,10 +741,10 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     }
 
     //cache username data
-    await _sharedPreferences.setString('fbUsername', stream.fbUsername);
-    await _sharedPreferences.setString('instaUsername', stream.instaUsername);
-    await _sharedPreferences.setString('twitterUsername', stream.twitterUsername);
-    await _sharedPreferences.setString('website', stream.website);
+    await _sharedPreferences.setString('fbUsername', stream.fbUsername!);
+    await _sharedPreferences.setString('instaUsername', stream.instaUsername!);
+    await _sharedPreferences.setString('twitterUsername', stream.twitterUsername!);
+    await _sharedPreferences.setString('website', stream.website!);
 
     return success;
   }
@@ -744,7 +760,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     setBusy(false);
   }
 
-  showNewContentConfirmationBottomSheet({BuildContext context}) async {
+  showNewContentConfirmationBottomSheet({BuildContext? context}) async {
     //FocusScope.of(context).unfocus();
 
     //exit function if form is invalid
@@ -760,7 +776,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
     }
 
     //display event confirmation
-    var sheetResponse = await _bottomSheetService.showCustomSheet(
+    var sheetResponse = await _bottomSheetService!.showCustomSheet(
       barrierDismissible: true,
       title: "Schedule Stream?",
       description: stream.privacy == "Public" ? "Schedule this stream for everyone to see" : "Your stream ready to be scheduled and shared",
@@ -770,7 +786,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
       variant: BottomSheetType.newContentConfirmation,
     );
     if (sheetResponse != null) {
-      String res = sheetResponse.responseData;
+      String? res = sheetResponse.responseData;
 
       //disable text fields while fetching image
       textFieldEnabled = false;
@@ -778,7 +794,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
 
       //get image from camera or gallery
       if (res == "insufficient funds") {
-        _dialogService.showDialog(
+        _dialogService!.showDialog(
           title: 'Insufficient Funds',
           description: 'You do no have enough WBLN to schedule this stream',
         );
@@ -796,12 +812,12 @@ class CreateLiveStreamViewModel extends BaseViewModel {
   displayUploadSuccessBottomSheet() async {
     //deposit and/or withdraw webblen & promo
     if (promo != null) {
-      _userDataService.depositWebblen(uid: webblenBaseViewModel.uid, amount: promo);
+      _userDataService!.depositWebblen(uid: webblenBaseViewModel!.uid, amount: promo!);
     }
-    _userDataService.withdrawWebblen(uid: webblenBaseViewModel.uid, amount: newStreamTaxRate);
+    _userDataService!.withdrawWebblen(uid: webblenBaseViewModel!.uid, amount: newStreamTaxRate!);
 
     //display success
-    var sheetResponse = await _bottomSheetService.showCustomSheet(
+    var sheetResponse = await _bottomSheetService!.showCustomSheet(
         variant: BottomSheetType.addContentSuccessful,
         takesInput: false,
         customData: stream,
@@ -809,13 +825,13 @@ class CreateLiveStreamViewModel extends BaseViewModel {
         title: isEditing ? "Your Stream has been Updated" : "Your Stream has been Scheduled! 🎉");
 
     if (sheetResponse == null || sheetResponse.responseData == "done") {
-      _navigationService.pushNamedAndRemoveUntil(Routes.WebblenBaseViewRoute);
+      _navigationService!.pushNamedAndRemoveUntil(Routes.WebblenBaseViewRoute);
     }
   }
 
   ///NAVIGATION
   navigateBack() async {
-    DialogResponse response = await _dialogService.showDialog(
+    DialogResponse? response = await _dialogService!.showDialog(
       title: isEditing ? "Cancel Editing Stream?" : "Cancel Creating Stream?",
       description: isEditing ? "Changes to this stream will not be saved" : "The details for this stream will not be saved",
       cancelTitle: "Cancel",
@@ -825,12 +841,12 @@ class CreateLiveStreamViewModel extends BaseViewModel {
       barrierDismissible: true,
     );
     if (response != null && !response.confirmed) {
-      _navigationService.back();
+      _navigationService!.back();
     }
   }
 
   navigateBackToWalletPage() async {
-    DialogResponse response = await _dialogService.showDialog(
+    DialogResponse? response = await _dialogService!.showDialog(
       title: "Create an Earnings Account?",
       description: isEditing ? "Changes to this stream will not be saved" : "The details for this stream will not be saved",
       cancelTitle: "Continue Editing",
@@ -840,7 +856,7 @@ class CreateLiveStreamViewModel extends BaseViewModel {
       barrierDismissible: true,
     );
     if (response != null && response.confirmed) {
-      webblenBaseViewModel.navigateToHomeWithIndex(2);
+      webblenBaseViewModel!.navigateToHomeWithIndex(2);
     }
   }
 }

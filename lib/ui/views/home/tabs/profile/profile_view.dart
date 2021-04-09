@@ -1,238 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
-import 'package:webblen_web_app/app/app.locator.dart';
+import 'package:stacked_hooks/stacked_hooks.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
+import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/profile/profile_view_model.dart';
 import 'package:webblen_web_app/ui/widgets/common/buttons/custom_button.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
 import 'package:webblen_web_app/ui/widgets/common/navigation/tab_bar/custom_tab_bar.dart';
-import 'package:webblen_web_app/ui/widgets/common/zero_state_view.dart';
-import 'package:webblen_web_app/ui/widgets/list_builders/list_events/list_events.dart';
-import 'package:webblen_web_app/ui/widgets/list_builders/list_live_streams/list_streams.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_posts/profile/current_user/list_current_user_posts.dart';
 import 'package:webblen_web_app/ui/widgets/user/follow_stats_row.dart';
 import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 
-class ProfileView extends StatefulWidget {
-  @override
-  _ProfileViewState createState() => _ProfileViewState();
-}
-
-class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStateMixin {
-  TabController _tabController;
-
-  Widget head(ProfileViewModel model) {
-    return Container(
-      height: 50,
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "Profile",
-            style: TextStyle(
-              color: appFontColor(),
-              fontWeight: FontWeight.bold,
-              fontSize: 30.0,
-            ),
-          ),
-          Row(
-            children: [
-              IconButton(
-                onPressed: () => model.showUserOptions(),
-                icon: Icon(
-                  FontAwesomeIcons.ellipsisH,
-                  color: appIconColor(),
-                  size: 20,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget userBioAndWebsite(ProfileViewModel model) {
-    return Container(
-      child: Column(
-        children: [
-          model.webblenBaseViewModel.user.bio != null && model.webblenBaseViewModel.user.bio.isNotEmpty
-              ? Container(
-                  margin: EdgeInsets.only(top: 4),
-                  child: CustomText(
-                    text: model.webblenBaseViewModel.user.bio,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: appFontColor(),
-                  ),
-                )
-              : Container(),
-          model.webblenBaseViewModel.user.website != null && model.webblenBaseViewModel.user.website.isNotEmpty
-              ? GestureDetector(
-                  onTap: () => model.openWebsite(),
-                  child: Container(
-                    margin: EdgeInsets.only(top: 4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          FontAwesomeIcons.link,
-                          size: 12,
-                          color: appFontColor(),
-                        ),
-                        horizontalSpaceTiny,
-                        CustomText(
-                          text: model.webblenBaseViewModel.user.website,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: appFontColor(),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              : Container(),
-        ],
-      ),
-    );
-  }
-
-  Widget userDetails(ProfileViewModel model) {
-    return Container(
-      child: Column(
-        children: [
-          SizedBox(height: 16),
-          UserProfilePic(
-            userPicUrl: model.webblenBaseViewModel.user.profilePicURL,
-            size: 60,
-            isBusy: false,
-          ),
-          SizedBox(height: 8),
-          Text(
-            "@${model.webblenBaseViewModel.user.username}",
-            style: TextStyle(
-              color: appFontColor(),
-              fontWeight: FontWeight.bold,
-              fontSize: 18.0,
-            ),
-          ),
-          verticalSpaceSmall,
-          FollowStatsRow(
-            followersLength: model.webblenBaseViewModel.user.followers.length,
-            followingLength: model.webblenBaseViewModel.user.following.length,
-            viewFollowersAction: () => model.navigateToUserFollowersView(),
-            viewFollowingAction: () => model.navigateToUserFollowingView(),
-          ),
-          verticalSpaceSmall,
-          userBioAndWebsite(model),
-        ],
-      ),
-    );
-  }
-
-  Widget tabBar() {
-    return WebblenProfileTabBar(
-      //key: PageStorageKey('profile-tab-bar'),
-      tabController: _tabController,
-    );
-  }
-
-  Widget body(ProfileViewModel model) {
-    return TabBarView(
-      controller: _tabController,
-      children: [
-        //posts
-        ListCurrentUserPosts(
-          scrollController: model.scrollController,
-        ),
-
-        //scheduled streams
-        model.streamResults.isEmpty && !model.reloadingStreams
-            ? ZeroStateView(
-                imageAssetName: "video_phone",
-                imageSize: 200,
-                header: "You Have Not Scheduled Any Streams",
-                subHeader: "Find Your Audience and Create a Stream",
-                mainActionButtonTitle: "Create Stream",
-                mainAction: () => model.webblenBaseViewModel.navigateToCreateStreamPage(),
-                secondaryActionButtonTitle: null,
-                secondaryAction: null,
-                refreshData: () async {},
-              )
-            : ListLiveStreams(
-                refreshData: model.refreshEvents,
-                dataResults: model.streamResults,
-                pageStorageKey: PageStorageKey('home-events'),
-                showStreamOptions: (stream) => model.showContentOptions(content: stream),
-              ),
-        model.eventResults.isEmpty && !model.reloadingEvents
-            ? ZeroStateView(
-                imageAssetName: "calendar",
-                imageSize: 200,
-                header: "You Have Not Scheduled Any Events",
-                subHeader: "Create an Event for the Community",
-                mainActionButtonTitle: "Create Event",
-                mainAction: () => model.webblenBaseViewModel.navigateToCreateEventPage(),
-                secondaryActionButtonTitle: null,
-                secondaryAction: null,
-                refreshData: () async {},
-                scrollController: null,
-              )
-            : ListEvents(
-                refreshData: model.refreshEvents,
-                dataResults: model.eventResults,
-                pageStorageKey: PageStorageKey('profile-events'),
-                scrollController: null,
-                showEventOptions: (event) => model.showContentOptions(content: event),
-              ),
-        // ZeroStateView(
-        //   imageAssetName: null,
-        //   header: "You Have No Recent Activity",
-        //   subHeader: "Get Involved in Your Community to Change That!",
-        //   mainActionButtonTitle: null,
-        //   mainAction: null,
-        //   secondaryActionButtonTitle: null,
-        //   secondaryAction: null,
-        //   refreshData: () async {},
-        // ),
-      ],
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(
-      length: 3, //4,
-      vsync: this,
-    );
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    _tabController.dispose();
-  }
-
+class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ProfileViewModel>.reactive(
-      disposeViewModel: false,
-      fireOnModelReadyOnce: true,
-      initialiseSpecialViewModelsOnce: true,
-      onModelReady: (model) => model.initialize(context: context, tabController: _tabController),
-      viewModelBuilder: () => locator<ProfileViewModel>(),
+      viewModelBuilder: () => ProfileViewModel(),
       builder: (context, model, child) => Container(
-        height: MediaQuery.of(context).size.height,
+        height: screenHeight(context),
         color: appBackgroundColor,
         child: SafeArea(
           child: Container(
-            child: model.webblenBaseViewModel.user == null
+            child: !model.isLoggedIn
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -255,7 +47,7 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                           textSize: 16,
                           height: 30,
                           width: 200,
-                          onPressed: () => model.webblenBaseViewModel.navigateToAuthView(),
+                          onPressed: () => model.navigateToAuthView(),
                           backgroundColor: appBackgroundColor,
                           textColor: appFontColor(),
                           elevation: 1.0,
@@ -266,51 +58,272 @@ class _ProfileViewState extends State<ProfileView> with SingleTickerProviderStat
                   )
                 : Column(
                     children: [
-                      head(model),
-                      Expanded(
-                        child: DefaultTabController(
-                          key: PageStorageKey('profile-tab-bar'),
-                          length: 4,
-                          child: NestedScrollView(
-                            key: PageStorageKey('profile-nested-scroll-key'),
-                            controller: model.scrollController,
-                            headerSliverBuilder: (context, innerBoxIsScrolled) {
-                              return [
-                                SliverAppBar(
-                                  key: PageStorageKey('profile-app-bar-key'),
-                                  pinned: true,
-                                  floating: true,
-                                  snap: true,
-                                  forceElevated: innerBoxIsScrolled,
-                                  expandedHeight: (model.webblenBaseViewModel.user.bio == null || model.webblenBaseViewModel.user.bio.isEmpty) &&
-                                          (model.webblenBaseViewModel.user.website == null || model.webblenBaseViewModel.user.website.isEmpty)
-                                      ? 200
-                                      : 250,
-                                  backgroundColor: appBackgroundColor,
-                                  flexibleSpace: FlexibleSpaceBar(
-                                    background: Container(
-                                      child: Column(
-                                        children: [
-                                          model.webblenBaseViewModel.user == null ? Container() : userDetails(model),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  bottom: PreferredSize(
-                                    preferredSize: Size.fromHeight(40),
-                                    child: tabBar(),
-                                  ),
-                                ),
-                              ];
-                            },
-                            body: body(model),
-                          ),
-                        ),
+                      _ProfileHead(
+                        showOptions: () => model.showOptions(),
+                      ),
+                      _ProfileBody(
+                        user: model.user,
                       ),
                     ],
                   ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ProfileHead extends StatelessWidget {
+  final VoidCallback showOptions;
+  const _ProfileHead({required this.showOptions});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "Profile",
+            style: TextStyle(
+              color: appFontColor(),
+              fontWeight: FontWeight.bold,
+              fontSize: 30.0,
+            ),
+          ),
+          Row(
+            children: [
+              IconButton(
+                onPressed: showOptions,
+                icon: Icon(
+                  FontAwesomeIcons.ellipsisH,
+                  color: appIconColor(),
+                  size: 20,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileBody extends HookViewModelWidget<ProfileViewModel> {
+  final WebblenUser user;
+  _ProfileBody({required this.user});
+
+  @override
+  Widget buildViewModelWidget(BuildContext context, ProfileViewModel model) {
+    var _scrollController = useScrollController();
+    var _tabController = useTabController(initialLength: 3);
+
+    return Expanded(
+      child: DefaultTabController(
+        key: PageStorageKey('profile-tab-bar'),
+        length: 4,
+        child: NestedScrollView(
+          key: PageStorageKey('profile-nested-scroll-key'),
+          controller: _scrollController,
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              SliverAppBar(
+                key: PageStorageKey('profile-app-bar-key'),
+                pinned: true,
+                floating: true,
+                snap: true,
+                forceElevated: innerBoxIsScrolled,
+                expandedHeight: ((user.bio?.isNotEmpty ?? true) || (user.website?.isNotEmpty ?? true)) ? 200 : 250,
+                backgroundColor: appBackgroundColor,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Container(
+                    child: Column(
+                      children: [
+                        _UserDetails(
+                          user: user,
+                          followerCount: user.followers!.length,
+                          followingCount: user.following!.length,
+                          viewFollowers: () {},
+                          viewFollowing: () {},
+                          viewWebsite: () => model.openWebsite(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                bottom: PreferredSize(
+                  preferredSize: Size.fromHeight(40),
+                  child: WebblenProfileTabBar(
+                    //key: PageStorageKey('profile-tab-bar'),
+                    tabController: _tabController,
+                  ),
+                ),
+              ),
+            ];
+          },
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              //posts
+              ListCurrentUserPosts(
+                scrollController: _scrollController,
+              ),
+
+              //scheduled streams
+              Container(),
+              Container(),
+              // model.streamResults.isEmpty && !model.reloadingStreams
+              //     ? ZeroStateView(
+              //         imageAssetName: "video_phone",
+              //         imageSize: 200,
+              //         header: "You Have Not Scheduled Any Streams",
+              //         subHeader: "Find Your Audience and Create a Stream",
+              //         mainActionButtonTitle: "Create Stream",
+              //         mainAction: () => model.webblenBaseViewModel!.navigateToCreateStreamPage(),
+              //         secondaryActionButtonTitle: null,
+              //         secondaryAction: null,
+              //         refreshData: () async {}, scrollController: null,
+              //       )
+              //     : ListLiveStreams(
+              //         refreshData: model.refreshEvents,
+              //         dataResults: model.streamResults,
+              //         pageStorageKey: PageStorageKey('home-events'),
+              //         showStreamOptions: (stream) => model.showContentOptions(content: stream), scrollController: null,
+              //       ),
+              // model.eventResults.isEmpty && !model.reloadingEvents
+              //     ? ZeroStateView(
+              //         imageAssetName: "calendar",
+              //         imageSize: 200,
+              //         header: "You Have Not Scheduled Any Events",
+              //         subHeader: "Create an Event for the Community",
+              //         mainActionButtonTitle: "Create Event",
+              //         mainAction: () => model.webblenBaseViewModel!.navigateToCreateEventPage(),
+              //         secondaryActionButtonTitle: null,
+              //         secondaryAction: null,
+              //         refreshData: () async {},
+              //         scrollController: null,
+              //       )
+              //     : ListEvents(
+              //         refreshData: model.refreshEvents,
+              //         dataResults: model.eventResults,
+              //         pageStorageKey: PageStorageKey('profile-events'),
+              //         scrollController: null,
+              //         showEventOptions: (event) => model.showContentOptions(content: event),
+              //       ),
+              // ZeroStateView(
+              //   imageAssetName: null,
+              //   header: "You Have No Recent Activity",
+              //   subHeader: "Get Involved in Your Community to Change That!",
+              //   mainActionButtonTitle: null,
+              //   mainAction: null,
+              //   secondaryActionButtonTitle: null,
+              //   secondaryAction: null,
+              //   refreshData: () async {},
+              // ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _UserDetails extends StatelessWidget {
+  final WebblenUser user;
+  final int followerCount;
+  final int followingCount;
+  final VoidCallback viewFollowers;
+  final VoidCallback viewFollowing;
+  final VoidCallback viewWebsite;
+  _UserDetails({
+    required this.user,
+    required this.followerCount,
+    required this.followingCount,
+    required this.viewFollowers,
+    required this.viewFollowing,
+    required this.viewWebsite,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+          SizedBox(height: 16),
+
+          ///USERNAME & PROFILE
+          UserProfilePic(
+            userPicUrl: user.profilePicURL,
+            size: 60,
+            isBusy: false,
+          ),
+          SizedBox(height: 8),
+          Text(
+            "@${user.username}",
+            style: TextStyle(
+              color: appFontColor(),
+              fontWeight: FontWeight.bold,
+              fontSize: 18.0,
+            ),
+          ),
+          verticalSpaceSmall,
+
+          ///FOLOWERS & FOLLOWING
+          FollowStatsRow(
+            followersLength: followerCount,
+            followingLength: followingCount,
+            viewFollowersAction: viewFollowers,
+            viewFollowingAction: viewFollowing,
+          ),
+          verticalSpaceSmall,
+
+          ///BIO & WEBSITE
+          Container(
+            child: Column(
+              children: [
+                user.bio != null && user.bio!.isNotEmpty
+                    ? Container(
+                        margin: EdgeInsets.only(top: 4),
+                        child: CustomText(
+                          text: user.bio,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: appFontColor(),
+                        ),
+                      )
+                    : Container(),
+                user.website != null && user.website!.isNotEmpty
+                    ? GestureDetector(
+                        onTap: viewWebsite,
+                        child: Container(
+                          margin: EdgeInsets.only(top: 4),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                FontAwesomeIcons.link,
+                                size: 12,
+                                color: appFontColor(),
+                              ),
+                              horizontalSpaceTiny,
+                              CustomText(
+                                text: user.website,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: appFontColor(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : Container(),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

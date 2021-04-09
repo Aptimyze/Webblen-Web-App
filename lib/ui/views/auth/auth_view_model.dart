@@ -9,11 +9,11 @@ import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/services/auth/auth_service.dart';
 
 class AuthViewModel extends BaseViewModel {
-  AuthService _authService = locator<AuthService>();
-  DialogService _dialogService = locator<DialogService>();
-  NavigationService _navigationService = locator<NavigationService>();
-  ThemeService _themeService = locator<ThemeService>();
-  SnackbarService _snackbarService = locator<SnackbarService>();
+  AuthService? _authService = locator<AuthService>();
+  DialogService? _dialogService = locator<DialogService>();
+  NavigationService? _navigationService = locator<NavigationService>();
+  ThemeService? _themeService = locator<ThemeService>();
+  SnackbarService? _snackbarService = locator<SnackbarService>();
 
   ///HELPERS
   final phoneMaskController = MaskedTextController(mask: '000-000-0000');
@@ -22,14 +22,14 @@ class AuthViewModel extends BaseViewModel {
   final passwordController = TextEditingController();
 
   bool signInViaPhone = true;
-  String phoneNo;
-  String phoneVerificationID;
+  String? phoneNo;
+  late String phoneVerificationID;
 
   ///Sign Up Via Email
-  Future signInWithEmail({@required email, @required password}) async {
+  Future signInWithEmail({required email, required password}) async {
     setBusy(true);
 
-    var result = await _authService.signInWithEmail(
+    var result = await _authService!.signInWithEmail(
       email: email,
       password: password,
     );
@@ -40,7 +40,7 @@ class AuthViewModel extends BaseViewModel {
       if (result) {
         navigateToHomePage();
       } else {
-        _dialogService.showDialog(
+        _dialogService!.showDialog(
           title: 'Login Error',
           description: "There Was an Issue Logging In. Please Try Again",
           barrierDismissible: true,
@@ -48,7 +48,7 @@ class AuthViewModel extends BaseViewModel {
         );
       }
     } else {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Login Error',
         description: result,
         barrierDismissible: true,
@@ -57,7 +57,7 @@ class AuthViewModel extends BaseViewModel {
     }
   }
 
-  Future<bool> sendSMSCode({@required phoneNo}) async {
+  Future<bool> sendSMSCode({required phoneNo}) async {
     //Phone Timeout & Verifcation
 
     final PhoneCodeAutoRetrievalTimeout autoRetrieve = (String verId) {
@@ -65,18 +65,19 @@ class AuthViewModel extends BaseViewModel {
       notifyListeners();
     };
 
-    final PhoneCodeSent smsCodeSent = (String verId, [int forceCodeResend]) {
+    final PhoneCodeSent smsCodeSent = (String verId, [int? forceCodeResend]) {
       phoneVerificationID = verId;
       notifyListeners();
     };
 
     final PhoneVerificationFailed verificationFailed = (FirebaseAuthException exception) {
-      return _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Phone Login Error',
         description: exception.message,
         barrierDismissible: true,
         buttonTitle: "Ok",
       );
+      return;
     };
 
     final PhoneVerificationCompleted verificationCompleted = (PhoneAuthCredential credential) async {
@@ -89,7 +90,7 @@ class AuthViewModel extends BaseViewModel {
 
     if (phoneNo != null && phoneNo.isNotEmpty && phoneNo.length >= 10) {
       //SEND SMS CODE FOR VERIFICATION
-      String error = await _authService.signInWithPhoneNumber(
+      String? error = await _authService!.signInWithPhoneNumber(
         phoneNo: phoneNo,
         // autoRetrievalTimeout: autoRetrieve,
         // smsCodeSent: smsCodeSent,
@@ -98,7 +99,7 @@ class AuthViewModel extends BaseViewModel {
       );
 
       if (error != null) {
-        _dialogService.showDialog(
+        _dialogService!.showDialog(
           title: 'Phone Login Error',
           description: error,
           barrierDismissible: true,
@@ -110,7 +111,7 @@ class AuthViewModel extends BaseViewModel {
       }
     } else {
       setBusy(false);
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Phone Login Error',
         description: "Invalid Phone Number",
         barrierDismissible: true,
@@ -120,16 +121,16 @@ class AuthViewModel extends BaseViewModel {
     }
   }
 
-  signInWithSMSCode({@required BuildContext context, @required String smsCode}) async {
+  signInWithSMSCode({required BuildContext context, required String smsCode}) async {
     Navigator.of(context).pop();
 
     setBusy(true);
 
-    var res = await _authService.signInWithSMSCode(verificationID: phoneVerificationID, smsCode: smsCode);
+    var res = await _authService!.signInWithSMSCode(verificationID: phoneVerificationID, smsCode: smsCode);
 
     if (res is String) {
       setBusy(false);
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Phone Login Error',
         description: res,
         barrierDismissible: true,
@@ -157,12 +158,12 @@ class AuthViewModel extends BaseViewModel {
   loginWithFacebook() async {
     setBusy(true);
 
-    var res = await _authService.loginWithFacebook();
+    var res = await _authService!.loginWithFacebook();
 
     setBusy(false);
 
     if (res is String) {
-      _dialogService.showDialog(
+      _dialogService!.showDialog(
         title: 'Facebook Sign In Error',
         description: res,
         barrierDismissible: true,
@@ -175,6 +176,6 @@ class AuthViewModel extends BaseViewModel {
 
   ///NAVIGATION
   navigateToHomePage() {
-    _navigationService.pushNamedAndRemoveUntil(Routes.WebblenBaseViewRoute);
+    _navigationService!.pushNamedAndRemoveUntil(Routes.WebblenBaseViewRoute);
   }
 }

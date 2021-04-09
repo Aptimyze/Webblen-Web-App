@@ -15,7 +15,7 @@ class EventBlockWidget extends StatelessWidget {
   final WebblenEvent event;
   final Function(WebblenEvent) showEventOptions;
 
-  EventBlockWidget({@required this.event, @required this.showEventOptions});
+  EventBlockWidget({required this.event, required this.showEventOptions});
 
   Widget eventStartDate(EventBlockViewModel model) {
     return Container(
@@ -24,12 +24,13 @@ class EventBlockWidget extends StatelessWidget {
         children: [
           SizedBox(height: 16),
           CustomText(
-            text: event.startDate.substring(4, event.startDate.length - 6),
+            text: event.startDate!.substring(4, event.startDate!.length - 6),
+            color: appFontColor(),
             fontSize: 18,
             fontWeight: FontWeight.w500,
           ),
           CustomText(
-            text: event.startDate.substring(0, event.startDate.length - 9),
+            text: event.startDate!.substring(0, event.startDate!.length - 9),
             color: appFontColorAlt(),
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -128,6 +129,7 @@ class EventBlockWidget extends StatelessWidget {
                       children: [
                         CustomText(
                           text: event.title,
+                          color: appFontColor(),
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
@@ -195,7 +197,7 @@ class EventBlockWidget extends StatelessWidget {
   }
 
   Widget eventTags(EventBlockViewModel model) {
-    return event.tags == null || event.tags.isEmpty
+    return event.tags == null || event.tags!.isEmpty
         ? Container()
         : Container(
             margin: EdgeInsets.only(top: 4, bottom: 8, right: 16),
@@ -209,11 +211,11 @@ class EventBlockWidget extends StatelessWidget {
                 top: 4.0,
                 bottom: 4.0,
               ),
-              itemCount: event.tags.length,
+              itemCount: event.tags!.length,
               itemBuilder: (context, index) {
                 return TagButton(
                   onTap: null,
-                  tag: event.tags[index],
+                  tag: event.tags![index],
                 );
               },
             ),

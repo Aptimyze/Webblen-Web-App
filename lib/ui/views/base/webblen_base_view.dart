@@ -90,18 +90,18 @@ class WebblenBaseView extends StatelessWidget {
                 ),
               )
             : model.initErrorStatus == InitErrorStatus.network
-                ? NetworkErrorView(
-                    tryAgainAction: () => model.initialize(),
-                  )
-                : model.initErrorStatus == InitErrorStatus.location
-                    ? LocationErrorView(
-                        tryAgainAction: () => model.initialize(),
-                      )
-                    : getViewForIndex(model.navBarIndex, model),
+            ? NetworkErrorView(
+                tryAgainAction: () => model.initialize(),
+              )
+            : model.initErrorStatus == InitErrorStatus.location
+            ? LocationErrorView(
+                tryAgainAction: () => model.initialize(),
+              )
+            : getViewForIndex(model.navBarIndex, model),
         floatingActionButton: Container(
           width: 100,
           child: Row(
-            mainAxisAlignment: model.isAnonymous == null || model.isAnonymous ? MainAxisAlignment.end : MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: model.isAnonymous ? MainAxisAlignment.end : MainAxisAlignment.spaceBetween,
             children: [
               model.cityName == null
                   ? Container(
@@ -110,7 +110,7 @@ class WebblenBaseView extends StatelessWidget {
                     )
                   : FloatingActionButton(
                       heroTag: "showFilter",
-                      onPressed: () => model.openFilter(),
+                      onPressed: () => model.customBottomSheetService.openFilter(),
                       backgroundColor: appActiveColor(),
                       foregroundColor: Colors.white,
                       mini: true,
@@ -120,14 +120,14 @@ class WebblenBaseView extends StatelessWidget {
                         size: 16,
                       ),
                     ),
-              model.isAnonymous == null || model.isAnonymous
+              model.isAnonymous
                   ? Container(
                       width: 0,
                       height: 0,
                     )
                   : FloatingActionButton(
                       heroTag: "addContent",
-                      onPressed: () => model.showAddContentOptions(),
+                      onPressed: () => model.customBottomSheetService.showAddContentOptions(),
                       backgroundColor: appActiveColor(),
                       foregroundColor: Colors.white,
                       mini: true,

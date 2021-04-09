@@ -8,7 +8,7 @@ import 'notification_bell_view_model.dart';
 class NotificationBellView extends StatelessWidget {
   final String uid;
   NotificationBellView({
-    @required this.uid,
+    required this.uid,
   });
 
   @override
@@ -34,7 +34,7 @@ class NotificationBellView extends StatelessWidget {
             Positioned(
               top: 0.0,
               right: 4.0,
-              child: model.notifCount > 0
+              child: model.notifCount! > 0
                   ? Container(
                       height: 10.0,
                       width: 10.0,

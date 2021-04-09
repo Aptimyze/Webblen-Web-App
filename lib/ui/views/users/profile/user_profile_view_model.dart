@@ -16,24 +16,24 @@ import 'package:webblen_web_app/services/share/share_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
 class UserProfileViewModel extends StreamViewModel<WebblenUser> {
-  AuthService _authService = locator<AuthService>();
-  DialogService _dialogService = locator<DialogService>();
-  NavigationService _navigationService = locator<NavigationService>();
-  UserDataService _userDataService = locator<UserDataService>();
-  BottomSheetService _bottomSheetService = locator<BottomSheetService>();
-  SnackbarService _snackbarService = locator<SnackbarService>();
-  DynamicLinkService _dynamicLinkService = locator<DynamicLinkService>();
-  PostDataService _postDataService = locator<PostDataService>();
-  ShareService _shareService = locator<ShareService>();
-  NotificationDataService _notificationDataService = locator<NotificationDataService>();
-  WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  AuthService? _authService = locator<AuthService>();
+  DialogService? _dialogService = locator<DialogService>();
+  NavigationService? _navigationService = locator<NavigationService>();
+  UserDataService? _userDataService = locator<UserDataService>();
+  BottomSheetService? _bottomSheetService = locator<BottomSheetService>();
+  SnackbarService? _snackbarService = locator<SnackbarService>();
+  DynamicLinkService? _dynamicLinkService = locator<DynamicLinkService>();
+  PostDataService? _postDataService = locator<PostDataService>();
+  ShareService? _shareService = locator<ShareService>();
+  NotificationDataService? _notificationDataService = locator<NotificationDataService>();
+  WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
 
   ///UI HELPERS
   ScrollController scrollController = ScrollController();
 
   ///DATA
   List<DocumentSnapshot> postResults = [];
-  DocumentSnapshot lastPostDocSnap;
+  DocumentSnapshot? lastPostDocSnap;
 
   bool loadingAdditionalPosts = false;
   bool morePostsAvailable = true;
@@ -42,20 +42,20 @@ class UserProfileViewModel extends StreamViewModel<WebblenUser> {
   int resultsLimit = 20;
 
   ///USER DATA
-  String uid;
-  WebblenUser currentUser;
-  WebblenUser user;
-  bool isFollowingUser;
+  String? uid;
+  late WebblenUser currentUser;
+  WebblenUser? user;
+  bool? isFollowingUser;
   bool sendNotification = false;
 
   ///STREAM USER DATA
   @override
-  void onData(WebblenUser data) {
+  void onData(WebblenUser? data) {
     if (data != null) {
       user = data;
       if (isFollowingUser == null) {
-        if (webblenBaseViewModel.user != null) {
-          if (user.followers.contains(currentUser.id)) {
+        if (webblenBaseViewModel!.user != null) {
+          if (user!.followers!.contains(currentUser.id)) {
             isFollowingUser = true;
           } else {
             isFollowingUser = false;
@@ -73,21 +73,19 @@ class UserProfileViewModel extends StreamViewModel<WebblenUser> {
 
   Stream<WebblenUser> streamUser() async* {
     while (true) {
-      if (uid == null) {
-        yield null;
-      }
-      await Future.delayed(Duration(seconds: 1));
-      var res = await _userDataService.getWebblenUserByID(uid);
-      if (res is String) {
-        yield null;
-      } else {
-        yield res;
+      if (uid != null) {
+        await Future.delayed(Duration(seconds: 1));
+        var res = await _userDataService!.getWebblenUserByID(uid);
+        if (res is String) {
+        } else {
+          yield res!;
+        }
       }
     }
   }
 
   ///INITIALIZE
-  initialize({String id, TabController tabController}) async {
+  initialize({String? id, TabController? tabController}) async {
     //set busy status
     setBusy(true);
 
@@ -101,7 +99,7 @@ class UserProfileViewModel extends StreamViewModel<WebblenUser> {
     scrollController.addListener(() {
       double triggerFetchMoreSize = 0.9 * scrollController.position.maxScrollExtent;
       if (scrollController.position.pixels > triggerFetchMoreSize) {
-        if (tabController.index == 0) {
+        if (tabController!.index == 0) {
           // loadAdditionalPosts();
         }
       }
@@ -126,7 +124,7 @@ class UserProfileViewModel extends StreamViewModel<WebblenUser> {
   ///Load Data
   loadPosts() async {
     //load posts with params
-    postResults = await _postDataService.loadPostsByUserID(id: user.id, resultsLimit: resultsLimit);
+    postResults = await _postDataService!.loadPostsByUserID(id: user!.id, resultsLimit: resultsLimit);
   }
 
   loadAdditionalPosts() async {
@@ -140,9 +138,9 @@ class UserProfileViewModel extends StreamViewModel<WebblenUser> {
     notifyListeners();
 
     //load additional posts
-    List<DocumentSnapshot> newResults = await _postDataService.loadAdditionalPostsByUserID(
+    List<DocumentSnapshot> newResults = await _postDataService!.loadAdditionalPostsByUserID(
       lastDocSnap: postResults[postResults.length - 1],
-      id: user.id,
+      id: user!.id,
       resultsLimit: resultsLimit,
     );
 
@@ -160,39 +158,39 @@ class UserProfileViewModel extends StreamViewModel<WebblenUser> {
 
   ///FOLLOW UNFOLLOW USER
   followUnfollowUser() async {
-    if (isFollowingUser) {
+    if (isFollowingUser!) {
       isFollowingUser = false;
       notifyListeners();
-      bool followedUser = await _userDataService.unFollowUser(currentUser.id, user.id);
+      bool followedUser = await _userDataService!.unFollowUser(currentUser.id, user!.id);
       if (followedUser) {
         WebblenNotification notification = WebblenNotification().generateNewFollowerNotification(
-          receiverUID: user.id,
+          receiverUID: user!.id,
           senderUID: currentUser.id,
           followerUsername: "@${currentUser.username}",
         );
-        _notificationDataService.sendNotification(notif: notification);
+        _notificationDataService!.sendNotification(notif: notification);
         followedUser = true;
         notifyListeners();
       }
     } else {
       isFollowingUser = true;
       notifyListeners();
-      _userDataService.followUser(currentUser.id, user.id);
+      _userDataService!.followUser(currentUser.id, user!.id);
     }
   }
 
   ///BOTTOM SHEETS
   showUserOptions() async {
-    var sheetResponse = await _bottomSheetService.showCustomSheet(
+    var sheetResponse = await _bottomSheetService!.showCustomSheet(
       barrierDismissible: true,
       variant: BottomSheetType.userOptions,
     );
     if (sheetResponse != null) {
-      String res = sheetResponse.responseData;
+      String? res = sheetResponse.responseData;
       if (res == "share profile") {
         //share profile
-        String url = await _dynamicLinkService.createProfileLink(user: user);
-        _shareService.copyContentLink(contentType: "profile", url: url);
+        String? url = await _dynamicLinkService!.createProfileLink(user: user!);
+        _shareService!.copyContentLink(contentType: "profile", url: url);
       } else if (res == "message") {
         //message user
       } else if (res == "block") {

@@ -7,21 +7,21 @@ import 'package:webblen_web_app/ui/widgets/comments/comment_block/comment_block_
 class ListComments extends StatelessWidget {
   final List results;
   final bool showingReplies;
-  final VoidCallback refreshData;
-  final PageStorageKey pageStorageKey;
-  final ScrollController scrollController;
-  final bool refreshingData;
+  final VoidCallback? refreshData;
+  final PageStorageKey? pageStorageKey;
+  final ScrollController? scrollController;
+  final bool? refreshingData;
   final Function(WebblenPostComment) replyToComment;
   final Function(WebblenPostComment) deleteComment;
   ListComments({
-    @required this.refreshData,
-    @required this.results,
-    @required this.showingReplies,
-    @required this.pageStorageKey,
-    @required this.scrollController,
-    @required this.refreshingData,
-    @required this.replyToComment,
-    @required this.deleteComment,
+    required this.refreshData,
+    required this.results,
+    required this.showingReplies,
+    required this.pageStorageKey,
+    required this.scrollController,
+    required this.refreshingData,
+    required this.replyToComment,
+    required this.deleteComment,
   });
 
   Widget listReplies(BuildContext context) {
@@ -46,8 +46,8 @@ class ListComments extends StatelessWidget {
             }
 
             return CommentBlockView(
-              replyToComment: replyToComment == null ? null : (val) => replyToComment(val),
-              deleteComment: deleteComment == null ? null : (val) => deleteComment(val),
+              replyToComment: (val) => replyToComment(val),
+              deleteComment: (val) => deleteComment(val),
               comment: comment,
             );
           },

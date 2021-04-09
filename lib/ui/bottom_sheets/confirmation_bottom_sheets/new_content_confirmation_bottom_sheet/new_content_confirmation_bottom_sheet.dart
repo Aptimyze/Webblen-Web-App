@@ -10,11 +10,11 @@ import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_circ
 import 'new_content_confirmation_bottom_sheet_model.dart';
 
 class NewContentConfirmationBottomSheet extends StatelessWidget {
-  final SheetRequest request;
-  final Function(SheetResponse) completer;
+  final SheetRequest? request;
+  final Function(SheetResponse)? completer;
 
   const NewContentConfirmationBottomSheet({
-    Key key,
+    Key? key,
     this.request,
     this.completer,
   }) : super(key: key);
@@ -42,7 +42,7 @@ class NewContentConfirmationBottomSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               CustomText(
-                text: request.title,
+                text: request!.title,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: appFontColor(),
@@ -50,7 +50,7 @@ class NewContentConfirmationBottomSheet extends StatelessWidget {
               ),
               verticalSpaceTiny,
               CustomText(
-                text: request.description,
+                text: request!.description,
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 color: appFontColorAlt(),
@@ -67,10 +67,10 @@ class NewContentConfirmationBottomSheet extends StatelessWidget {
                     color: appFontColor(),
                     textAlign: TextAlign.left,
                   ),
-                  model.webblenBaseViewModel.user.WBLN == null
+                  model.user.WBLN == null
                       ? CustomCircleProgressIndicator(size: 10, color: appActiveColor())
                       : CustomText(
-                          text: "${model.webblenBaseViewModel.user.WBLN.toStringAsFixed(2)} WBLN",
+                          text: "${model.user.WBLN!.toStringAsFixed(2)} WBLN",
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: appFontColor(),
@@ -79,7 +79,7 @@ class NewContentConfirmationBottomSheet extends StatelessWidget {
                 ],
               ),
               verticalSpaceSmall,
-              request.customData['promo'] != null
+              request!.customData['promo'] != null
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -91,16 +91,16 @@ class NewContentConfirmationBottomSheet extends StatelessWidget {
                           textAlign: TextAlign.left,
                         ),
                         CustomText(
-                          text: "+${request.customData['promo'].toStringAsFixed(2)} WBLN",
+                          text: "+${request!.customData['promo'].toStringAsFixed(2)} WBLN",
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: model.webblenBaseViewModel.user.WBLN == null ? Colors.transparent : appConfirmationColor(),
+                          color: model.user.WBLN == null ? Colors.transparent : appConfirmationColor(),
                           textAlign: TextAlign.right,
                         ),
                       ],
                     )
                   : Container(),
-              request.customData['promo'] != null ? verticalSpaceSmall : Container(),
+              request!.customData['promo'] != null ? verticalSpaceSmall : Container(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -112,10 +112,10 @@ class NewContentConfirmationBottomSheet extends StatelessWidget {
                     textAlign: TextAlign.left,
                   ),
                   CustomText(
-                    text: "-${request.customData['fee'].toStringAsFixed(2)} WBLN",
+                    text: "-${request!.customData['fee'].toStringAsFixed(2)} WBLN",
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: model.webblenBaseViewModel.user.WBLN == null ? Colors.transparent : appDestructiveColor(),
+                    color: model.user.WBLN == null ? Colors.transparent : appDestructiveColor(),
                     textAlign: TextAlign.right,
                   ),
                 ],
@@ -129,7 +129,7 @@ class NewContentConfirmationBottomSheet extends StatelessWidget {
                 height: 4,
               ),
               verticalSpaceMedium,
-              model.webblenBaseViewModel.user.WBLN == null
+              model.user.WBLN == null
                   ? Container(height: 15)
                   : Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -143,9 +143,9 @@ class NewContentConfirmationBottomSheet extends StatelessWidget {
                         ),
                         horizontalSpaceSmall,
                         CustomText(
-                          text: request.customData['promo'] == null
-                              ? "${(model.webblenBaseViewModel.user.WBLN - request.customData['fee']).toStringAsFixed(2)} WBLN"
-                              : "${(model.webblenBaseViewModel.user.WBLN + request.customData['promo'] - request.customData['fee']).toStringAsFixed(2)} WBLN",
+                          text: request!.customData['promo'] == null
+                              ? "${(model.user.WBLN! - request!.customData['fee']).toStringAsFixed(2)} WBLN"
+                              : "${(model.user.WBLN! + request!.customData['promo'] - request!.customData['fee']).toStringAsFixed(2)} WBLN",
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: appFontColor(),
@@ -155,25 +155,25 @@ class NewContentConfirmationBottomSheet extends StatelessWidget {
                     ),
               verticalSpaceLarge,
               CustomButton(
-                onPressed: model.webblenBaseViewModel.user.WBLN == null
+                onPressed: model.user.WBLN == null
                     ? null
-                    : request.customData['promo'] != null && (model.webblenBaseViewModel.user.WBLN + request.customData['promo']) < request.customData['fee'] ||
-                            request.customData['promo'] == null && model.webblenBaseViewModel.user.WBLN < request.customData['fee']
-                        ? () => completer(SheetResponse(responseData: "insufficient funds"))
-                        : () => completer(SheetResponse(responseData: "confirmed")),
-                text: model.webblenBaseViewModel.user.WBLN == null ? "Calculating Total..." : request.mainButtonTitle,
+                    : request!.customData['promo'] != null && (model.user.WBLN! + request!.customData['promo']) < request!.customData['fee'] ||
+                        request!.customData['promo'] == null && model.user.WBLN! < request!.customData['fee']
+                    ? () => completer!(SheetResponse(responseData: "insufficient funds"))
+                    : () => completer!(SheetResponse(responseData: "confirmed")),
+                text: model.user.WBLN == null ? "Calculating Total..." : request!.mainButtonTitle,
                 textSize: 16,
-                textColor: model.webblenBaseViewModel.user.WBLN == null ? appFontColorAlt() : Colors.white,
+                textColor: model.user.WBLN == null ? appFontColorAlt() : Colors.white,
                 height: 40,
                 width: screenWidth(context),
-                backgroundColor: model.webblenBaseViewModel.user.WBLN == null ? appButtonColor() : appConfirmationColor(),
+                backgroundColor: model.user.WBLN == null ? appButtonColor() : appConfirmationColor(),
                 elevation: 1.0,
                 isBusy: false,
               ),
               verticalSpaceSmall,
               CustomButton(
-                onPressed: () => completer(SheetResponse(responseData: "cancelled")),
-                text: request.secondaryButtonTitle,
+                onPressed: () => completer!(SheetResponse(responseData: "cancelled")),
+                text: request!.secondaryButtonTitle,
                 textSize: 16,
                 textColor: appFontColor(),
                 height: 40,

@@ -6,8 +6,8 @@ class LiveStreamChatDataService {
   final CollectionReference chatRef = FirebaseFirestore.instance.collection("webblen_live_stream_chats");
 
   //CREATE
-  Future<String> joinChatStream({@required String streamID, @required String uid, @required bool isHost, @required String username}) async {
-    String error;
+  Future<String?> joinChatStream({required String streamID, required String uid, required bool isHost, required String username}) async {
+    String? error;
     WebblenStreamChatMessage message = WebblenStreamChatMessage(
       senderUID: uid,
       username: 'system',
@@ -22,8 +22,8 @@ class LiveStreamChatDataService {
     return error;
   }
 
-  Future<String> sendLeftChatStreamMessage({@required String streamID, @required String uid, @required bool isHost, @required String username}) async {
-    String error;
+  Future<String?> sendLeftChatStreamMessage({required String streamID, required String uid, required bool isHost, required String username}) async {
+    String? error;
     WebblenStreamChatMessage message = WebblenStreamChatMessage(
       senderUID: uid,
       username: 'system',
@@ -36,8 +36,8 @@ class LiveStreamChatDataService {
     return error;
   }
 
-  Future<String> sendCheckIntoStreamMessage({@required String streamID, @required String uid, @required String username}) async {
-    String error;
+  Future<String?> sendCheckIntoStreamMessage({required String streamID, required String uid, required String username}) async {
+    String? error;
     WebblenStreamChatMessage message = WebblenStreamChatMessage(
       senderUID: uid,
       username: 'system',
@@ -50,8 +50,8 @@ class LiveStreamChatDataService {
     return error;
   }
 
-  Future<String> sendCheckoutOfStream({@required String streamID, @required String uid, @required String username}) async {
-    String error;
+  Future<String?> sendCheckoutOfStream({required String streamID, required String uid, required String username}) async {
+    String? error;
     WebblenStreamChatMessage message = WebblenStreamChatMessage(
       senderUID: uid,
       username: 'system',
@@ -64,8 +64,8 @@ class LiveStreamChatDataService {
     return error;
   }
 
-  Future<String> sendStreamChatMessage({@required String streamID, @required WebblenStreamChatMessage message}) async {
-    String error;
+  Future<String?> sendStreamChatMessage({required String streamID, required WebblenStreamChatMessage message}) async {
+    String? error;
     await chatRef.doc(streamID).collection("messages").doc(message.timePostedInMilliseconds.toString()).set(message.toMap()).catchError((e) {
       error = e.details;
     });

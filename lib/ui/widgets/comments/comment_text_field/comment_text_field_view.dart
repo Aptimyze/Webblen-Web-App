@@ -17,20 +17,20 @@ class CommentTextFieldView extends StatelessWidget {
   final String contentID;
   final FocusNode focusNode;
   final bool isReplying;
-  final String replyReceiverUsername;
+  final String? replyReceiverUsername;
   final TextEditingController commentTextController;
   final Function(Map<String, dynamic>) onSubmitted;
 
   CommentTextFieldView({
-    @required this.contentID,
-    @required this.focusNode,
-    @required this.commentTextController,
-    @required this.isReplying,
-    @required this.replyReceiverUsername,
-    @required this.onSubmitted,
+    required this.contentID,
+    required this.focusNode,
+    required this.commentTextController,
+    required this.isReplying,
+    required this.replyReceiverUsername,
+    required this.onSubmitted,
   });
 
-  final AlgoliaSearchService _algoliaSearchService = locator<AlgoliaSearchService>();
+  final AlgoliaSearchService? _algoliaSearchService = locator<AlgoliaSearchService>();
 
   Widget replyContainer() {
     return Container(
@@ -80,7 +80,7 @@ class CommentTextFieldView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           UserProfilePic(
-            userPicUrl: model.webblenBaseViewModel.user.profilePicURL,
+            userPicUrl: model.webblenBaseViewModel!.user!.profilePicURL,
             size: 45,
             isBusy: false,
           ),
@@ -145,49 +145,54 @@ class CommentTextFieldView extends StatelessWidget {
                       String cursorString = searchTerm.substring(0, cursorPosition);
                       String lastWord = getLastWordInString(cursorString);
                       if (lastWord.startsWith("@") && lastWord.length > 1) {
-                        return await _algoliaSearchService.queryUsers(searchTerm: lastWord.substring(1, lastWord.length - 1), resultsLimit: 3);
+                        return await _algoliaSearchService!.queryUsers(searchTerm: lastWord.substring(1, lastWord.length - 1), resultsLimit: 3);
                       }
-                      return null;
+                      return [];
                     },
-                    itemBuilder: (context, WebblenUser user) {
-                      return Container(
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                        height: 50,
-                        child: Row(
-                          children: [
-                            UserProfilePic(
-                              userPicUrl: user.profilePicURL,
-                              size: 35,
-                              isBusy: false,
-                            ),
-                            horizontalSpaceTiny,
-                            CustomText(
-                              text: "@${user.username}",
-                              fontSize: 16,
-                              textAlign: TextAlign.left,
-                              fontWeight: FontWeight.bold,
-                              color: appFontColor(),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    onSuggestionSelected: (WebblenUser user) {
-                      model.addUserToMentions(user);
-                      focusNode.requestFocus();
-                      int cursorPosition = commentTextController.selection.baseOffset;
-                      String startOfString = commentTextController.text.substring(0, cursorPosition - 1);
-                      String endOfString = commentTextController.text.substring(cursorPosition - 1, commentTextController.text.length - 1);
-                      if (endOfString.length == 1) {
-                        endOfString = "";
-                      } else if (endOfString.length > 1) {
-                        endOfString = endOfString.substring(2, endOfString.length - 1);
+                    itemBuilder: (context, user) {
+                      if (user is WebblenUser) {
+                        return Container(
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                          height: 50,
+                          child: Row(
+                            children: [
+                              UserProfilePic(
+                                userPicUrl: user!.profilePicURL,
+                                size: 35,
+                                isBusy: false,
+                              ),
+                              horizontalSpaceTiny,
+                              CustomText(
+                                text: "@${user.username}",
+                                fontSize: 16,
+                                textAlign: TextAlign.left,
+                                fontWeight: FontWeight.bold,
+                                color: appFontColor(),
+                              ),
+                            ],
+                          ),
+                        );
                       }
-                      String modifiedStartOfString = replaceLastWordInString(startOfString, "@${user.username} ");
+                      return Container();
+                    },
+                    onSuggestionSelected: (user) {
+                      if (user is WebblenUser) {
+                        model.addUserToMentions(user);
+                        focusNode.requestFocus();
+                        int cursorPosition = commentTextController.selection.baseOffset;
+                        String startOfString = commentTextController.text.substring(0, cursorPosition - 1);
+                        String endOfString = commentTextController.text.substring(cursorPosition - 1, commentTextController.text.length - 1);
+                        if (endOfString.length == 1) {
+                          endOfString = "";
+                        } else if (endOfString.length > 1) {
+                          endOfString = endOfString.substring(2, endOfString.length - 1);
+                        }
+                        String modifiedStartOfString = replaceLastWordInString(startOfString, "@${user.username} ");
 
-                      commentTextController.text = modifiedStartOfString + " " + endOfString;
+                        commentTextController.text = modifiedStartOfString + " " + endOfString;
 
-                      commentTextController.selection = TextSelection.fromPosition(TextPosition(offset: modifiedStartOfString.length));
+                        commentTextController.selection = TextSelection.fromPosition(TextPosition(offset: modifiedStartOfString.length));
+                      }
                     },
                   ),
                 ),
@@ -203,7 +208,7 @@ class CommentTextFieldView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ViewModelBuilder<CommentTextFieldViewModel>.reactive(
       viewModelBuilder: () => CommentTextFieldViewModel(),
-      builder: (context, model, child) => model.webblenBaseViewModel.user == null ? Container() : commentTextField(context, model),
+      builder: (context, model, child) => model.webblenBaseViewModel!.user == null ? Container() : commentTextField(context, model),
     );
   }
 }

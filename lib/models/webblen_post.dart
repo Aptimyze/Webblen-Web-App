@@ -1,26 +1,30 @@
+import 'package:webblen_web_app/utils/custom_string_methods.dart';
+
 class WebblenPost {
-  String id;
-  String parentID;
-  String authorID;
-  String postType;
-  String imageURL;
-  String body;
-  List nearbyZipcodes;
-  String city;
-  String province;
-  double lat;
-  double lon;
-  int commentCount;
-  int postDateTimeInMilliseconds;
-  bool reported;
-  String webAppLink;
-  List savedBy;
-  List sharedComs;
-  bool paidOut;
-  List tags;
-  List participantIDs;
-  List followers;
-  List suggestedUIDs;
+  String? id;
+  String? parentID;
+  String? authorID;
+  String? postType;
+  String? imageURL;
+  String? body;
+  List? nearbyZipcodes;
+  String? city;
+  String? province;
+  double? lat;
+  double? lon;
+  int? commentCount;
+  int? postDateTimeInMilliseconds;
+  bool? reported;
+  String? webAppLink;
+  List? savedBy;
+  int? clicks;
+  List? clickedBy;
+  List? sharedComs;
+  bool? paidOut;
+  List? tags;
+  List? participantIDs;
+  List? followers;
+  List? suggestedUIDs;
 
   WebblenPost({
     this.id,
@@ -39,6 +43,8 @@ class WebblenPost {
     this.reported,
     this.webAppLink,
     this.savedBy,
+    this.clicks,
+    this.clickedBy,
     this.sharedComs,
     this.paidOut,
     this.tags,
@@ -65,6 +71,8 @@ class WebblenPost {
           reported: false,
           webAppLink: data['webAppLink'],
           savedBy: data['savedBy'],
+          clicks: data['clicks'],
+          clickedBy: data['clickedBy'],
           sharedComs: data['sharedComs'],
           paidOut: data['paidOut'],
           tags: data['tags'],
@@ -90,6 +98,8 @@ class WebblenPost {
         'reported': this.reported,
         'webAppLink': this.webAppLink,
         'savedBy': this.savedBy,
+        'clicks': this.clicks,
+        'clickedBy': this.clickedBy,
         'sharedComs': this.sharedComs,
         'paidOut': this.paidOut,
         'tags': this.tags,
@@ -97,4 +107,32 @@ class WebblenPost {
         'followers': this.followers,
         'suggestedUIDs': this.suggestedUIDs,
       };
+
+  WebblenPost generateNewWebblenPost({required String authorID, required List suggestedUIDs}) {
+    String id = getRandomString(30);
+    WebblenPost post = WebblenPost(
+      id: id,
+      authorID: authorID,
+      reported: false,
+      paidOut: false,
+      tags: [],
+      savedBy: [],
+      clickedBy: [],
+      clicks: 0,
+      participantIDs: [],
+      suggestedUIDs: suggestedUIDs,
+      followers: suggestedUIDs,
+      commentCount: 0,
+      postType: 'post',
+    );
+    return post;
+  }
+
+  bool isValid() {
+    bool isValid = true;
+    if (this.id == null) {
+      isValid = false;
+    }
+    return isValid;
+  }
 }

@@ -7,27 +7,27 @@ import 'package:webblen_web_app/models/webblen_activity.dart';
 class ActivityDataService {
   final CollectionReference activityRef = FirebaseFirestore.instance.collection("webblen_activity");
 
-  Future createActivity({@required WebblenActivity activity}) async {
+  Future createActivity({required WebblenActivity activity}) async {
     await activityRef.doc(activity.id).set(activity.toMap()).catchError((e) {
       return e.message;
     });
   }
 
-  Future updateEvent({@required WebblenActivity activity}) async {
+  Future updateEvent({required WebblenActivity activity}) async {
     await activityRef.doc(activity.id).update(activity.toMap()).catchError((e) {
       return e.message;
     });
   }
 
-  Future deleteEvent({@required WebblenActivity activity}) async {
+  Future deleteEvent({required WebblenActivity activity}) async {
     await activityRef.doc(activity.id).delete();
   }
 
   ///READ & QUERIES
   Future<List<DocumentSnapshot>> loadActivity({
-    @required String uid,
-    @required int resultsLimit,
-    @required bool personalActivity,
+    required String uid,
+    required int resultsLimit,
+    required bool personalActivity,
   }) async {
     Query query;
     List<DocumentSnapshot> docs = [];
@@ -45,10 +45,10 @@ class ActivityDataService {
   }
 
   Future<List<DocumentSnapshot>> loadAdditionalActivity({
-    @required String uid,
-    @required DocumentSnapshot lastDocSnap,
-    @required int resultsLimit,
-    @required bool personalActivity,
+    required String uid,
+    required DocumentSnapshot lastDocSnap,
+    required int resultsLimit,
+    required bool personalActivity,
   }) async {
     Query query;
     List<DocumentSnapshot> docs = [];

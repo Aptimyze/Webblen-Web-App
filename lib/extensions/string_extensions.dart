@@ -11,7 +11,7 @@ extension StringExtensions on String {
 // https://github.com/flutter/flutter/issues/33470#issuecomment-537802636
 bool copyText(String text) {
   final textarea = TextAreaElement();
-  document.body.append(textarea);
+  document.body!.append(textarea);
   textarea.style.border = '0';
   textarea.style.margin = '0';
   textarea.style.padding = '0';

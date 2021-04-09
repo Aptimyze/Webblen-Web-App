@@ -16,11 +16,11 @@ class FeeForm extends StatelessWidget {
   final VoidCallback validateAndSubmitFee;
   final VoidCallback deleteFee;
   FeeForm({
-    @required this.editingFee,
-    @required this.feeNameTextController,
-    @required this.feePriceTextController,
-    @required this.validateAndSubmitFee,
-    @required this.deleteFee,
+    required this.editingFee,
+    required this.feeNameTextController,
+    required this.feePriceTextController,
+    required this.validateAndSubmitFee,
+    required this.deleteFee,
   });
 
   @override
@@ -84,7 +84,9 @@ class FeeForm extends StatelessWidget {
             children: <Widget>[
               CustomButton(
                 text: !editingFee ? "Add Fee" : "Update Fee",
+                textSize: 14,
                 textColor: Colors.white,
+                elevation: 1,
                 backgroundColor: CustomColors.darkMountainGreen,
                 height: 30.0,
                 width: 120,

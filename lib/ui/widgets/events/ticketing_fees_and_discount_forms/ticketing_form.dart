@@ -18,12 +18,12 @@ class TicketingForm extends StatelessWidget {
   final VoidCallback validateAndSubmitTicket;
   final VoidCallback deleteTicket;
   TicketingForm(
-      {@required this.editingTicket,
-      @required this.ticketNameTextController,
-      @required this.ticketQuantityTextController,
-      @required this.ticketPriceTextController,
-      @required this.validateAndSubmitTicket,
-      @required this.deleteTicket});
+      {required this.editingTicket,
+      required this.ticketNameTextController,
+      required this.ticketQuantityTextController,
+      required this.ticketPriceTextController,
+      required this.validateAndSubmitTicket,
+      required this.deleteTicket});
 
   @override
   Widget build(BuildContext context) {
@@ -103,11 +103,13 @@ class TicketingForm extends StatelessWidget {
               CustomButton(
                 text: !editingTicket ? "Add Ticket" : "Update Ticket",
                 textColor: Colors.white,
+                textSize: 14,
                 backgroundColor: CustomColors.darkMountainGreen,
                 height: 30.0,
                 width: 120,
                 onPressed: validateAndSubmitTicket,
                 isBusy: false,
+                elevation: 1,
               ),
               SizedBox(width: 8.0),
               CustomIconButton(

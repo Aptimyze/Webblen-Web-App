@@ -4,9 +4,9 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 
 class ShareService {
-  DialogService _dialogService = locator<DialogService>();
+  DialogService? _dialogService = locator<DialogService>();
 
-  copyContentLink({@required String contentType, @required String url}) {
+  copyContentLink({required String? contentType, required String? url}) {
     String dialogTitle;
     String dialogDesc;
 
@@ -26,7 +26,7 @@ class ShareService {
       dialogDesc = "The link to this profile has been copied to your clipboard";
     }
 
-    _dialogService.showDialog(
+    _dialogService!.showDialog(
       title: dialogTitle,
       description: dialogDesc,
       barrierDismissible: true,

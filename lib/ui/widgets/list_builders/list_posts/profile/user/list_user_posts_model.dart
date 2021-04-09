@@ -1,19 +1,23 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:stacked/stacked.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
+import 'package:webblen_web_app/services/bottom_sheets/custom_bottom_sheet_service.dart';
 import 'package:webblen_web_app/services/firestore/data/post_data_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
 class ListUserPostsModel extends BaseViewModel {
-  PostDataService _postDataService = locator<PostDataService>();
-  WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  PostDataService? _postDataService = locator<PostDataService>();
+  WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  CustomBottomSheetService customBottomSheetService = locator<CustomBottomSheetService>();
 
   ///HELPERS
   ScrollController scrollController = ScrollController();
 
   ///USER DATA
-  String uid;
+  String? uid;
 
   ///DATA
   List<DocumentSnapshot> dataResults = [];
@@ -23,7 +27,7 @@ class ListUserPostsModel extends BaseViewModel {
 
   int resultsLimit = 5;
 
-  initialize({@required String id}) async {
+  initialize({required String? id}) async {
     // load additional data on scroll
     uid = id;
     notifyListeners();
@@ -54,7 +58,7 @@ class ListUserPostsModel extends BaseViewModel {
     setBusy(true);
 
     //load data with params
-    dataResults = await _postDataService.loadPostsByUserID(
+    dataResults = await _postDataService!.loadPostsByUserID(
       id: uid,
       resultsLimit: resultsLimit,
     );
@@ -74,7 +78,7 @@ class ListUserPostsModel extends BaseViewModel {
     notifyListeners();
 
     //load additional posts
-    List<DocumentSnapshot> newResults = await _postDataService.loadAdditionalPostsByUserID(
+    List<DocumentSnapshot> newResults = await _postDataService!.loadAdditionalPostsByUserID(
       id: uid,
       resultsLimit: resultsLimit,
       lastDocSnap: dataResults[dataResults.length - 1],
@@ -93,7 +97,7 @@ class ListUserPostsModel extends BaseViewModel {
   }
 
   showContentOptions(dynamic content) async {
-    String val = await webblenBaseViewModel.showContentOptions(content: content);
+    String val = await customBottomSheetService.showContentOptions(content: content);
     if (val == "deleted content") {
       dataResults.removeWhere((doc) => doc.id == content.id);
       notifyListeners();

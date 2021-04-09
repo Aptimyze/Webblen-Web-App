@@ -8,10 +8,10 @@ class ForYouEventDataService {
 
   ///READ & QUERIES
   Future<List<Map<String, dynamic>>> loadSuggestedEvents({
-    @required String areaCode,
-    @required int resultsLimit,
-    @required String tagFilter,
-    @required String sortBy,
+    required String areaCode,
+    required int resultsLimit,
+    required String tagFilter,
+    required String sortBy,
   }) async {
     Query query;
     List<DocumentSnapshot> docs = [];
@@ -36,12 +36,12 @@ class ForYouEventDataService {
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
       if (tagFilter.isNotEmpty) {
-        docs.removeWhere((doc) => !doc.data()['tags'].contains(tagFilter));
+        docs.removeWhere((doc) => !doc.data()!['tags'].contains(tagFilter));
       }
     }
 
     docs.forEach((doc) {
-      Map<String, dynamic> docData = doc.data();
+      Map<String, dynamic> docData = doc.data()!;
       docData['contentType'] = 'event';
       docData['time'] = docData['startDateTimeInMilliseconds'];
       docData['engagement'] = docData['savedBy'].length;
@@ -52,11 +52,11 @@ class ForYouEventDataService {
   }
 
   Future<List<Map<String, dynamic>>> loadAdditionalSuggestedEvents({
-    @required int lastStartDate,
-    @required String areaCode,
-    @required int resultsLimit,
-    @required String tagFilter,
-    @required String sortBy,
+    required int lastStartDate,
+    required String areaCode,
+    required int resultsLimit,
+    required String tagFilter,
+    required String sortBy,
   }) async {
     Query query;
     List<DocumentSnapshot> docs = [];
@@ -81,12 +81,12 @@ class ForYouEventDataService {
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
       if (tagFilter.isNotEmpty) {
-        docs.removeWhere((doc) => !doc.data()['tags'].contains(tagFilter));
+        docs.removeWhere((doc) => !doc.data()!['tags'].contains(tagFilter));
       }
     }
 
     docs.forEach((doc) {
-      Map<String, dynamic> docData = doc.data();
+      Map<String, dynamic> docData = doc.data()!;
       docData['contentType'] = 'event';
       docData['time'] = docData['startDateTimeInMilliseconds'];
       docData['engagement'] = docData['savedBy'].length;
@@ -96,7 +96,7 @@ class ForYouEventDataService {
     return suggested;
   }
 
-  Future<List<Map<String, dynamic>>> loadFollowingEvents({@required String id, @required int resultsLimit}) async {
+  Future<List<Map<String, dynamic>>> loadFollowingEvents({required String id, required int resultsLimit}) async {
     List<DocumentSnapshot> docs = [];
     List<Map<String, dynamic>> suggested = [];
     Query query = eventsRef.where('followers', arrayContains: id).orderBy('startDateTimeInMilliseconds', descending: true).limit(resultsLimit);
@@ -110,7 +110,7 @@ class ForYouEventDataService {
     }
 
     docs.forEach((doc) {
-      Map<String, dynamic> docData = doc.data();
+      Map<String, dynamic> docData = doc.data()!;
       docData['contentType'] = 'event';
       docData['time'] = docData['startDateTimeInMilliseconds'];
       docData['engagement'] = docData['savedBy'].length;
@@ -121,9 +121,9 @@ class ForYouEventDataService {
   }
 
   Future<List<Map<String, dynamic>>> loadAdditionalFollowingEvents({
-    @required int lastStartDate,
-    @required String id,
-    @required int resultsLimit,
+    required int lastStartDate,
+    required String id,
+    required int resultsLimit,
   }) async {
     List<DocumentSnapshot> docs = [];
     List<Map<String, dynamic>> suggested = [];
@@ -141,7 +141,7 @@ class ForYouEventDataService {
     }
 
     docs.forEach((doc) {
-      Map<String, dynamic> docData = doc.data();
+      Map<String, dynamic> docData = doc.data()!;
       docData['contentType'] = 'event';
       docData['time'] = docData['startDateTimeInMilliseconds'];
       docData['engagement'] = docData['savedBy'].length;

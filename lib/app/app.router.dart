@@ -26,16 +26,16 @@ class Routes {
   static const String WebblenBaseViewRoute = '/';
   static const String _PostViewRoute = '/post/:id';
   static String PostViewRoute({@required dynamic id}) => '/post/$id';
-  static const String _CreatePostViewRoute = '/post/new/:id/:promo';
+  static const String _CreatePostViewRoute = '/post/publish/:id/:promo';
   static String CreatePostViewRoute(
           {@required dynamic id, @required dynamic promo}) =>
-      '/post/new/$id/$promo';
+      '/post/publish/$id/$promo';
   static const String _LiveStreamViewRoute = '/stream/:id';
   static String LiveStreamViewRoute({@required dynamic id}) => '/stream/$id';
-  static const String _CreateLiveStreamViewRoute = '/stream/new/:id/:promo';
+  static const String _CreateLiveStreamViewRoute = '/stream/publish/:id/:promo';
   static String CreateLiveStreamViewRoute(
           {@required dynamic id, @required dynamic promo}) =>
-      '/stream/new/$id/$promo';
+      '/stream/publish/$id/$promo';
   static const String _AllSearchResultsViewRoute = '/all_results/:term';
   static String AllSearchResultsViewRoute({@required dynamic term}) =>
       '/all_results/$term';

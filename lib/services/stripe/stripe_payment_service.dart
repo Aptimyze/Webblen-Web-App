@@ -7,7 +7,7 @@ class StripePaymentService {
   // CollectionReference ticketDistroRef = FirebaseFirestore.instance.collection("ticket_distros");
   // CollectionReference purchasedTicketsRef = FirebaseFirestore.instance.collection("purchased_tickets");
 
-  Future<String> purchaseTickets(
+  Future<String?> purchaseTickets(
     String eventTitle,
     String purchaserID,
     String eventHostID,
@@ -22,7 +22,7 @@ class StripePaymentService {
     String cardHolderName,
     String email,
   ) async {
-    String status;
+    String? status;
     final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
       'liveWebPurchaseTickets',
     );
@@ -56,12 +56,12 @@ class StripePaymentService {
     return status;
   }
 
-  Future<String> sendEmailConfirmation(
+  Future<String?> sendEmailConfirmation(
     String emailAddress,
     String eventTitle,
     String numOfTicketsPurchased,
   ) async {
-    String status;
+    String? status;
     final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
       'sendEmailConfirmation',
     );

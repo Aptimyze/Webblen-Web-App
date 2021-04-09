@@ -15,7 +15,7 @@ import 'package:webblen_web_app/utils/url_handler.dart';
 import 'auth_view_model.dart';
 
 class AuthView extends StatelessWidget {
-  const AuthView({Key key}) : super(key: key);
+  const AuthView({Key? key}) : super(key: key);
 
   Widget orTextLabel() {
     return Text(
@@ -124,6 +124,7 @@ class AuthView extends StatelessWidget {
                   context: context,
                   smsCode: model.smsController.text,
                 ),
+                textSize: 14,
               ),
             ],
           ),
@@ -186,6 +187,7 @@ class AuthView extends StatelessWidget {
           onPressed: model.signInViaPhone
               ? () => sendSMSCode(context, model)
               : () => model.signInWithEmail(email: model.emailController.text, password: model.passwordController.text),
+          textSize: 14,
         ),
         verticalSpaceMedium,
         orTextLabel(),

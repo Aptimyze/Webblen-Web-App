@@ -9,11 +9,11 @@ import 'package:webblen_web_app/ui/widgets/common/buttons/custom_button.dart';
 import 'post_author_bottom_sheet_model.dart';
 
 class PostAuthorBottomSheet extends StatelessWidget {
-  final SheetRequest request;
-  final Function(SheetResponse) completer;
+  final SheetRequest? request;
+  final Function(SheetResponse)? completer;
 
   const PostAuthorBottomSheet({
-    Key key,
+    Key? key,
     this.request,
     this.completer,
   }) : super(key: key);
@@ -36,7 +36,7 @@ class PostAuthorBottomSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CustomButton(
-                onPressed: () => completer(SheetResponse(responseData: "edit")),
+                onPressed: () => completer!(SheetResponse(responseData: "edit")),
                 text: "Edit",
                 textSize: 16,
                 textColor: appFontColor(),
@@ -48,7 +48,7 @@ class PostAuthorBottomSheet extends StatelessWidget {
               ),
               verticalSpaceSmall,
               CustomButton(
-                onPressed: () => completer(SheetResponse(responseData: "share")),
+                onPressed: () => completer!(SheetResponse(responseData: "share")),
                 text: "Share",
                 textSize: 16,
                 textColor: appFontColor(),
@@ -60,7 +60,7 @@ class PostAuthorBottomSheet extends StatelessWidget {
               ),
               verticalSpaceSmall,
               CustomButton(
-                onPressed: () => completer(SheetResponse(responseData: "delete")),
+                onPressed: () => completer!(SheetResponse(responseData: "delete")),
                 text: "Delete",
                 textSize: 16,
                 textColor: appDestructiveColor(),

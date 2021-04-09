@@ -7,10 +7,10 @@ import 'package:webblen_web_app/ui/widgets/search/search_result_view.dart';
 class ListStreamSearchResults extends StatelessWidget {
   final Function(Map<String, dynamic>) onSearchTermSelected;
   final List<SearchResult> results;
-  final ScrollController scrollController;
+  final ScrollController? scrollController;
   final bool isScrollable;
 
-  ListStreamSearchResults({@required this.onSearchTermSelected, @required this.results, @required this.isScrollable, @required this.scrollController});
+  ListStreamSearchResults({required this.onSearchTermSelected, required this.results, required this.isScrollable, required this.scrollController});
 
   Widget listResults() {
     return ListView.builder(

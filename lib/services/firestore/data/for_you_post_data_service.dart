@@ -10,14 +10,14 @@ class ForYouPostDataService {
   CollectionReference streamsRef = FirebaseFirestore.instance.collection('webblen_live_streams');
 
   int dateTimeInMilliseconds1YearAgo = DateTime.now().millisecondsSinceEpoch - 31500000000;
-  FirestoreStorageService _firestoreStorageService = locator<FirestoreStorageService>();
+  FirestoreStorageService? _firestoreStorageService = locator<FirestoreStorageService>();
 
   ///READ & QUERIES
   Future<List<Map<String, dynamic>>> loadSuggestedPosts({
-    @required String areaCode,
-    @required int resultsLimit,
-    @required String tagFilter,
-    @required String sortBy,
+    required String areaCode,
+    required int resultsLimit,
+    required String tagFilter,
+    required String sortBy,
   }) async {
     Query query;
     List<DocumentSnapshot> docs = [];
@@ -44,7 +44,7 @@ class ForYouPostDataService {
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
       if (tagFilter.isNotEmpty) {
-        docs.removeWhere((doc) => !doc.data()['tags'].contains(tagFilter));
+        docs.removeWhere((doc) => !doc.data()!['tags'].contains(tagFilter));
       }
       // if (sortBy == "Latest") {
       //   docs.sort((docA, docB) => docB.data()['postDateTimeInMilliseconds'].compareTo(docA.data()['postDateTimeInMilliseconds']));
@@ -54,7 +54,7 @@ class ForYouPostDataService {
     }
 
     docs.forEach((doc) {
-      Map<String, dynamic> docData = doc.data();
+      Map<String, dynamic> docData = doc.data()!;
       docData['contentType'] = 'post';
       docData['time'] = docData['postDateTimeInMilliseconds'];
       docData['engagement'] = docData['commentCount'];
@@ -65,11 +65,11 @@ class ForYouPostDataService {
   }
 
   Future<List<Map<String, dynamic>>> loadAdditionalSuggestedPosts(
-      {@required DocumentSnapshot lastDocSnap,
-      @required String areaCode,
-      @required int resultsLimit,
-      @required String tagFilter,
-      @required String sortBy}) async {
+      {required DocumentSnapshot lastDocSnap,
+      required String areaCode,
+      required int resultsLimit,
+      required String tagFilter,
+      required String sortBy}) async {
     Query query;
     List<DocumentSnapshot> docs = [];
     List<Map<String, dynamic>> suggestedData = [];
@@ -97,7 +97,7 @@ class ForYouPostDataService {
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
       if (tagFilter.isNotEmpty) {
-        docs.removeWhere((doc) => !doc.data()['tags'].contains(tagFilter));
+        docs.removeWhere((doc) => !doc.data()!['tags'].contains(tagFilter));
       }
       // if (sortBy == "Latest") {
       //   docs.sort((docA, docB) => docB.data()['postDateTimeInMilliseconds'].compareTo(docA.data()['postDateTimeInMilliseconds']));
@@ -107,7 +107,7 @@ class ForYouPostDataService {
     }
 
     docs.forEach((doc) {
-      Map<String, dynamic> docData = doc.data();
+      Map<String, dynamic> docData = doc.data()!;
       docData['contentType'] = 'post';
       docData['time'] = docData['postDateTimeInMilliseconds'];
       docData['engagement'] = docData['commentCount'];
@@ -117,7 +117,7 @@ class ForYouPostDataService {
     return suggestedData;
   }
 
-  Future<List<Map<String, dynamic>>> loadFollowingPosts({@required String id, @required int resultsLimit}) async {
+  Future<List<Map<String, dynamic>>> loadFollowingPosts({required String id, required int resultsLimit}) async {
     List<DocumentSnapshot> docs = [];
     List<Map<String, dynamic>> suggestedData = [];
     Query query = postsRef.where('followers', arrayContains: id).orderBy('postDateTimeInMilliseconds', descending: true).limit(resultsLimit);
@@ -131,7 +131,7 @@ class ForYouPostDataService {
     }
 
     docs.forEach((doc) {
-      Map<String, dynamic> docData = doc.data();
+      Map<String, dynamic> docData = doc.data()!;
       docData['contentType'] = 'post';
       docData['time'] = docData['postDateTimeInMilliseconds'];
       docData['engagement'] = docData['commentCount'];
@@ -142,9 +142,9 @@ class ForYouPostDataService {
   }
 
   Future<List<Map<String, dynamic>>> loadAdditionalFollowingPosts({
-    @required String id,
-    @required DocumentSnapshot lastDocSnap,
-    @required int resultsLimit,
+    required String id,
+    required DocumentSnapshot lastDocSnap,
+    required int resultsLimit,
   }) async {
     List<DocumentSnapshot> docs = [];
     List<Map<String, dynamic>> suggested = [];
@@ -163,7 +163,7 @@ class ForYouPostDataService {
     }
 
     docs.forEach((doc) {
-      Map<String, dynamic> docData = doc.data();
+      Map<String, dynamic> docData = doc.data()!;
       docData['contentType'] = 'post';
       docData['time'] = docData['postDateTimeInMilliseconds'];
       docData['engagement'] = docData['commentCount'];

@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:js/js.dart';
 import 'package:location/location.dart';
 import 'package:maps_launcher/maps_launcher.dart';
@@ -12,14 +13,14 @@ import 'package:webblen_web_app/services/location/location_js.dart';
 import 'location_js.dart';
 
 class LocationService {
-  Map<String, double> currentLocation;
+  Map<String, double?>? currentLocation;
   Location currentUserLocation = Location();
-  DialogService _dialogService = locator<DialogService>();
+  DialogService? _dialogService = locator<DialogService>();
 
-  PlatformDataService _platformDataService = locator<PlatformDataService>();
+  PlatformDataService? _platformDataService = locator<PlatformDataService>();
 
-  Future<Map<String, dynamic>> getCurrentLocation() async {
-    await getCurrentPosition(allowInterop((pos) => success(pos)));
+  Future<Map<String, dynamic>?> getCurrentLocation() async {
+    getCurrentPosition(allowInterop((pos) => success(pos)));
     return currentLocation;
   }
 
@@ -27,16 +28,16 @@ class LocationService {
     try {
       print(pos.coords.latitude);
       print(pos.coords.longitude);
-      currentLocation['lat'] = pos.coords.latitude;
-      currentLocation['lon'] = pos.coords.longitude;
+      currentLocation!['lat'] = pos.coords.latitude;
+      currentLocation!['lon'] = pos.coords.longitude;
     } catch (ex) {
       print("Location Error Exception thrown : " + ex.toString());
       //currentLocation = null;
     }
   }
 
-  Future<List> findNearestZipcodes(String zipcode) async {
-    List zips;
+  Future<List?> findNearestZipcodes(String? zipcode) async {
+    List? zips;
     final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
       'findNearestZipcodes',
     );
@@ -49,7 +50,7 @@ class LocationService {
       //print(e);
     });
     if (result != null) {
-      List areaCodes = result.data['data'];
+      List? areaCodes = result.data['data'];
       if (areaCodes != null && areaCodes.isNotEmpty) {
         zips = areaCodes;
       }
@@ -57,8 +58,8 @@ class LocationService {
     return zips;
   }
 
-  Future<Map<dynamic, dynamic>> reverseGeocodeLatLon(double lat, double lon) async {
-    Map<dynamic, dynamic> data;
+  Future<Map<dynamic, dynamic>?> reverseGeocodeLatLon(double lat, double lon) async {
+    Map<dynamic, dynamic>? data;
     final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
       'reverseGeocodeLatLon',
     );
@@ -76,41 +77,41 @@ class LocationService {
     return data;
   }
 
-  Future<String> getCurrentZipcode() async {
-    currentLocation = await getCurrentLocation();
+  Future<String?> getCurrentZipcode() async {
+    currentLocation = await (getCurrentLocation() as FutureOr<Map<String, double?>?>);
     if (currentLocation == null) {
       return null;
     }
-    double lat = currentLocation['lat'];
-    double lon = currentLocation['lon'];
-    String zip = await getZipFromLatLon(lat, lon);
+    double? lat = currentLocation!['lat'];
+    double? lon = currentLocation!['lon'];
+    String? zip = await getZipFromLatLon(lat, lon);
     return zip;
   }
 
-  Future<String> getCurrentCity() async {
-    currentLocation = await getCurrentLocation();
+  Future<String?> getCurrentCity() async {
+    currentLocation = await (getCurrentLocation() as FutureOr<Map<String, double?>?>);
     if (currentLocation == null) {
       return null;
     }
-    double lat = currentLocation['lat'];
-    double lon = currentLocation['lon'];
-    String city = await getCityNameFromLatLon(lat, lon);
+    double? lat = currentLocation!['lat'];
+    double? lon = currentLocation!['lon'];
+    String? city = await getCityNameFromLatLon(lat, lon);
     return city;
   }
 
-  Future<String> getCurrentProvince() async {
-    currentLocation = await getCurrentLocation();
+  Future<String?> getCurrentProvince() async {
+    currentLocation = await (getCurrentLocation() as FutureOr<Map<String, double?>?>);
     if (currentLocation == null) {
       return null;
     }
-    double lat = currentLocation['lat'];
-    double lon = currentLocation['lon'];
-    String province = await getProvinceFromLatLon(lat, lon);
+    double? lat = currentLocation!['lat'];
+    double? lon = currentLocation!['lon'];
+    String? province = await getProvinceFromLatLon(lat, lon);
     return province;
   }
 
-  Future<String> getAddressFromLatLon(double lat, double lon) async {
-    String foundAddress;
+  Future<String?> getAddressFromLatLon(double lat, double lon) async {
+    String? foundAddress;
     // Coordinates coordinates = Coordinates(lat, lon);
     // String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
     // var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates);
@@ -119,10 +120,10 @@ class LocationService {
     return foundAddress;
   }
 
-  Future<String> getZipFromLatLon(double lat, double lon) async {
-    String zip;
+  Future<String?> getZipFromLatLon(double? lat, double? lon) async {
+    String? zip;
     GooglePlacesService _googlePlacesService = locator<GooglePlacesService>();
-    String key = await _platformDataService.getGoogleApiKey().catchError((e) {});
+    String? key = await _platformDataService!.getGoogleApiKey().catchError((e) {});
     Map<String, dynamic> data = await _googlePlacesService.getLocationDetailsFromLatLon(key: key, lat: lat, lon: lon);
     print(data);
     // var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates).catchError((e) {});
@@ -131,18 +132,18 @@ class LocationService {
     return zip;
   }
 
-  Future<String> getCityNameFromLatLon(double lat, double lon) async {
-    String cityName;
-    GooglePlacesService _googlePlacesService = locator<GooglePlacesService>();
-    String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
+  Future<String?> getCityNameFromLatLon(double? lat, double? lon) async {
+    String? cityName;
+    GooglePlacesService? _googlePlacesService = locator<GooglePlacesService>();
+    String? googleAPIKey = await _platformDataService!.getGoogleApiKey().catchError((e) {});
     // var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates);
     // var address = addresses.first;
     // cityName = address.locality;
     return cityName;
   }
 
-  Future<String> getProvinceFromLatLon(double lat, double lon) async {
-    String province;
+  Future<String?> getProvinceFromLatLon(double? lat, double? lon) async {
+    String? province;
     // Coordinates coordinates = Coordinates(lat, lon);
     // String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
     // var addresses = await Geocoder.google(googleAPIKey).findAddressesFromCoordinates(coordinates);
@@ -151,23 +152,23 @@ class LocationService {
     return province;
   }
 
-  Future<String> getCityFromZip(String zip) async {
+  Future<String?> getCityFromZip(String? zip) async {
     GooglePlacesService _googlePlacesService = locator<GooglePlacesService>();
-    String cityName;
-    String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
+    String? cityName;
+    String? googleAPIKey = await _platformDataService!.getGoogleApiKey().catchError((e) {});
     cityName = await _googlePlacesService.googleGetCityFromZip(key: googleAPIKey, input: zip);
     return cityName;
   }
 
-  Future<String> getProvinceFromZip(String zip) async {
+  Future<String?> getProvinceFromZip(String zip) async {
     GooglePlacesService _googlePlacesService = locator<GooglePlacesService>();
-    String province;
-    String googleAPIKey = await _platformDataService.getGoogleApiKey().catchError((e) {});
+    String? province;
+    String? googleAPIKey = await _platformDataService!.getGoogleApiKey().catchError((e) {});
     province = await _googlePlacesService.googleGetProvinceFromZip(key: googleAPIKey, input: zip);
     return province;
   }
 
-  openMaps({@required String address}) {
+  openMaps({required String address}) {
     MapsLauncher.launchQuery(address);
   }
 }

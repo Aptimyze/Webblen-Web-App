@@ -22,9 +22,11 @@ class RecentSearchView extends StatelessWidget {
             onTap: () => model.navigateToSearchView(),
             enabled: false,
             textEditingController: null,
+            onChanged: (String) {},
+            onFieldSubmitted: (String) {},
           ),
           IconButton(
-            onPressed: () => model.showAddContentOptions(),
+            onPressed: () => model.customBottomSheetService.showAddContentOptions(),
             icon: Icon(FontAwesomeIcons.plus, color: appIconColor(), size: 20),
           ),
         ],
@@ -33,12 +35,12 @@ class RecentSearchView extends StatelessWidget {
   }
 
   Widget body(RecentSearchViewModel model) {
-    return model.webblenBaseViewModel.user.recentSearchTerms != null && model.webblenBaseViewModel.user.recentSearchTerms.isNotEmpty
+    return model.user.recentSearchTerms?.isNotEmpty ?? true
         ? Hero(
             tag: 'recent-searches',
             child: ListRecentSearchResults(
               onSearchTermSelected: (val) => model.researchTerm(val),
-              searchTerms: model.webblenBaseViewModel.user.recentSearchTerms,
+              searchTerms: model.user.recentSearchTerms,
               isScrollable: false,
               scrollController: null,
             ),
@@ -50,6 +52,11 @@ class RecentSearchView extends StatelessWidget {
             header: "No Recent Searches Found",
             subHeader: "Search for anything you'd like",
             refreshData: null,
+            secondaryAction: () {},
+            mainActionButtonTitle: '',
+            scrollController: null,
+            mainAction: () {},
+            secondaryActionButtonTitle: '',
           );
   }
 

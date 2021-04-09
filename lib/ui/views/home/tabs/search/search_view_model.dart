@@ -11,13 +11,13 @@ import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/search/recent_search_view_model.dart';
 
 class SearchViewModel extends BaseViewModel {
-  AuthService _authService = locator<AuthService>();
-  DialogService _dialogService = locator<DialogService>();
-  NavigationService _navigationService = locator<NavigationService>();
-  AlgoliaSearchService _algoliaSearchService = locator<AlgoliaSearchService>();
-  UserDataService _userDataService = locator<UserDataService>();
-  RecentSearchViewModel _recentSearchViewModel = locator<RecentSearchViewModel>();
-  WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  AuthService? _authService = locator<AuthService>();
+  DialogService? _dialogService = locator<DialogService>();
+  NavigationService? _navigationService = locator<NavigationService>();
+  AlgoliaSearchService? _algoliaSearchService = locator<AlgoliaSearchService>();
+  UserDataService? _userDataService = locator<UserDataService>();
+  RecentSearchViewModel? _recentSearchViewModel = locator<RecentSearchViewModel>();
+  WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
 
   ///HELPERS
   TextEditingController searchTextController = TextEditingController();
@@ -34,7 +34,7 @@ class SearchViewModel extends BaseViewModel {
 
   ///DATA
 
-  initialize({String term}) async {
+  initialize({String? term}) async {
     setBusy(true);
 
     //check if user clicked recently searched term
@@ -44,7 +44,7 @@ class SearchViewModel extends BaseViewModel {
     }
 
     //get recent search
-    recentSearchTerms = _recentSearchViewModel.recentSearchTerms;
+    //recentSearchTerms = _recentSearchViewModel!.recentSearchTerms;
 
     notifyListeners();
     setBusy(false);
@@ -61,23 +61,23 @@ class SearchViewModel extends BaseViewModel {
       eventResults = [];
       userResults = [];
     } else {
-      streamResults = await _algoliaSearchService.searchStreams(searchTerm: searchTerm, resultsLimit: streamResultsLimit);
-      eventResults = await _algoliaSearchService.searchEvents(searchTerm: searchTerm, resultsLimit: eventResultsLimit);
-      userResults = await _algoliaSearchService.searchUsers(searchTerm: searchTerm, resultsLimit: userResultsLimit);
+      streamResults = await _algoliaSearchService!.searchStreams(searchTerm: searchTerm, resultsLimit: streamResultsLimit);
+      eventResults = await _algoliaSearchService!.searchEvents(searchTerm: searchTerm, resultsLimit: eventResultsLimit);
+      userResults = await _algoliaSearchService!.searchUsers(searchTerm: searchTerm, resultsLimit: userResultsLimit);
     }
     notifyListeners();
     setBusy(false);
   }
 
   ///NAVIGATION
-  viewAllResultsForSearchTerm({BuildContext context, String searchTerm}) async {
+  viewAllResultsForSearchTerm({BuildContext? context, required String searchTerm}) async {
     if (searchTerm.trim().isNotEmpty) {
       searchTextController.text = searchTerm;
       notifyListeners();
-      _algoliaSearchService.storeSearchTerm(uid: webblenBaseViewModel.uid, searchTerm: searchTerm);
-      await _navigationService.navigateTo(Routes.AllSearchResultsViewRoute(term: searchTerm));
+      _algoliaSearchService!.storeSearchTerm(uid: webblenBaseViewModel!.uid, searchTerm: searchTerm);
+      await _navigationService!.navigateTo(Routes.AllSearchResultsViewRoute(term: searchTerm));
       searchTextController.selection = TextSelection(baseOffset: 0, extentOffset: searchTextController.text.length);
-      FocusScope.of(context).previousFocus();
+      FocusScope.of(context!).previousFocus();
     }
   }
 
@@ -87,7 +87,7 @@ class SearchViewModel extends BaseViewModel {
 
   navigateToUserView(Map<String, dynamic> userData) {
     //_algoliaSearchService.storeSearchTerm(uid: webblenBaseViewModel.uid, searchTerm: userData['username']);
-    _navigationService.navigateTo(Routes.UserProfileView(id: userData['id']));
+    _navigationService!.navigateTo(Routes.UserProfileView(id: userData['id']));
   }
 
   navigateToLiveStreamView(Map<String, dynamic> streamData) {
