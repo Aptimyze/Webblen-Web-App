@@ -1,3 +1,6 @@
+import 'package:webblen_web_app/utils/custom_string_methods.dart';
+import 'package:webblen_web_app/utils/random_image_url_generator.dart';
+
 class WebblenUser {
   // ignore: non_constant_identifier_names
   double? WBLN;
@@ -107,6 +110,38 @@ class WebblenUser {
         'lastSeenCity': this.lastSeenCity,
         'associatedTags': this.associatedTags,
       };
+
+  WebblenUser generateNewUser(String id) {
+    String randomUsername = "user" + getRandomString(5);
+    String randomImgURL = getRandomImageURL();
+    WebblenUser user = WebblenUser(
+      id: id,
+      WBLN: 5.0001,
+      achievements: [],
+      ap: 1.00,
+      apLvl: 1,
+      blockedUsers: [],
+      emailAddress: null,
+      eventsToLvlUp: 20,
+      fbAccessToken: null,
+      followers: [],
+      following: [],
+      googleAccessToken: null,
+      googleIDToken: googleIDToken,
+      isAdmin: false,
+      profilePicURL: randomImgURL,
+      username: randomUsername,
+      bio: null,
+      website: null,
+      isPrivate: false,
+      recentSearchTerms: [],
+      onboarded: false,
+      lastSeenZipcode: "58104",
+      lastSeenCity: "Fargo",
+      associatedTags: [],
+    );
+    return user;
+  }
 
   //checks if obj is valid
   bool isValid() {

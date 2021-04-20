@@ -181,7 +181,7 @@ class CreateLiveStreamView extends StatelessWidget {
                         ).showCursorOnHover,
 
                   ///POST IMAGE
-                  model.fileToUpload.relativePath!.isEmpty && model.stream.imageURL == null ? imgBtn(context, model) : imgPreview(context, model),
+                  model.fileToUploadByteMemory.isEmpty && model.stream.imageURL == null ? imgBtn(context, model) : imgPreview(context, model),
                   verticalSpaceMedium,
 
                   ///POST TAGS
@@ -201,7 +201,7 @@ class CreateLiveStreamView extends StatelessWidget {
                           required: true,
                         ),
                         verticalSpaceSmall,
-                        TagDropdownField(
+                        TagAutoCompleteField(
                           enabled: model.textFieldEnabled,
                           controller: model.tagTextController,
                           onTagSelected: (tag) => model.addTag(tag!),

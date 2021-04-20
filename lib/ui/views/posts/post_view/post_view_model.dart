@@ -69,7 +69,7 @@ class PostViewModel extends ReactiveViewModel {
 
     author = await _userDataService!.getWebblenUserByID(post!.authorID);
 
-    if (webblenBaseViewModel!.uid == post!.authorID) {
+    if (user.id == post!.authorID) {
       isAuthor = true;
     }
 
@@ -143,7 +143,7 @@ class PostViewModel extends ReactiveViewModel {
 
       //send comment & notification
       await _commentDataService!.sendComment(post!.id, post!.authorID, comment);
-      if (webblenBaseViewModel!.uid != post!.authorID) {
+      if (user.id != post!.authorID) {
         sendCommentNotification(text);
       }
 
@@ -166,7 +166,7 @@ class PostViewModel extends ReactiveViewModel {
       WebblenPostComment comment = WebblenPostComment(
         postID: post!.id,
         senderUID: user.id,
-        username: user.id,
+        username: user.username,
         message: text,
         isReply: true,
         replies: [],
@@ -236,7 +236,7 @@ class PostViewModel extends ReactiveViewModel {
     WebblenNotification notification = WebblenNotification().generatePostCommentNotification(
       postID: post!.id,
       receiverUID: post!.authorID,
-      senderUID: webblenBaseViewModel!.uid,
+      senderUID: user.id,
       commenterUsername: "@${webblenBaseViewModel!.user!.username}",
       comment: comment,
     );
@@ -247,7 +247,7 @@ class PostViewModel extends ReactiveViewModel {
     WebblenNotification notification = WebblenNotification().generatePostCommentNotification(
       postID: post!.id,
       receiverUID: receiverUID,
-      senderUID: webblenBaseViewModel!.uid,
+      senderUID: user.id,
       commenterUsername: "@${webblenBaseViewModel!.user!.username}",
       comment: comment,
     );
@@ -258,7 +258,7 @@ class PostViewModel extends ReactiveViewModel {
     WebblenNotification notification = WebblenNotification().generateWebblenCommentMentionNotification(
       postID: post!.id,
       receiverUID: receiverUID,
-      senderUID: webblenBaseViewModel!.uid,
+      senderUID: user.id,
       commenterUsername: "@${webblenBaseViewModel!.user!.username}",
       comment: comment,
     );

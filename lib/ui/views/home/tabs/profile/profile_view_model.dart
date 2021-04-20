@@ -15,6 +15,9 @@ class ProfileViewModel extends ReactiveViewModel {
   bool get isLoggedIn => _reactiveWebblenUserService.userLoggedIn;
   WebblenUser get user => _reactiveWebblenUserService.user;
 
+  @override
+  List<ReactiveServiceMixin> get reactiveServices => [_reactiveWebblenUserService];
+
   //open user site
   openWebsite() {
     UrlHandler().launchInWebViewOrVC(_reactiveWebblenUserService.user.website!);
@@ -29,7 +32,4 @@ class ProfileViewModel extends ReactiveViewModel {
   navigateToAuthView() {
     _webblenBaseViewModel.navigateToAuthView();
   }
-
-  @override
-  List<ReactiveServiceMixin> get reactiveServices => [_reactiveWebblenUserService];
 }

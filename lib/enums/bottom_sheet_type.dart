@@ -13,4 +13,5 @@ enum BottomSheetType {
   displayContentGifters,
   giftWBLN,
   purchaseWBLN,
+  stripeAccount,
 }

@@ -6,6 +6,7 @@ import 'package:webblen_web_app/services/auth/auth_service.dart';
 import 'package:webblen_web_app/services/bottom_sheets/custom_bottom_sheet_service.dart';
 import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/dynamic_links/dynamic_link_service.dart';
+import 'package:webblen_web_app/services/email/email_service.dart';
 import 'package:webblen_web_app/services/firestore/common/firestore_storage_service.dart';
 import 'package:webblen_web_app/services/firestore/data/activity_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/comment_data_service.dart';
@@ -28,6 +29,17 @@ import 'package:webblen_web_app/services/stripe/stripe_payment_service.dart';
 import 'package:webblen_web_app/ui/views/auth/auth_view.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
+import 'package:webblen_web_app/ui/views/earnings/how_earnings_work/how_earnings_work_view.dart';
+import 'package:webblen_web_app/ui/views/earnings/payout_methods/payout_methods_view.dart';
+import 'package:webblen_web_app/ui/views/earnings/set_up_direct_deposit/set_up_direct_deposit_view.dart';
+import 'package:webblen_web_app/ui/views/earnings/set_up_instant_deposit/set_up_instant_deposit_view.dart';
+import 'package:webblen_web_app/ui/views/events/create_event_view/create_event_view.dart';
+import 'package:webblen_web_app/ui/views/events/event_view/event_details_view.dart';
+import 'package:webblen_web_app/ui/views/events/tickets/event_tickets/event_tickets_view.dart';
+import 'package:webblen_web_app/ui/views/events/tickets/my_tickets/my_tickets_view.dart';
+import 'package:webblen_web_app/ui/views/events/tickets/ticket_details/ticket_details_view.dart';
+import 'package:webblen_web_app/ui/views/events/tickets/ticket_purchase/ticket_purchase_view.dart';
+import 'package:webblen_web_app/ui/views/events/tickets/ticket_selection/ticket_selection_view.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/home/home_view_model.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/search/recent_search_view_model.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/wallet/wallet_view_model.dart';
@@ -81,9 +93,21 @@ import 'package:webblen_web_app/ui/views/users/profile/user_profile_view.dart';
     ),
 
     // //EVENT
-    // MaterialRoute(page: EventView, name: "EventViewRoute"),
-    // MaterialRoute(page: CreateEventView, name: "CreateEventViewRoute"),
-    //
+    CustomRoute(
+      page: EventDetailsView,
+      name: "EventDetailsViewRoute",
+      path: "/event/:id",
+      //transitionsBuilder: TransitionsBuilders.fadeIn,
+      durationInMilliseconds: 0,
+    ),
+    CustomRoute(
+      page: CreateEventView,
+      name: "CreateEventViewRoute",
+      path: "/event/publish/:id/:promo",
+      //transitionsBuilder: TransitionsBuilders.fadeIn,
+      durationInMilliseconds: 0,
+    ),
+
     // //STREAM
     CustomRoute(
       page: LiveStreamDetailsView,
@@ -96,6 +120,22 @@ import 'package:webblen_web_app/ui/views/users/profile/user_profile_view.dart';
       page: CreateLiveStreamView,
       name: "CreateLiveStreamViewRoute",
       path: "/stream/publish/:id/:promo",
+      //transitionsBuilder: TransitionsBuilders.fadeIn,
+      durationInMilliseconds: 0,
+    ),
+
+    //TICKETS
+    CustomRoute(
+      page: TicketSelectionView,
+      name: "TicketSelectionViewRoute",
+      path: "/tickets/select/:id",
+      //transitionsBuilder: TransitionsBuilders.fadeIn,
+      durationInMilliseconds: 0,
+    ),
+    CustomRoute(
+      page: TicketPurchaseView,
+      name: "TicketPurchaseViewRoute",
+      path: "/tickets/purchase/:id/:ticketsToPurchase",
       //transitionsBuilder: TransitionsBuilders.fadeIn,
       durationInMilliseconds: 0,
     ),
@@ -142,9 +182,58 @@ import 'package:webblen_web_app/ui/views/users/profile/user_profile_view.dart';
       durationInMilliseconds: 0,
     ),
     //CustomRoute(page: SettingsView, name: "SettingsViewRoute"),
-    //
+
     // //WALLET
     // MaterialRoute(page: RedeemedRewardsView, name: 'RedeemedRewardsViewRoute'),
+
+    //TICKETS
+    CustomRoute(
+      page: MyTicketsView,
+      name: "MyTicketsViewRoute",
+      path: "/wallet/my_tickets",
+      //transitionsBuilder: TransitionsBuilders.fadeIn,
+      durationInMilliseconds: 0,
+    ),
+    CustomRoute(
+      page: EventTicketsView,
+      name: "EventTicketsViewRoute",
+      path: "/wallet/my_tickets/event/:id",
+      //transitionsBuilder: TransitionsBuilders.fadeIn,
+      durationInMilliseconds: 0,
+    ),
+    CustomRoute(
+      page: TicketDetailsView,
+      name: "TicketDetailsViewRoute",
+      path: "/tickets/view/:id",
+      //transitionsBuilder: TransitionsBuilders.fadeIn,
+      durationInMilliseconds: 0,
+    ),
+
+    //EARNINGS
+    CustomRoute(
+      page: PayoutMethodsView,
+      name: "PayoutMethodsViewRoute",
+      path: "/payout-methods",
+      durationInMilliseconds: 0,
+    ),
+    CustomRoute(
+      page: HowEarningsWorkView,
+      name: "HowEarningsWorkViewRoute",
+      path: "/how-earnings-work",
+      durationInMilliseconds: 0,
+    ),
+    CustomRoute(
+      page: SetupDirectDepositView,
+      name: "SetUpDirectDepositViewRoute",
+      path: "/setup-direct-deposit",
+      durationInMilliseconds: 0,
+    ),
+    CustomRoute(
+      page: SetupInstantDepositView,
+      name: "SetUpInstantDepositViewRoute",
+      path: "/setup-instant-deposit",
+      durationInMilliseconds: 0,
+    ),
   ],
   dependencies: [
     //LAZY SINGLETONS
@@ -172,6 +261,7 @@ import 'package:webblen_web_app/ui/views/users/profile/user_profile_view.dart';
     //LazySingleton(classType: RedeemedRewardDataService),
     LazySingleton(classType: TicketDistroDataService),
     LazySingleton(classType: CommentDataService),
+    LazySingleton(classType: EmailService),
     LazySingleton(classType: StripePaymentService),
     LazySingleton(classType: StripeConnectAccountService),
     LazySingleton(classType: LocationService),

@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
+import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/firestore/common/firestore_storage_service.dart';
 
 class UserDataService {
@@ -12,6 +13,7 @@ class UserDataService {
   CollectionReference postsRef = FirebaseFirestore.instance.collection('posts');
   FirestoreStorageService? _firestoreStorageService = locator<FirestoreStorageService>();
   SnackbarService? _snackbarService = locator<SnackbarService>();
+  CustomDialogService _customDialogService = locator<CustomDialogService>();
 
   FutureOr<bool> checkIfUserExists(String? id) async {
     bool exists = false;
@@ -22,6 +24,15 @@ class UserDataService {
       exists = true;
     }
     return exists;
+  }
+
+  Future<bool> checkIfUsernameExists(String username) async {
+    bool usernameExists = false;
+    QuerySnapshot snapshot = await userRef.where("username", isEqualTo: username).get();
+    if (snapshot.docs.isNotEmpty) {
+      usernameExists = true;
+    }
+    return usernameExists;
   }
 
   Future createWebblenUser(WebblenUser user) async {
@@ -36,7 +47,7 @@ class UserDataService {
     DocumentSnapshot snapshot = await userRef.doc(id).get().catchError((e) {
       error = e.message;
     });
-    if (error != null){
+    if (error != null) {
       return user;
     }
     if (snapshot.exists) {
@@ -45,12 +56,17 @@ class UserDataService {
     return user;
   }
 
-  Future<WebblenUser?> getWebblenUserByUsername(String username) async {
-    WebblenUser? user;
+  Future<WebblenUser> getWebblenUserByUsername(String username) async {
+    WebblenUser user = WebblenUser();
+    String? error;
     QuerySnapshot querySnapshot = await userRef.where("username", isEqualTo: username).get().catchError((e) {
       //print(e.message)
-      return null;
+      error = e.message;
     });
+    if (error != null) {
+      _customDialogService.showErrorDialog(description: error!);
+      return user;
+    }
     if (querySnapshot.docs.isNotEmpty) {
       DocumentSnapshot doc = querySnapshot.docs.first;
       Map<String, dynamic> docData = doc.data()!;

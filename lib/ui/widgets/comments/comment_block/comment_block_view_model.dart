@@ -3,17 +3,24 @@ import 'dart:async';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
+import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
+import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
 class CommentBlockViewModel extends BaseViewModel {
-  NavigationService? _navigationService = locator<NavigationService>();
-  UserDataService? _userDataService = locator<UserDataService>();
+  NavigationService _navigationService = locator<NavigationService>();
+  UserDataService _userDataService = locator<UserDataService>();
   WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
 
   ///ERROR STATUS
   bool errorLoadingData = false;
+
+  ///USER DATA
+  bool get isLoggedIn => _reactiveWebblenUserService.userLoggedIn;
+  WebblenUser get user => _reactiveWebblenUserService.user;
 
   ///DATA
   bool isAuthor = false;
@@ -33,7 +40,7 @@ class CommentBlockViewModel extends BaseViewModel {
     setBusy(true);
 
     //get comment author data
-    var res = await _userDataService!.getWebblenUserByID(uid);
+    var res = await _userDataService.getWebblenUserByID(uid);
 
     if (res is String) {
       errorLoadingData = true;
@@ -44,7 +51,7 @@ class CommentBlockViewModel extends BaseViewModel {
       authorProfilePicURL = res.profilePicURL;
 
       //check if author is current user
-      if (authorUID == webblenBaseViewModel!.uid) {
+      if (authorUID == user.id) {
         isAuthor = true;
       }
     }
@@ -66,16 +73,18 @@ class CommentBlockViewModel extends BaseViewModel {
     if (!loadingUser) {
       loadingUser = true;
       notifyListeners();
-      WebblenUser user = await (_userDataService!.getWebblenUserByUsername(username) as FutureOr<WebblenUser>);
+      WebblenUser user = await _userDataService.getWebblenUserByUsername(username);
       loadingUser = false;
       notifyListeners();
-      navigateToUserPage(user.id);
+      if (user.isValid()){
+        navigateToUserPage(user.id);
+      }
     }
   }
 
   ///NAVIGATION
   navigateToUserPage(String? id) {
-    //_navigationService.navigateTo(Routes.UserProfileView, arguments: {'id': id});
+    _navigationService.navigateTo(Routes.UserProfileView(id: id));
   }
 //
 // navigateToPage() {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_hooks/stacked_hooks.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
@@ -13,6 +14,7 @@ import 'recent_search_view_model.dart';
 class RecentSearchView extends StatelessWidget {
   Widget head(RecentSearchViewModel model) {
     return Container(
+      height: 50,
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -70,19 +72,100 @@ class RecentSearchView extends StatelessWidget {
       builder: (context, model, child) => Container(
         height: screenHeight(context),
         color: appBackgroundColor,
-        child: SafeArea(
-          child: Container(
-            child: Column(
+        child: ListView(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          children: [
+            Align(
+              alignment: Alignment.topCenter,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _SearchHead(),
+                  _SearchBody(),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SearchHead extends HookViewModelWidget<RecentSearchViewModel> {
+  @override
+  Widget buildViewModelWidget(BuildContext context, RecentSearchViewModel model) {
+    return Container(
+      height: 50,
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      constraints: BoxConstraints(
+        maxWidth: 500,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                head(model),
-                verticalSpaceSmall,
-                Expanded(
-                  child: body(model),
+                SearchField(
+                  heroTag: 'search',
+                  onTap: () => model.navigateToSearchView(),
+                  enabled: false,
+                  textEditingController: null,
+                  onChanged: (String) {},
+                  onFieldSubmitted: (String) {},
+                ),
+                IconButton(
+                  onPressed: () => model.customBottomSheetService.showAddContentOptions(),
+                  icon: Icon(FontAwesomeIcons.plus, color: appIconColor(), size: 20),
                 ),
               ],
             ),
           ),
-        ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchBody extends HookViewModelWidget<RecentSearchViewModel> {
+  @override
+  Widget buildViewModelWidget(BuildContext context, RecentSearchViewModel model) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      constraints: BoxConstraints(
+        maxWidth: 500,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          model.user.recentSearchTerms?.isNotEmpty ?? true
+              ? Hero(
+                  tag: 'recent-searches',
+                  child: ListRecentSearchResults(
+                    onSearchTermSelected: (val) => model.researchTerm(val),
+                    searchTerms: model.user.recentSearchTerms,
+                    isScrollable: true,
+                    scrollController: null,
+                  ),
+                )
+              : ZeroStateView(
+                  imageAssetName: "search",
+                  imageSize: 200,
+                  opacity: 0.3,
+                  header: "No Recent Searches Found",
+                  subHeader: "Search for anything you'd like",
+                  refreshData: null,
+                  secondaryAction: () {},
+                  mainActionButtonTitle: '',
+                  scrollController: null,
+                  mainAction: () {},
+                  secondaryActionButtonTitle: '',
+                ),
+        ],
       ),
     );
   }

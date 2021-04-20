@@ -100,15 +100,12 @@ class WebblenBaseView extends StatelessWidget {
             : getViewForIndex(model.navBarIndex, model),
         floatingActionButton: Container(
           width: 100,
-          child: Row(
-            mainAxisAlignment: model.isAnonymous ? MainAxisAlignment.end : MainAxisAlignment.spaceBetween,
-            children: [
-              model.cityName == null
-                  ? Container(
-                      width: 0,
-                      height: 0,
-                    )
-                  : FloatingActionButton(
+          child: model.isBusy
+              ? Container()
+              : Row(
+                  mainAxisAlignment: model.isLoggedIn ? MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
+                  children: [
+                    FloatingActionButton(
                       heroTag: "showFilter",
                       onPressed: () => model.customBottomSheetService.openFilter(),
                       backgroundColor: appActiveColor(),
@@ -120,25 +117,22 @@ class WebblenBaseView extends StatelessWidget {
                         size: 16,
                       ),
                     ),
-              model.isAnonymous
-                  ? Container(
-                      width: 0,
-                      height: 0,
-                    )
-                  : FloatingActionButton(
-                      heroTag: "addContent",
-                      onPressed: () => model.customBottomSheetService.showAddContentOptions(),
-                      backgroundColor: appActiveColor(),
-                      foregroundColor: Colors.white,
-                      mini: true,
-                      child: Icon(
-                        FontAwesomeIcons.plus,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                    ),
-            ],
-          ),
+                    model.isLoggedIn
+                        ? FloatingActionButton(
+                            heroTag: "addContent",
+                            onPressed: () => model.customBottomSheetService.showAddContentOptions(),
+                            backgroundColor: appActiveColor(),
+                            foregroundColor: Colors.white,
+                            mini: true,
+                            child: Icon(
+                              FontAwesomeIcons.plus,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          )
+                        : Container(height: 0, width: 0),
+                  ],
+                ),
         ),
       ),
     );

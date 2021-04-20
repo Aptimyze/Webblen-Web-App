@@ -37,16 +37,12 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> with ReactiveSer
   // LiveStreamDataService _liveStreamDataService = locator<LiveStreamDataService>();
 
   ///INITIAL DATA
-
-  bool loadedUID = false;
   InitErrorStatus initErrorStatus = InitErrorStatus.none;
   late Map<String, dynamic> currentLocation;
 
   ///CURRENT USER
   bool get isLoggedIn => _reactiveWebblenUserService.userLoggedIn;
   WebblenUser get user => _reactiveWebblenUserService.user;
-  String? uid;
-  bool isAnonymous = true;
 
   ///LOCATION DATA
   String get cityName => _reactiveContentFilterService.cityName;
@@ -71,13 +67,11 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> with ReactiveSer
   @override
   void onData(WebblenUser? data) {
     if (data != null) {
-      if (data.id == null) {
-        if (_reactiveWebblenUserService.userLoggedIn) {
-          _reactiveWebblenUserService.updateUserLoggedIn(false);
-          _reactiveWebblenUserService.updateWebblenUser(data);
-          notifyListeners();
-          setBusy(false);
-        }
+      if (!data.isValid()) {
+        _reactiveWebblenUserService.updateUserLoggedIn(false);
+        _reactiveWebblenUserService.updateWebblenUser(data);
+        notifyListeners();
+        setBusy(false);
       } else if (user != data) {
         _reactiveWebblenUserService.updateWebblenUser(data);
         _reactiveWebblenUserService.updateUserLoggedIn(true);
@@ -93,25 +87,22 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> with ReactiveSer
   Stream<WebblenUser> streamUser() async* {
     while (true) {
       await Future.delayed(Duration(seconds: 2));
-      WebblenUser user = WebblenUser();
+      WebblenUser streamedUser = WebblenUser();
 
-      //check if logged in
-      isAnonymous = await _authService.isAnonymous();
-      if (isAnonymous) {
-        yield user;
+      if (!isLoggedIn) {
+        print('not logged in');
+        yield streamedUser;
       } else {
-        uid = await _authService.getCurrentUserID();
-        user = await _userDataService.getWebblenUserByID(uid);
+        String? uid = await _authService.getCurrentUserID();
+        streamedUser = await _userDataService.getWebblenUserByID(uid);
 
-        //get previous location of user
         if (cityName.isEmpty || areaCode.isEmpty) {
           String lastSeenAreaCode = (user.lastSeenZipcode?.isEmpty ?? true) ? "58104" : user.lastSeenZipcode!;
           String? lastSeenCity = await _locationService.getCityFromZip(lastSeenAreaCode);
           _reactiveContentFilterService.updateAreaCode(lastSeenAreaCode);
           _reactiveContentFilterService.updateCityName(lastSeenCity!);
-          notifyListeners();
         }
-        yield user;
+        yield streamedUser;
       }
     }
   }
@@ -123,39 +114,12 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> with ReactiveSer
   initialize() async {
     setBusy(true);
     _themeService.setThemeMode(ThemeManagerMode.light);
-
-    //getLocationDetails();
-    //load content promos (if any exists)
     postPromo = await _platformDataService.getPostPromo();
     streamPromo = await _platformDataService.getStreamPromo();
     eventPromo = await _platformDataService.getEventPromo();
-  }
-
-  ///CHECKS IF USER IS LOGGED IN
-  Future checkAuthState() async {
-    bool isLoggedIn = await _authService.isLoggedIn();
-    if (isLoggedIn) {
-      ///CHECK IF USER IS ANONYMOUS
-      isAnonymous = await _authService.isAnonymous();
-      if (!isAnonymous) {
-        ///CHECK IF USER HAS CREATED PROFILE
-        uid = (await _authService.getCurrentUserID())!;
-        loadedUID = true;
-        notifyListeners();
-        bool userExists = await _userDataService.checkIfUserExists(uid);
-        if (!userExists) {
-          //_navigationService.replaceWith(Routes.OnboardingViewRoute);
-        }
-      } else {
-        //_navigationService.replaceWith(Routes.AuthViewRoute);
-        notifyListeners();
-        setBusy(false);
-      }
-    } else {
-      isAnonymous = await _authService.signInAnonymously();
-      notifyListeners();
-      setBusy(false);
-    }
+    //await checkAuthState();
+    //getLocationDetails();
+    //load content promos (if any exists)
   }
 
   ///LOCATION
@@ -184,7 +148,7 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> with ReactiveSer
       print(currentLocation['lat']);
       //cityName = await _locationService.getCityNameFromLatLon(pos.coords.latitude, pos.coords.longitude);
       //reaCode = await _locationService.getZipFromLatLon(pos.coords.latitude, pos.coords.longitude);
-      _userDataService.updateLastSeenZipcode(id: uid, zip: areaCode);
+      //_userDataService.updateLastSeenZipcode(id: uid, zip: areaCode);
       notifyListeners();
     } catch (ex) {
       print("Location Error Exception thrown : " + ex.toString());
@@ -212,18 +176,20 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> with ReactiveSer
       return;
     }
     if (id == null) {
-      //generate new id if necessary
-      id = "";
+      id = "new";
     }
     _navigationService.navigateTo(Routes.CreatePostViewRoute(id: id, promo: addPromo! ? postPromo : 0));
   }
 
-  navigateToCreateEventPage() {
+  navigateToCreateEventPage({required String? id, required bool addPromo}) {
     if (!isLoggedIn) {
       _customDialogService.showLoginRequiredDialog(description: "You must be logged in to create a event");
       return;
     }
-    //_navigationService.navigateTo(Routes.CreateEventViewRoute);
+    if (id == null) {
+      id = "new";
+    }
+    _navigationService.navigateTo(Routes.CreateEventViewRoute(id: id, promo: addPromo ? eventPromo : 0));
   }
 
   navigateToCreateStreamPage({required String? id, required bool addPromo}) async {

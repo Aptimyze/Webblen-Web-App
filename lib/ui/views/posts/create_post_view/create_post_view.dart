@@ -127,7 +127,7 @@ class CreatePostView extends StatelessWidget {
                           "What topics are related to this post?",
                         ),
                         verticalSpaceSmall,
-                        TagDropdownField(
+                        TagAutoCompleteField(
                           enabled: model.textFieldEnabled,
                           controller: model.tagTextController,
                           onTagSelected: (tag) => model.addTag(tag!),

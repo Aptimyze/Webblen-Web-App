@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 
@@ -20,10 +21,15 @@ class PhoneTextField extends StatelessWidget {
       showDropdownIcon: false,
       onChanged: (phone) => onChanged(phone.completeNumber),
       onSubmitted: (phoneNum) => onFieldSubmitted(),
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+      ],
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(color: appFontColorAlt()),
         border: InputBorder.none,
+        counter: Container(),
+        contentPadding: EdgeInsets.only(top: 4),
       ),
     );
   }

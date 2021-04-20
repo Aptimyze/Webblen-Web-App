@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/services/firestore/common/firestore_storage_service.dart';
 
@@ -39,7 +38,6 @@ class ForYouPostDataService {
     QuerySnapshot snapshot = await query.get().catchError((e) {
       print(e);
       if (!e.message.contains("insufficient permissions")) {}
-      return null;
     });
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
@@ -64,12 +62,13 @@ class ForYouPostDataService {
     return suggestedData;
   }
 
-  Future<List<Map<String, dynamic>>> loadAdditionalSuggestedPosts(
-      {required DocumentSnapshot lastDocSnap,
-      required String areaCode,
-      required int resultsLimit,
-      required String tagFilter,
-      required String sortBy}) async {
+  Future<List<Map<String, dynamic>>> loadAdditionalSuggestedPosts({
+    required DocumentSnapshot lastDocSnap,
+    required String areaCode,
+    required int resultsLimit,
+    required String tagFilter,
+    required String sortBy,
+  }) async {
     Query query;
     List<DocumentSnapshot> docs = [];
     List<Map<String, dynamic>> suggestedData = [];

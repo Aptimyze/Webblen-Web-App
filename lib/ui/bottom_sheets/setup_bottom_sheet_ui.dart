@@ -1,6 +1,7 @@
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/enums/bottom_sheet_type.dart';
+import 'package:webblen_web_app/ui/bottom_sheets/stripe_bottom_sheet/stripe_account_bottom_sheet.dart';
 import 'package:webblen_web_app/ui/bottom_sheets/user_options_bottom_sheets/current_user_options_bottom_sheet/current_user_options_bottom_sheet.dart';
 import 'package:webblen_web_app/ui/bottom_sheets/user_options_bottom_sheets/user_options_bottom_sheet/user_options_bottom_sheet.dart';
 
@@ -35,6 +36,8 @@ void setupBottomSheetUI() {
     BottomSheetType.homeFilter: (context, sheetRequest, completer) => HomeFilterBottomSheet(request: sheetRequest, completer: completer),
     BottomSheetType.imagePicker: (context, sheetRequest, completer) => ImagePickerBottomSheet(request: sheetRequest, completer: completer),
     BottomSheetType.calendar: (context, sheetRequest, completer) => CalendarBottomSheet(request: sheetRequest, completer: completer),
+    BottomSheetType.stripeAccount: (context, sheetRequest, completer) => StripeAccountBottomSheet(request: sheetRequest, completer: completer),
+
     //BottomSheetType.purchaseWBLN: (context, sheetRequest, completer) => PurchaseWebblenBottomSheet(request: sheetRequest, completer: completer),
     // BottomSheetType.eventCreatorOptions: (context, sheetRequest, completer) => CauseCreatorBottomSheet(request: sheetRequest, completer: completer),
     // BottomSheetType.eventOptions: (context, sheetRequest, completer) => CauseBottomSheet(request: sheetRequest, completer: completer),

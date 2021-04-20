@@ -80,7 +80,6 @@ class HomeFilterBottomSheetModel extends BaseViewModel {
   ///GET LOCATION DETAILS
   getPlaceDetails(String place) async {
     String placeID = placeSearchResults[place];
-    googlePlacesService.getDetailsFromPlaceID(key: googleAPIKey, placeID: placeID);
     Map<String, dynamic> details = await googlePlacesService.getDetailsFromPlaceID(key: googleAPIKey, placeID: placeID);
     setPlacesSearchResults(details);
     if (details.isNotEmpty) {

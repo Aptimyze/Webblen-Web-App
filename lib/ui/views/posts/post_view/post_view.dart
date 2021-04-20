@@ -252,7 +252,7 @@ class PostView extends StatelessWidget {
                                   children: [
                                     postBody(context, model),
                                     postComments(context, model),
-                                    SizedBox(height: 80),
+                                    SizedBox(height: 100),
                                   ],
                                 ),
                               ),
@@ -262,23 +262,18 @@ class PostView extends StatelessWidget {
                       ),
                       Align(
                         alignment: Alignment.bottomCenter,
-                        child: Container(
-                          constraints: BoxConstraints(
-                            maxWidth: 500,
-                          ),
-                          child: CommentTextFieldView(
-                            onSubmitted: model.isReplying
-                                ? (val) => model.replyToComment(
-                                      context: context,
-                                      commentData: val,
-                                    )
-                                : (val) => model.submitComment(context: context, commentData: val),
-                            focusNode: model.focusNode,
-                            commentTextController: model.commentTextController,
-                            isReplying: model.isReplying,
-                            replyReceiverUsername: model.isReplying ? model.commentToReplyTo!.username : null,
-                            contentID: '',
-                          ),
+                        child: CommentTextFieldView(
+                          onSubmitted: model.isReplying
+                              ? (val) => model.replyToComment(
+                                    context: context,
+                                    commentData: val,
+                                  )
+                              : (val) => model.submitComment(context: context, commentData: val),
+                          focusNode: model.focusNode,
+                          commentTextController: model.commentTextController,
+                          isReplying: model.isReplying,
+                          replyReceiverUsername: model.isReplying ? model.commentToReplyTo!.username : null,
+                          contentID: '',
                         ),
                       ),
                     ],

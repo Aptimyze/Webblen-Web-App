@@ -22,8 +22,6 @@ class _ListHomePostsState extends State<ListHomePosts> with AutomaticKeepAliveCl
   Widget build(BuildContext context) {
     super.build(context);
     return ViewModelBuilder<ListHomePostsModel>.reactive(
-      // disposeViewModel: false,
-      // initialiseSpecialViewModelsOnce: true,
       onModelReady: (model) => model.initialize(),
       viewModelBuilder: () => ListHomePostsModel(),
       builder: (context, model, child) => model.isBusy

@@ -41,24 +41,13 @@ class ListHomePostsModel extends ReactiveViewModel {
   List<ReactiveServiceMixin> get reactiveServices => [_reactiveContentFilterService];
 
   initialize() async {
-    // get content filter
-    syncContentFilter();
-
     _reactiveContentFilterService.addListener(() {
       if (areaCode != listAreaCode || listTagFilter != tagFilter || listSortByFilter != sortByFilter) {
-        syncContentFilter();
-        refreshData();
+        notifyListeners();
       }
     });
 
     await loadData();
-  }
-
-  syncContentFilter() {
-    listAreaCode = areaCode;
-    listTagFilter = listTagFilter;
-    listSortByFilter = sortByFilter;
-    notifyListeners();
   }
 
   Future<void> refreshData() async {

@@ -9,7 +9,13 @@ class FirestoreStorageService {
 
   Future<String> uploadImage({required File? imgFile, required String storageBucket, required String folderName, required String fileName}) async {
     String imgURL = "";
-    uploadTask = fb.storage().refFromURL("gs://webblen-events.appspot.com").child(storageBucket).child(folderName).child(fileName).put(imgFile);
+    uploadTask = fb.storage().refFromURL("gs://webblen-events.appspot.com").child(storageBucket).child(folderName).child(fileName).put(
+          imgFile,
+          fb.UploadMetadata(
+            contentType: "image/png",
+            cacheControl: 'public, max-age=3600, s-maxage=3600',
+          ),
+        );
     uploadTaskSnapshot = await uploadTask.future;
     imgURL = await (await uploadTaskSnapshot.ref.getDownloadURL()).toString();
     return imgURL;

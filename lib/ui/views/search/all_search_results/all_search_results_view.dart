@@ -10,7 +10,6 @@ import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_top_
 import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_top_nav_bar/custom_top_nav_bar_item.dart';
 import 'package:webblen_web_app/ui/widgets/common/navigation/tab_bar/custom_tab_bar.dart';
 import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_linear_progress_indicator.dart';
-import 'package:webblen_web_app/ui/widgets/list_builders/list_live_streams/list_streams.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_users.dart';
 import 'package:webblen_web_app/ui/widgets/search/search_field.dart';
 
@@ -50,7 +49,9 @@ class _AllSearchResultsViewState extends State<AllSearchResultsView> with Single
             heroTag: 'search',
             onTap: () => model.navigateToPreviousPage(),
             enabled: false,
-            textEditingController: model.searchTextController, onChanged: (String ) {  }, onFieldSubmitted: (String ) {  },
+            textEditingController: model.searchTextController,
+            onChanged: (String) {},
+            onFieldSubmitted: (String) {},
           ),
           SizedBox(width: 8),
           GestureDetector(
@@ -73,22 +74,8 @@ class _AllSearchResultsViewState extends State<AllSearchResultsView> with Single
       controller: _tabController,
       children: [
         noResultsFound(model),
-        model.streamResults.isNotEmpty
-            ? ListLiveStreams(
-                refreshData: model.refreshStreams,
-                dataResults: model.streamResults,
-                pageStorageKey: PageStorageKey('stream-results'),
-                scrollController: model.streamScrollController, showStreamOptions: (WebblenLiveStream ) {  },
-              )
-            : noResultsFound(model),
-        model.eventResults.isNotEmpty
-            ? ListLiveStreams(
-                refreshData: model.refreshEvents,
-                dataResults: model.eventResults,
-                pageStorageKey: PageStorageKey('event-results'),
-                scrollController: model.eventScrollController, showStreamOptions: (WebblenLiveStream ) {  },
-              )
-            : noResultsFound(model),
+        Container(),
+        Container(),
         model.userResults.isNotEmpty
             ? ListUsers(
                 refreshData: model.refreshUsers,

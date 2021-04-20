@@ -168,7 +168,7 @@ class WebblenLiveStream {
         'suggestedUIDs': this.suggestedUIDs,
       };
 
-  WebblenLiveStream generateNewWebblenLiveStream({required String? hostID, required List suggestedUIDs}) {
+  WebblenLiveStream generateNewWebblenLiveStream({required String hostID, required List suggestedUIDs}) {
     String id = getRandomString(30);
     WebblenLiveStream stream = WebblenLiveStream(
       id: id,

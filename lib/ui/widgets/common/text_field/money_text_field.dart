@@ -12,7 +12,6 @@ class MoneyTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFieldContainer(
-      height: 38,
       child: TextFormField(
         controller: controller,
         style: TextStyle(color: appFontColor()),

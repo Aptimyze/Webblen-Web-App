@@ -47,13 +47,17 @@ class PostDataService {
 
   Future saveUnsavePost({required String? userID, required String? postID, required bool savedPost}) async {
     List? savedBy = [];
+    String? error;
     DocumentSnapshot snapshot = await postsRef.doc(postID).get().catchError((e) {
       _dialogService!.showDialog(
         title: "Post Error",
         description: e.message,
       );
-      return false;
+      error = e.message;
     });
+    if (error != null) {
+      return false;
+    }
     if (snapshot.exists) {
       savedBy = snapshot.data()!['savedBy'] == null ? [] : snapshot.data()!['savedBy'].toList(growable: true);
       if (savedPost) {
@@ -71,13 +75,17 @@ class PostDataService {
   }
 
   reportPost({required String? postID, required String? reporterID}) async {
+    String? error;
     DocumentSnapshot snapshot = await postsRef.doc(postID).get().catchError((e) {
       _dialogService!.showDialog(
         title: "Report Error",
         description: e.message,
       );
-      return null;
+      error = e.message;
     });
+    if (error != null) {
+      return;
+    }
     if (snapshot.exists) {
       List reportedBy = snapshot.data()!['reportedBy'] == null ? [] : snapshot.data()!['reportedBy'].toList(growable: true);
       if (reportedBy.contains(reporterID)) {
@@ -129,13 +137,17 @@ class PostDataService {
 
   Future getPostByID(String? id) async {
     WebblenPost? post;
+    String? error;
     DocumentSnapshot snapshot = await postsRef.doc(id).get().catchError((e) {
       _dialogService!.showDialog(
         title: "Post Error",
         description: e.message,
       );
-      return null;
+      error = e.message;
     });
+    if (error != null) {
+      return post;
+    }
     if (snapshot.exists) {
       post = WebblenPost.fromMap(snapshot.data()!);
     } else {
@@ -175,6 +187,7 @@ class PostDataService {
   }) async {
     Query query;
     List<DocumentSnapshot> docs = [];
+    String? error;
     if (areaCode.isEmpty) {
       query = postsRef
           .where('postDateTimeInMilliseconds', isGreaterThan: dateTimeInMilliseconds1YearAgo)
@@ -194,8 +207,11 @@ class PostDataService {
           description: e.message,
         );
       }
-      return [];
+      error = e.message;
     });
+    if (error != null) {
+      return docs;
+    }
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
       if (tagFilter!.isNotEmpty) {
@@ -210,10 +226,16 @@ class PostDataService {
     return docs;
   }
 
-  Future<List<DocumentSnapshot>> loadAdditionalPosts(
-      {required DocumentSnapshot lastDocSnap, required String areaCode, required int resultsLimit, required String? tagFilter, required String? sortBy}) async {
+  Future<List<DocumentSnapshot>> loadAdditionalPosts({
+    required DocumentSnapshot lastDocSnap,
+    required String areaCode,
+    required int resultsLimit,
+    required String? tagFilter,
+    required String? sortBy,
+  }) async {
     Query query;
     List<DocumentSnapshot> docs = [];
+    String? error;
     if (areaCode.isEmpty) {
       query = postsRef
           .where('postDateTimeInMilliseconds', isGreaterThan: dateTimeInMilliseconds1YearAgo)
@@ -235,8 +257,11 @@ class PostDataService {
           description: e.message,
         );
       }
-      return [];
+      error = e.message;
     });
+    if (error != null) {
+      return docs;
+    }
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
       if (tagFilter!.isNotEmpty) {
@@ -251,8 +276,12 @@ class PostDataService {
     return docs;
   }
 
-  Future<List<DocumentSnapshot>> loadPostsByUserID({required String? id, required int resultsLimit}) async {
+  Future<List<DocumentSnapshot>> loadPostsByUserID({
+    required String? id,
+    required int resultsLimit,
+  }) async {
     List<DocumentSnapshot> docs = [];
+    String? error;
     Query query = postsRef.where('authorID', isEqualTo: id).orderBy('postDateTimeInMilliseconds', descending: true).limit(resultsLimit);
     QuerySnapshot snapshot = await query.get().catchError((e) {
       if (!e.message.contains("insufficient permissions")) {
@@ -261,8 +290,11 @@ class PostDataService {
           description: e.message,
         );
       }
-      return [];
+      error = e.message;
     });
+    if (error != null) {
+      return docs;
+    }
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
     }
@@ -275,6 +307,7 @@ class PostDataService {
     required int resultsLimit,
   }) async {
     List<DocumentSnapshot> docs = [];
+    String? error;
     Query query =
         postsRef.where('authorID', isEqualTo: id).orderBy('postDateTimeInMilliseconds', descending: true).startAfterDocument(lastDocSnap).limit(resultsLimit);
     QuerySnapshot snapshot = await query.get().catchError((e) {
@@ -284,8 +317,11 @@ class PostDataService {
           description: e.message,
         );
       }
-      return [];
+      error = e.message;
     });
+    if (error != null) {
+      return docs;
+    }
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
     }

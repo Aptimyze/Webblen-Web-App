@@ -26,34 +26,36 @@ class ListComments extends StatelessWidget {
 
   Widget listReplies(BuildContext context) {
     return Container(
-        child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ListView.builder(
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          itemCount: results.length,
-          itemBuilder: (context, index) {
-            WebblenPostComment comment;
-
-            ///GET POST OBJECT
-            if (results[index] is DocumentSnapshot) {
-              comment = WebblenPostComment.fromMap(results[index].data());
-            } else if (results[index] is Map<String, dynamic>) {
-              comment = WebblenPostComment.fromMap(results[index]);
-            } else {
-              comment = results[index];
-            }
-
-            return CommentBlockView(
-              replyToComment: (val) => replyToComment(val),
-              deleteComment: (val) => deleteComment(val),
-              comment: comment,
-            );
-          },
+        constraints: BoxConstraints(
+          maxWidth: 400,
         ),
-      ],
-    ));
+        child: Column(
+          children: [
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: results.length,
+              itemBuilder: (context, index) {
+                WebblenPostComment comment;
+
+                ///GET POST OBJECT
+                if (results[index] is DocumentSnapshot) {
+                  comment = WebblenPostComment.fromMap(results[index].data());
+                } else if (results[index] is Map<String, dynamic>) {
+                  comment = WebblenPostComment.fromMap(results[index]);
+                } else {
+                  comment = results[index];
+                }
+
+                return CommentBlockView(
+                  replyToComment: (val) => replyToComment(val),
+                  deleteComment: (val) => deleteComment(val),
+                  comment: comment,
+                );
+              },
+            ),
+          ],
+        ));
   }
 
   Widget listResults() {

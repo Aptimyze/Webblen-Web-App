@@ -3,15 +3,234 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:stacked/stacked.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
+import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/wallet/wallet_view_model.dart';
 import 'package:webblen_web_app/ui/widgets/common/buttons/custom_button.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
-import 'package:webblen_web_app/ui/widgets/wallet/usd_balance_block.dart';
+import 'package:webblen_web_app/ui/widgets/wallet/stripe/create_earnings_account/create_earnings_account_block_view.dart';
+import 'package:webblen_web_app/ui/widgets/wallet/stripe/stripe_account/stripe_account_block_view.dart';
 import 'package:webblen_web_app/ui/widgets/wallet/webblen_balance_block.dart';
 
 class WalletView extends StatelessWidget {
-  Widget optionRow(BuildContext context, Icon icon, String optionName, Color optionColor, VoidCallback onTap) {
+  @override
+  Widget build(BuildContext context) {
+    return ViewModelBuilder<WalletViewModel>.reactive(
+      disposeViewModel: false,
+      initialiseSpecialViewModelsOnce: true,
+      onModelReady: (model) => model.initialize(),
+      viewModelBuilder: () => WalletViewModel(),
+      builder: (context, model, child) => Container(
+        height: MediaQuery.of(context).size.height,
+        color: appBackgroundColor,
+        child: SafeArea(
+          child: Container(
+            child: !model.isLoggedIn
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CustomText(
+                          text: "You are not logged in",
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: appFontColor(),
+                        ),
+                        CustomText(
+                          text: "Please log in to view your wallet",
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: appFontColor(),
+                        ),
+                        verticalSpaceMedium,
+                        CustomButton(
+                          text: "Log In",
+                          textSize: 16,
+                          height: 30,
+                          width: 200,
+                          onPressed: () => model.webblenBaseViewModel!.navigateToAuthView(),
+                          backgroundColor: appBackgroundColor,
+                          textColor: appFontColor(),
+                          elevation: 1.0,
+                          isBusy: false,
+                        ),
+                      ],
+                    ),
+                  )
+                : Align(
+                    alignment: getValueForScreenType(context: context, mobile: Alignment.topCenter, desktop: Alignment.center, tablet: Alignment.center),
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: [
+                        Align(
+                          alignment: getValueForScreenType(context: context, mobile: Alignment.topCenter, desktop: Alignment.center, tablet: Alignment.center),
+                          child: _WalletBody(
+                            isBusy: model.isBusy,
+                            stripeAccountSetup: model.stripeAccountIsSetup,
+                            dismissedNotice: model.dismissedSetupAccountNotice,
+                            dismissNotice: () => model.dismissCreateStripeAccountNotice(),
+                            wblnBalance: model.user.WBLN!,
+                            viewTickets: () => model.navigateToTicektsView(),
+                            viewShop: () {},
+                            viewPurchaseHistory: () {},
+                            giveFeedback: () {},
+                            viewHelpFAQ: () {},
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _WalletBody extends StatelessWidget {
+  final bool isBusy;
+  final bool stripeAccountSetup;
+  final bool dismissedNotice;
+  final VoidCallback dismissNotice;
+  final double wblnBalance;
+  final VoidCallback viewTickets;
+  final VoidCallback viewShop;
+  final VoidCallback viewPurchaseHistory;
+  final VoidCallback giveFeedback;
+  final VoidCallback viewHelpFAQ;
+
+  _WalletBody({
+    required this.isBusy,
+    required this.stripeAccountSetup,
+    required this.dismissedNotice,
+    required this.dismissNotice,
+    required this.wblnBalance,
+    required this.viewTickets,
+    required this.viewShop,
+    required this.viewPurchaseHistory,
+    required this.giveFeedback,
+    required this.viewHelpFAQ,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: 500,
+      ),
+      child: Column(
+        children: [
+          isBusy
+              ? Container()
+              : stripeAccountSetup
+              ? Container(
+                  margin: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(height: 8.0),
+                      StripeAccountBlockView(),
+                      //stripeAccountMenu(verificationStatus, balance),
+                    ],
+                  ),
+                )
+              // ),
+              : dismissedNotice
+              ? CreateEarningsAccountBlockView(
+                  dismissNotice: dismissNotice,
+                )
+              : Container(),
+          SizedBox(height: 16.0),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: WebblenBalanceBlock(
+              balance: wblnBalance,
+              onPressed: () {},
+            ),
+          ),
+          SizedBox(height: 32.0),
+          _WalletMenuOption(
+            icon: Icon(
+              FontAwesomeIcons.ticketAlt,
+              color: appIconColor(),
+              size: 18.0,
+            ),
+            name: "My Tickets",
+            color: appFontColor(),
+            onPressed: viewTickets,
+          ).showCursorOnHover,
+          SizedBox(height: 8.0),
+          _WalletMenuOption(
+            icon: Icon(
+              FontAwesomeIcons.shoppingCart,
+              color: appInActiveColorAlt(),
+              size: 18.0,
+            ),
+            name: "Shop (coming soon)",
+            color: appInActiveColorAlt(),
+            onPressed: viewShop,
+          ),
+          // SizedBox(height: 8.0),
+          // Container(
+          //   margin: EdgeInsets.symmetric(horizontal: 16),
+          //   color: appDividerColor(),
+          //   height: 0.5,
+          // ),
+          // SizedBox(height: 8.0),
+          // optionRow(
+          //   context,
+          //   Icon(
+          //     FontAwesomeIcons.clock,
+          //     color: appIconColor(),
+          //     size: 18.0,
+          //   ),
+          //   'Purchase History',
+          //   appFontColor(),
+          //   // () => PageTransitionService(
+          //   //   context: context,
+          //   //   currentUser: currentUser,
+          //   // ).transitionToRedeemedRewardsPage(),
+          //   () => model.navigateToRedeemedRewardsView(),
+          // ),
+          SizedBox(height: 8.0),
+          _WalletMenuOption(
+            icon: Icon(
+              FontAwesomeIcons.lightbulb,
+              color: appIconColor(),
+              size: 18.0,
+            ),
+            name: "Give Feedback",
+            color: appFontColor(),
+            onPressed: giveFeedback,
+          ).showCursorOnHover,
+          SizedBox(height: 8.0),
+          _WalletMenuOption(
+            icon: Icon(FontAwesomeIcons.questionCircle, color: appIconColor(), size: 18.0),
+            name: "Help/FAQ",
+            color: appFontColor(),
+            onPressed: viewHelpFAQ,
+          ).showCursorOnHover,
+          SizedBox(height: 8.0),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 16),
+            color: appDividerColor(),
+            height: 0.5,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _WalletMenuOption extends StatelessWidget {
+  final Icon icon;
+  final String name;
+  final Color color;
+  final VoidCallback onPressed;
+  _WalletMenuOption({required this.icon, required this.name, required this.color, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 16.0),
@@ -30,376 +249,16 @@ class WalletView extends StatelessWidget {
               child: icon,
             ),
             Text(
-              optionName,
+              name,
               style: TextStyle(
                 fontSize: 16,
-                color: appFontColor(),
+                color: color,
               ),
             ),
           ],
         ),
       ),
-      onTap: onTap,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ViewModelBuilder<WalletViewModel>.reactive(
-      disposeViewModel: false,
-      initialiseSpecialViewModelsOnce: true,
-      onModelReady: (model) => model.initialize(),
-      viewModelBuilder: () => WalletViewModel(),
-      builder: (context, model, child) => ResponsiveBuilder(
-        builder: (context, screenSize) => Container(
-          height: MediaQuery.of(context).size.height,
-          color: appBackgroundColor,
-          child: SafeArea(
-            child: Container(
-              child: model.webblenBaseViewModel!.user == null
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CustomText(
-                            text: "You are not logged in",
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: appFontColor(),
-                          ),
-                          CustomText(
-                            text: "Please log in to view your wallet",
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: appFontColor(),
-                          ),
-                          verticalSpaceMedium,
-                          CustomButton(
-                            text: "Log In",
-                            textSize: 16,
-                            height: 30,
-                            width: 200,
-                            onPressed: () => model.webblenBaseViewModel!.navigateToAuthView(),
-                            backgroundColor: appBackgroundColor,
-                            textColor: appFontColor(),
-                            elevation: 1.0,
-                            isBusy: false,
-                          ),
-                        ],
-                      ),
-                    )
-                  : screenSize.isMobile
-                      ? ListView(
-                          shrinkWrap: true,
-                          children: [
-                            Center(
-                              child: Container(
-                                constraints: BoxConstraints(
-                                  maxWidth: 500,
-                                ),
-                                child: Column(
-                                  children: [
-                                    verticalSpaceMedium,
-                                    model.isBusy
-                                        ? Container()
-                                        : model.stripeAccountIsSetup
-                                            ? Container(
-                                                margin: EdgeInsets.symmetric(horizontal: 16.0),
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                                  children: [
-                                                    SizedBox(height: 8.0),
-                                                    USDBalanceBlock(
-                                                      onPressed: () {},
-                                                      balance: model.userStripeInfo!.availableBalance ?? 0.00,
-                                                      pendingBalance: model.userStripeInfo!.pendingBalance ?? 0.00,
-                                                      // onPressed: () => showStripeAcctBottomSheet(
-                                                      //     verificationStatus, balance),
-                                                    ),
-                                                    //stripeAccountMenu(verificationStatus, balance),
-                                                  ],
-                                                ),
-                                              )
-                                            // ),
-                                            : Container(),
-                                    SizedBox(height: 16.0),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 16),
-                                      child: WebblenBalanceBlock(
-                                        balance: model.webblenBaseViewModel!.user!.WBLN,
-                                        onPressed: () {},
-                                        // balance: webblenBalance,
-                                        // onPressed: () => showWebblenBottomSheet(webblenBalance),
-                                      ),
-                                    ),
-                                    SizedBox(height: 32.0),
-                                    optionRow(
-                                      context,
-                                      Icon(
-                                        FontAwesomeIcons.shoppingCart,
-                                        color: appIconColor(),
-                                        size: 18.0,
-                                      ),
-                                      'Shop',
-                                      appFontColor(),
-                                      // () => PageTransitionService(
-                                      //   context: context,
-                                      //   currentUser: currentUser,
-                                      // ).transitionToShopPage(),
-                                      () {},
-                                    ),
-                                    SizedBox(height: 8.0),
-                                    Container(
-                                      margin: EdgeInsets.symmetric(horizontal: 16),
-                                      color: appDividerColor(),
-                                      height: 0.5,
-                                    ),
-                                    SizedBox(height: 8.0),
-                                    optionRow(
-                                      context,
-                                      Icon(
-                                        FontAwesomeIcons.trophy,
-                                        color: appIconColor(),
-                                        size: 18.0,
-                                      ),
-                                      'Reward History',
-                                      appFontColor(),
-                                      // () => PageTransitionService(
-                                      //   context: context,
-                                      //   currentUser: currentUser,
-                                      // ).transitionToRedeemedRewardsPage(),
-                                      () => model.navigateToRedeemedRewardsView(),
-                                    ),
-                                    SizedBox(height: 8.0),
-                                    Container(
-                                      margin: EdgeInsets.symmetric(horizontal: 16),
-                                      color: appDividerColor(),
-                                      height: 0.5,
-                                    ),
-                                    SizedBox(height: 8.0),
-                                    optionRow(
-                                      context,
-                                      Icon(
-                                        FontAwesomeIcons.ticketAlt,
-                                        color: appIconColor(),
-                                        size: 18.0,
-                                      ),
-                                      'My Tickets',
-                                      appFontColor(),
-                                      // () => PageTransitionService(context: context)
-                                      //     .transitionToUserTicketsPage(),
-                                      () {},
-                                    ),
-                                    SizedBox(height: 8.0),
-                                    Container(
-                                      margin: EdgeInsets.symmetric(horizontal: 16),
-                                      color: appDividerColor(),
-                                      height: 0.5,
-                                    ),
-                                    SizedBox(height: 8.0),
-                                    optionRow(
-                                      context,
-                                      Icon(
-                                        FontAwesomeIcons.lightbulb,
-                                        color: appIconColor(),
-                                        size: 18.0,
-                                      ),
-                                      'Give Feedback',
-                                      appFontColor(),
-                                      // () => PageTransitionService(
-                                      //   context: context,
-                                      //   currentUser: currentUser,
-                                      // ).transitionToFeedbackPage(),
-                                      () {},
-                                    ),
-                                    SizedBox(height: 8.0),
-                                    Container(
-                                      margin: EdgeInsets.symmetric(horizontal: 16),
-                                      color: appDividerColor(),
-                                      height: 0.5,
-                                    ),
-                                    SizedBox(height: 8.0),
-                                    optionRow(
-                                      context,
-                                      Icon(FontAwesomeIcons.questionCircle, color: appIconColor(), size: 18.0),
-                                      'Help/FAQ',
-                                      appFontColor(),
-                                      // () => OpenUrl().launchInWebViewOrVC(
-                                      //   context,
-                                      //   'https://www.webblen.io/faq',
-                                      // ),
-                                      () {},
-                                    ),
-                                    SizedBox(height: 8.0),
-                                    Container(
-                                      margin: EdgeInsets.symmetric(horizontal: 16),
-                                      color: appDividerColor(),
-                                      height: 0.5,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      : Center(
-                          child: ListView(
-                            shrinkWrap: true,
-                            children: [
-                              Center(
-                                child: Container(
-                                  constraints: BoxConstraints(
-                                    maxWidth: 500,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      model.isBusy
-                                          ? Container()
-                                          : model.stripeAccountIsSetup
-                                              ? Container(
-                                                  margin: EdgeInsets.symmetric(horizontal: 16.0),
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                                    children: [
-                                                      SizedBox(height: 8.0),
-                                                      USDBalanceBlock(
-                                                        onPressed: () {},
-                                                        balance: model.userStripeInfo!.availableBalance ?? 0.00,
-                                                        pendingBalance: model.userStripeInfo!.pendingBalance ?? 0.00,
-                                                        // onPressed: () => showStripeAcctBottomSheet(
-                                                        //     verificationStatus, balance),
-                                                      ),
-                                                      //stripeAccountMenu(verificationStatus, balance),
-                                                    ],
-                                                  ),
-                                                )
-                                              // ),
-                                              : Container(),
-                                      SizedBox(height: 16.0),
-                                      Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 16),
-                                        child: WebblenBalanceBlock(
-                                          balance: model.webblenBaseViewModel!.user!.WBLN,
-                                          onPressed: () {},
-                                          // balance: webblenBalance,
-                                          // onPressed: () => showWebblenBottomSheet(webblenBalance),
-                                        ),
-                                      ),
-                                      SizedBox(height: 32.0),
-                                      optionRow(
-                                        context,
-                                        Icon(
-                                          FontAwesomeIcons.shoppingCart,
-                                          color: appIconColor(),
-                                          size: 18.0,
-                                        ),
-                                        'Shop',
-                                        appFontColor(),
-                                        // () => PageTransitionService(
-                                        //   context: context,
-                                        //   currentUser: currentUser,
-                                        // ).transitionToShopPage(),
-                                        () {},
-                                      ),
-                                      SizedBox(height: 8.0),
-                                      Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 16),
-                                        color: appDividerColor(),
-                                        height: 0.5,
-                                      ),
-                                      SizedBox(height: 8.0),
-                                      optionRow(
-                                        context,
-                                        Icon(
-                                          FontAwesomeIcons.trophy,
-                                          color: appIconColor(),
-                                          size: 18.0,
-                                        ),
-                                        'Reward History',
-                                        appFontColor(),
-                                        // () => PageTransitionService(
-                                        //   context: context,
-                                        //   currentUser: currentUser,
-                                        // ).transitionToRedeemedRewardsPage(),
-                                        () => model.navigateToRedeemedRewardsView(),
-                                      ),
-                                      SizedBox(height: 8.0),
-                                      Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 16),
-                                        color: appDividerColor(),
-                                        height: 0.5,
-                                      ),
-                                      SizedBox(height: 8.0),
-                                      optionRow(
-                                        context,
-                                        Icon(
-                                          FontAwesomeIcons.ticketAlt,
-                                          color: appIconColor(),
-                                          size: 18.0,
-                                        ),
-                                        'My Tickets',
-                                        appFontColor(),
-                                        // () => PageTransitionService(context: context)
-                                        //     .transitionToUserTicketsPage(),
-                                        () {},
-                                      ),
-                                      SizedBox(height: 8.0),
-                                      Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 16),
-                                        color: appDividerColor(),
-                                        height: 0.5,
-                                      ),
-                                      SizedBox(height: 8.0),
-                                      optionRow(
-                                        context,
-                                        Icon(
-                                          FontAwesomeIcons.lightbulb,
-                                          color: appIconColor(),
-                                          size: 18.0,
-                                        ),
-                                        'Give Feedback',
-                                        appFontColor(),
-                                        // () => PageTransitionService(
-                                        //   context: context,
-                                        //   currentUser: currentUser,
-                                        // ).transitionToFeedbackPage(),
-                                        () {},
-                                      ),
-                                      SizedBox(height: 8.0),
-                                      Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 16),
-                                        color: appDividerColor(),
-                                        height: 0.5,
-                                      ),
-                                      SizedBox(height: 8.0),
-                                      optionRow(
-                                        context,
-                                        Icon(FontAwesomeIcons.questionCircle, color: appIconColor(), size: 18.0),
-                                        'Help/FAQ',
-                                        appFontColor(),
-                                        // () => OpenUrl().launchInWebViewOrVC(
-                                        //   context,
-                                        //   'https://www.webblen.io/faq',
-                                        // ),
-                                        () {},
-                                      ),
-                                      SizedBox(height: 8.0),
-                                      Container(
-                                        margin: EdgeInsets.symmetric(horizontal: 16),
-                                        color: appDividerColor(),
-                                        height: 0.5,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-            ),
-          ),
-        ),
-      ),
+      onTap: onPressed,
     );
   }
 }

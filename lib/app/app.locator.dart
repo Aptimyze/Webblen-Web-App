@@ -15,6 +15,7 @@ import '../services/auth/auth_service.dart';
 import '../services/bottom_sheets/custom_bottom_sheet_service.dart';
 import '../services/dialogs/custom_dialog_service.dart';
 import '../services/dynamic_links/dynamic_link_service.dart';
+import '../services/email/email_service.dart';
 import '../services/firestore/common/firestore_storage_service.dart';
 import '../services/firestore/data/activity_data_service.dart';
 import '../services/firestore/data/comment_data_service.dart';
@@ -59,6 +60,7 @@ void setupLocator() {
   locator.registerLazySingleton(() => LiveStreamDataService());
   locator.registerLazySingleton(() => TicketDistroDataService());
   locator.registerLazySingleton(() => CommentDataService());
+  locator.registerLazySingleton(() => EmailService());
   locator.registerLazySingleton(() => StripePaymentService());
   locator.registerLazySingleton(() => StripeConnectAccountService());
   locator.registerLazySingleton(() => LocationService());

@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:devicelocale/devicelocale.dart';
 import 'package:webblen_web_app/models/user_stripe_info.dart';
+import 'package:webblen_web_app/utils/url_handler.dart';
 
 class StripeConnectAccountService {
   CollectionReference stripeRef = FirebaseFirestore.instance.collection('stripe');
@@ -26,23 +28,38 @@ class StripeConnectAccountService {
     return stripeUID;
   }
 
-  Future getStripeConnectAccountByUID(String? uid) async {
-    UserStripeInfo? userStripeInfo;
+  FutureOr<UserStripeInfo> getStripeConnectAccountByUID(String? uid) async {
+    UserStripeInfo userStripeInfo = UserStripeInfo();
+    String? error;
     DocumentSnapshot snapshot = await stripeRef.doc(uid).get().catchError((e) {
-      return e.message;
+      error = e.message;
     });
+
+    if (error != null) {
+      return userStripeInfo;
+    }
+
     if (snapshot.exists) {
-      print(snapshot.data());
       userStripeInfo = UserStripeInfo.fromMap(snapshot.data()!);
     }
     return userStripeInfo;
   }
 
-  ///TODO: CREATE/RENAME CLOUD FUNCTION
-  Future<Map<String, dynamic>?> getStripeConnectAccountVerificationStatus(String uid) async {
-    Map<String, dynamic>? res;
+  createStripeConnectAccount({required String uid}) async {
+    String? locale = await Devicelocale.currentLocale;
+    if (locale == null) {
+      print('create stripe connect account error');
+    } else {
+      String country = locale.split('-')[1].toUpperCase();
+      String stripeConnectURL = 'https://us-central1-webblen-events.cloudfunctions.net/createWebblenStripeConnectAccount?uid=$uid&country=$country';
+      UrlHandler().launchInWebViewOrVC(stripeConnectURL);
+    }
+  }
+
+  Future<Map<String, dynamic>> retrieveWebblenStripeAccountStatus({required String uid}) async {
+    Map<String, dynamic> res = {};
     final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-      'getStripeConnectAccountVerificationStatus',
+      'retrieveWebblenStripeAccountStatus',
     );
 
     final HttpsCallableResult result = await callable.call(<String, dynamic>{
@@ -55,43 +72,31 @@ class StripeConnectAccountService {
     return res;
   }
 
-  Future<String> updateStripeAccountVerificationStatus(String uid) async {
-    String status = "pending";
-    Map<String, dynamic> res = await (getStripeConnectAccountVerificationStatus(uid) as FutureOr<Map<String, dynamic>>);
-
-    //Check if additional KYC data is required
-    List currentlyDue = res['currently_due'];
-
-    //Check if any stripe connect account data is pending verification
-    List? pending = res['pending_verification'];
-
-    if (currentlyDue.length > 1 || pending!.isNotEmpty) {
-      await stripeRef.doc(uid).update({"verified": "pending"});
-    } else {
-      await stripeRef.doc(uid).update({"verified": "verified"});
-      status = "verified";
-    }
-    return status;
-  }
-
-  Future<Map<String, dynamic>?> getStripeAccountBalance({
-    required String uid,
-    required String stripeUID,
-  }) async {
-    Map<String, dynamic>? res;
+  Future<void> updateStripeAccountBalance({required String uid}) async {
+    print('updating account balance');
     final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
-      'getStripeAccountBalance',
+      'updateStripeAccountBalance',
     );
     final HttpsCallableResult result = await callable.call(
       <String, dynamic>{
         'uid': uid,
-        'stripeUID': stripeUID,
       },
     );
-    if (result.data != null) {
-      res = Map<String, dynamic>.from(result.data);
+  }
+
+  Future<void> updateStripeAccountStatus({required String uid, required Map<String, dynamic> accountStatus}) async {
+    //Check if additional KYC data is required
+    List currentlyDue = accountStatus['currently_due'];
+    //Check if any stripe connect account data is pending verification
+    List pending = accountStatus['pending_verification'];
+
+    if (currentlyDue.length > 1) {
+      await stripeRef.doc(uid).update({"verified": "pending", "actionRequired": true});
+    } else if (pending.isNotEmpty) {
+      await stripeRef.doc(uid).update({"verified": "pending", "actionRequired": false});
+    } else {
+      await stripeRef.doc(uid).update({"verified": "verified", "actionRequired": false});
     }
-    return res;
   }
 
   Future<String?> performInstantStripePayout({

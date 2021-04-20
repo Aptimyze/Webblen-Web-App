@@ -12,7 +12,6 @@ class NumberTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFieldContainer(
-      height: 38,
       child: TextFormField(
         enabled: enabled != null ? enabled : true,
         controller: controller,

@@ -25,7 +25,7 @@ class ListHomeLiveStreamsModel extends ReactiveViewModel {
   String listTagFilter = "";
   String listSortByFilter = "Latest";
 
-  String get cityName => _reactiveContentFilterService.areaCode;
+  String get cityName => _reactiveContentFilterService.cityName;
   String get areaCode => _reactiveContentFilterService.areaCode;
   String get tagFilter => _reactiveContentFilterService.tagFilter;
   String get sortByFilter => _reactiveContentFilterService.sortByFilter;

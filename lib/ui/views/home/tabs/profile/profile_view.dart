@@ -10,7 +10,9 @@ import 'package:webblen_web_app/ui/views/home/tabs/profile/profile_view_model.da
 import 'package:webblen_web_app/ui/widgets/common/buttons/custom_button.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
 import 'package:webblen_web_app/ui/widgets/common/navigation/tab_bar/custom_tab_bar.dart';
-import 'package:webblen_web_app/ui/widgets/list_builders/list_posts/profile/current_user/list_current_user_posts.dart';
+import 'package:webblen_web_app/ui/widgets/list_builders/list_events/profile/list_profile_events.dart';
+import 'package:webblen_web_app/ui/widgets/list_builders/list_live_streams/profile/list_profile_live_streams.dart';
+import 'package:webblen_web_app/ui/widgets/list_builders/list_posts/profile/list_profile_posts.dart';
 import 'package:webblen_web_app/ui/widgets/user/follow_stats_row.dart';
 import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 
@@ -167,61 +169,25 @@ class _ProfileBody extends HookViewModelWidget<ProfileViewModel> {
             controller: _tabController,
             children: [
               //posts
-              ListCurrentUserPosts(
+              ListProfilePosts(
+                id: model.user.id!,
+                isCurrentUser: true,
                 scrollController: _scrollController,
               ),
 
               //scheduled streams
-              Container(),
-              Container(),
-              // model.streamResults.isEmpty && !model.reloadingStreams
-              //     ? ZeroStateView(
-              //         imageAssetName: "video_phone",
-              //         imageSize: 200,
-              //         header: "You Have Not Scheduled Any Streams",
-              //         subHeader: "Find Your Audience and Create a Stream",
-              //         mainActionButtonTitle: "Create Stream",
-              //         mainAction: () => model.webblenBaseViewModel!.navigateToCreateStreamPage(),
-              //         secondaryActionButtonTitle: null,
-              //         secondaryAction: null,
-              //         refreshData: () async {}, scrollController: null,
-              //       )
-              //     : ListLiveStreams(
-              //         refreshData: model.refreshEvents,
-              //         dataResults: model.streamResults,
-              //         pageStorageKey: PageStorageKey('home-events'),
-              //         showStreamOptions: (stream) => model.showContentOptions(content: stream), scrollController: null,
-              //       ),
-              // model.eventResults.isEmpty && !model.reloadingEvents
-              //     ? ZeroStateView(
-              //         imageAssetName: "calendar",
-              //         imageSize: 200,
-              //         header: "You Have Not Scheduled Any Events",
-              //         subHeader: "Create an Event for the Community",
-              //         mainActionButtonTitle: "Create Event",
-              //         mainAction: () => model.webblenBaseViewModel!.navigateToCreateEventPage(),
-              //         secondaryActionButtonTitle: null,
-              //         secondaryAction: null,
-              //         refreshData: () async {},
-              //         scrollController: null,
-              //       )
-              //     : ListEvents(
-              //         refreshData: model.refreshEvents,
-              //         dataResults: model.eventResults,
-              //         pageStorageKey: PageStorageKey('profile-events'),
-              //         scrollController: null,
-              //         showEventOptions: (event) => model.showContentOptions(content: event),
-              //       ),
-              // ZeroStateView(
-              //   imageAssetName: null,
-              //   header: "You Have No Recent Activity",
-              //   subHeader: "Get Involved in Your Community to Change That!",
-              //   mainActionButtonTitle: null,
-              //   mainAction: null,
-              //   secondaryActionButtonTitle: null,
-              //   secondaryAction: null,
-              //   refreshData: () async {},
-              // ),
+              ListProfileLiveStreams(
+                id: model.user.id!,
+                isCurrentUser: true,
+                scrollController: _scrollController,
+              ),
+
+              //scheduled streams
+              ListProfileEvents(
+                id: model.user.id!,
+                isCurrentUser: true,
+                scrollController: _scrollController,
+              ),
             ],
           ),
         ),

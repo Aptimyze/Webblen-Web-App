@@ -1,6 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_hooks/stacked_hooks.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/widgets/common/buttons/apple_auth_button.dart';
 import 'package:webblen_web_app/ui/widgets/common/buttons/custom_button.dart';
@@ -33,13 +35,13 @@ class AuthView extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         FacebookAuthButton(
-          action: () => model.loginWithFacebook(),
+          action: () => model.signInWithFacebook(),
         ),
         AppleAuthButton(
-          action: () {},
+          action: () => model.signInWithApple(),
         ),
         GoogleAuthButton(
-          action: () {},
+          action: () => model.signInWithGoogle(),
         ),
         model.signInViaPhone
             ? EmailAuthButton(
@@ -134,8 +136,8 @@ class AuthView extends StatelessWidget {
   }
 
   sendSMSCode(BuildContext context, AuthViewModel model) async {
-    bool receivedVerificationID = await model.sendSMSCode(phoneNo: model.phoneNo);
-    if (receivedVerificationID) {
+    bool receivedConfirmationResult = await model.sendSMSCode(phoneNo: model.phoneNo);
+    if (receivedConfirmationResult) {
       displayBottomActionSheet(context, model);
     }
   }
@@ -152,11 +154,8 @@ class AuthView extends StatelessWidget {
         ),
         verticalSpaceMedium,
         model.signInViaPhone
-            ? PhoneTextField(
-                controller: model.phoneMaskController,
-                hintText: "701-120-3000",
-                onChanged: (phoneNo) => model.setPhoneNo(phoneNo),
-                onFieldSubmitted: () => sendSMSCode(context, model),
+            ? _PhoneNumberField(
+                sendSMSCode: () => sendSMSCode(context, model),
               )
             : SingleLineTextField(
                 controller: model.emailController,
@@ -227,6 +226,22 @@ class AuthView extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _PhoneNumberField extends HookViewModelWidget<AuthViewModel> {
+  final VoidCallback sendSMSCode;
+  _PhoneNumberField({required this.sendSMSCode});
+
+  @override
+  Widget buildViewModelWidget(BuildContext context, AuthViewModel model) {
+    final phoneNumber = useTextEditingController();
+    return PhoneTextField(
+      controller: phoneNumber,
+      hintText: "XXXXXXXXXX",
+      onChanged: (phoneNo) => model.setPhoneNo(phoneNo),
+      onFieldSubmitted: sendSMSCode,
     );
   }
 }

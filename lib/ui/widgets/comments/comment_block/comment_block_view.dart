@@ -23,7 +23,9 @@ class CommentBlockView extends StatelessWidget {
     List<TextSpan> richText = [
       TextSpan(
         text: '${comment.username} ',
+        mouseCursor: MaterialStateMouseCursor.clickable,
         style: TextStyle(color: appFontColor(), fontSize: 14.0, fontWeight: FontWeight.bold),
+        recognizer: TapGestureRecognizer()..onTap = () => model.navigateToUserPage(comment.senderUID),
       ),
     ];
     words.forEach((word) {
@@ -31,6 +33,7 @@ class CommentBlockView extends StatelessWidget {
       if (word.startsWith("@")) {
         textSpan = TextSpan(
           text: "$word ",
+          mouseCursor: MaterialStateMouseCursor.clickable,
           style: TextStyle(color: appTextButtonColor(), fontSize: 14.0, fontWeight: FontWeight.w400),
           recognizer: TapGestureRecognizer()..onTap = () => model.navigateToMentionedUser(word.replaceAll("@", "")),
         );
@@ -78,7 +81,7 @@ class CommentBlockView extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ),
+                    ).showCursorOnHover,
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -102,7 +105,7 @@ class CommentBlockView extends StatelessWidget {
                               style: TextStyle(color: appFontColorAlt(), fontSize: 12.0, fontWeight: FontWeight.w500),
                             ),
                             SizedBox(width: 8.0),
-                            replyToComment == null
+                            comment.isReply!
                                 ? Container()
                                 : GestureDetector(
                                     onTap: () => replyToComment(comment), //replyAction,
@@ -110,7 +113,7 @@ class CommentBlockView extends StatelessWidget {
                                       "Reply",
                                       style: TextStyle(color: appFontColorAlt(), fontSize: 12.0, fontWeight: FontWeight.bold),
                                     ),
-                                  ),
+                                  ).showCursorOnHover,
                             horizontalSpaceSmall,
                             model.isAuthor
                                 ? GestureDetector(
@@ -120,7 +123,7 @@ class CommentBlockView extends StatelessWidget {
                                       "Delete",
                                       style: TextStyle(color: Colors.red[300], fontSize: 12.0, fontWeight: FontWeight.bold),
                                     ),
-                                  )
+                                  ).showCursorOnHover
                                 : Container(),
                           ],
                         ),

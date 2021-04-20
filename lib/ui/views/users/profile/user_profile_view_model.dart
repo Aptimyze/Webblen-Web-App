@@ -12,6 +12,7 @@ import 'package:webblen_web_app/services/dynamic_links/dynamic_link_service.dart
 import 'package:webblen_web_app/services/firestore/data/notification_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/post_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
+import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
 import 'package:webblen_web_app/services/share/share_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
@@ -27,6 +28,11 @@ class UserProfileViewModel extends StreamViewModel<WebblenUser> {
   ShareService? _shareService = locator<ShareService>();
   NotificationDataService? _notificationDataService = locator<NotificationDataService>();
   WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
+
+  ///DATA
+  bool get isLoggedIn => _reactiveWebblenUserService.userLoggedIn;
+  WebblenUser get currentUser => _reactiveWebblenUserService.user;
 
   ///UI HELPERS
   ScrollController scrollController = ScrollController();
@@ -43,7 +49,6 @@ class UserProfileViewModel extends StreamViewModel<WebblenUser> {
 
   ///USER DATA
   String? uid;
-  late WebblenUser currentUser;
   WebblenUser? user;
   bool? isFollowingUser;
   bool sendNotification = false;
@@ -54,12 +59,10 @@ class UserProfileViewModel extends StreamViewModel<WebblenUser> {
     if (data != null) {
       user = data;
       if (isFollowingUser == null) {
-        if (webblenBaseViewModel!.user != null) {
-          if (user!.followers!.contains(currentUser.id)) {
-            isFollowingUser = true;
-          } else {
-            isFollowingUser = false;
-          }
+        if (user!.followers!.contains(currentUser.id)) {
+          isFollowingUser = true;
+        } else {
+          isFollowingUser = false;
         }
       }
       notifyListeners();

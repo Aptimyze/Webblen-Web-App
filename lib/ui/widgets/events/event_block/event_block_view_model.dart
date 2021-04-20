@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
+import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/firestore/data/event_data_service.dart';
@@ -13,6 +15,11 @@ class EventBlockViewModel extends BaseViewModel {
   UserDataService _userDataService = locator<UserDataService>();
   ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
   WebblenBaseViewModel _webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  NavigationService _navigationService = locator<NavigationService>();
+
+  ///USER DATA
+  bool get isLoggedIn => _reactiveWebblenUserService.userLoggedIn;
+  WebblenUser get user => _reactiveWebblenUserService.user;
 
   bool eventIsHappeningNow = false;
   bool savedEvent = false;
@@ -32,7 +39,7 @@ class EventBlockViewModel extends BaseViewModel {
     //check if event is happening now
     isEventHappeningNow(event);
 
-    WebblenUser author = await _userDataService.getWebblenUserByID(event.id);
+    WebblenUser author = await _userDataService.getWebblenUserByID(event.authorID);
     if (author.isValid()) {
       authorImageURL = author.profilePicURL;
       authorUsername = author.username;
@@ -62,7 +69,7 @@ class EventBlockViewModel extends BaseViewModel {
     }
     HapticFeedback.lightImpact();
     notifyListeners();
-    await _eventDataService.saveUnsaveEvent(uid: _webblenBaseViewModel!.uid, eventID: eventID, savedEvent: savedEvent);
+    await _eventDataService.saveUnsaveEvent(uid: user.id, eventID: eventID, savedEvent: savedEvent);
   }
 
   ///NAVIGATION
@@ -70,18 +77,11 @@ class EventBlockViewModel extends BaseViewModel {
 //   _navigationService.replaceWith(PageRouteName);
 // }
 //
-  navigateToEventView({String? eventID}) async {
-    // String res = await _navigationService.navigateTo(Routes.EventViewRoute, arguments: {'id': eventID});
-    // if (res == "event no longer exists") {
-    //   _snackbarService.showSnackbar(
-    //     title: 'Uh Oh...',
-    //     message: "This event no longer exists",
-    //     duration: Duration(seconds: 5),
-    //   );
-    // }
+  navigateToEventView(String id) async {
+    _navigationService.navigateTo(Routes.EventDetailsViewRoute(id: id));
   }
 
   navigateToUserView(String? id) {
-    // _navigationService.navigateTo(Routes.UserProfileView, arguments: {'id': id});
+    _navigationService.navigateTo(Routes.UserProfileView(id: id));
   }
 }

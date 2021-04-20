@@ -15,6 +15,7 @@ dependencies:
   url_launcher:
   js:
   url_strategy:
+  universal_io: ^2.0.4
 
   #ARCHITECTURE
   stacked: ^2.0.2
@@ -34,21 +35,27 @@ dependencies:
   #ALGOLIA
   algolia: ^1.0.1
 
+  #SENDGRID
+  sendgrid_mailer: ^0.1.3
+
   #FIRESTORE DATABASE
   firebase: ^9.0.1
   firebase_core: ^1.0.3
   cloud_firestore: ^1.0.4
   firebase_auth: ^1.0.2
+  firebase_auth_oauth: ^1.0.1
   cloud_functions: ^1.0.3
 
   #Auth
   flutter_facebook_auth: ^3.3.2
   google_sign_in: ^5.0.1
+  sign_in_with_apple_js: ^2.0.1
 
   #LOCATION
   location: ^4.1.1
   google_place: ^0.4.0
   maps_launcher: ^2.0.0
+  devicelocale: ^0.4.1
 
   #UI
   font_awesome_flutter: ^9.0.0
@@ -65,11 +72,15 @@ dependencies:
   stripe_sdk: ^5.0.0-nullsafety.0
 
   #OTHER
+  qr_flutter: ^4.0.0
   auto_size_text: ^3.0.0-nullsafety.0
   flutter_typeahead: ^3.1.1
   introduction_screen: ^2.1.0
   flutter_masked_text2: ^0.9.1
-  syncfusion_flutter_sliders: ^19.1.55-beta
+  mask_text_input_formatter: ^2.0.0-nullsafety.2
+  flutter_xlider:
+    git:
+      url: https://github.com/mukai154/flutter_xlider.git
   intl_phone_field: ^2.0.0
 
 

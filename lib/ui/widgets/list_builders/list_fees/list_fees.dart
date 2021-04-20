@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
+import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/models/webblen_ticket_distro.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
@@ -14,29 +15,26 @@ class ListFeesForEditing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 8.0),
+      constraints: BoxConstraints(
+        maxWidth: 500,
+      ),
+      margin: EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            decoration: BoxDecoration(
-              color: appDividerColor(),
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-            ),
-            child: Container(
-              width: (MediaQuery.of(context).size.width - 16) * 0.40,
-              child: CustomText(
-                text: 'FEES',
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: appFontColorAlt(),
-              ),
+            height: 20,
+            child: CustomText(
+              text: 'FEES',
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: appFontColorAlt(),
             ),
           ),
           verticalSpaceTiny,
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            height: 30,
+            padding: EdgeInsets.symmetric(horizontal: 8),
             decoration: BoxDecoration(
               color: appDividerColor(),
               borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -44,25 +42,42 @@ class ListFeesForEditing extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Container(
-                  width: (MediaQuery.of(context).size.width - 16) * 0.40,
-                  child: CustomText(
-                    text: 'Fee Name',
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: appFontColor(),
+                Expanded(
+                  flex: 4,
+                  child: Container(
+                    margin: EdgeInsets.only(right: 4),
+                    child: CustomText(
+                      text: 'Fee Name',
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: appFontColor(),
+                    ),
                   ),
                 ),
-                Container(
-                  width: (MediaQuery.of(context).size.width - 16) * 0.20,
-                  child: CustomText(
-                    text: 'Price',
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: appFontColor(),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    width: 1,
+                    margin: EdgeInsets.only(right: 4),
                   ),
                 ),
-                Container(width: 35.0),
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    margin: EdgeInsets.only(right: 4),
+                    child: CustomText(
+                      text: 'Price',
+                      textAlign: TextAlign.right,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: appFontColor(),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Container(),
+                ),
               ],
             ),
           ),
@@ -77,36 +92,49 @@ class ListFeesForEditing extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Container(
-                      width: 150,
-                      child: CustomText(
-                        text: ticketDistro!.fees![index]["feeName"],
-                        color: appFontColor(),
-                        textAlign: TextAlign.left,
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
+                    Expanded(
+                      flex: 4,
+                      child: Container(
+                        margin: EdgeInsets.only(right: 4),
+                        child: CustomText(
+                          text: ticketDistro!.fees![index]["feeName"],
+                          color: appFontColor(),
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                    Container(
-                      width: 70.0,
-                      child: CustomText(
-                        text: ticketDistro!.fees![index]["feePrice"],
-                        color: appFontColor(),
-                        textAlign: TextAlign.left,
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w500,
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        margin: EdgeInsets.only(right: 4),
                       ),
                     ),
-                    Container(
-                      width: 35.0,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          GestureDetector(
-                            onTap: () => editFeeAtIndex(index),
-                            child: Icon(FontAwesomeIcons.edit, size: 16.0, color: appFontColor()),
-                          ),
-                        ],
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        margin: EdgeInsets.only(right: 4),
+                        child: CustomText(
+                          text: ticketDistro!.fees![index]["feePrice"],
+                          color: appFontColor(),
+                          textAlign: TextAlign.right,
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            GestureDetector(
+                              onTap: () => editFeeAtIndex(index),
+                              child: Icon(FontAwesomeIcons.edit, size: 14.0, color: appFontColor()),
+                            ).showCursorOnHover,
+                          ],
+                        ),
                       ),
                     ),
                   ],

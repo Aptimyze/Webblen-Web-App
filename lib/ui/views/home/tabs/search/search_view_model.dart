@@ -4,13 +4,15 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/models/search_result.dart';
+import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/algolia/algolia_search_service.dart';
 import 'package:webblen_web_app/services/auth/auth_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
+import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/search/recent_search_view_model.dart';
 
-class SearchViewModel extends BaseViewModel {
+class SearchViewModel extends ReactiveViewModel {
   AuthService? _authService = locator<AuthService>();
   DialogService? _dialogService = locator<DialogService>();
   NavigationService? _navigationService = locator<NavigationService>();
@@ -18,9 +20,14 @@ class SearchViewModel extends BaseViewModel {
   UserDataService? _userDataService = locator<UserDataService>();
   RecentSearchViewModel? _recentSearchViewModel = locator<RecentSearchViewModel>();
   WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
 
   ///HELPERS
   TextEditingController searchTextController = TextEditingController();
+
+  ///CURRENT USER
+  bool get isLoggedIn => _reactiveWebblenUserService.userLoggedIn;
+  WebblenUser get user => _reactiveWebblenUserService.user;
 
   ///SEARCH
   List recentSearchTerms = [];
@@ -32,7 +39,9 @@ class SearchViewModel extends BaseViewModel {
   int eventResultsLimit = 5;
   int userResultsLimit = 5;
 
-  ///DATA
+  @override
+  // TODO: implement reactiveServices
+  List<ReactiveServiceMixin> get reactiveServices => [_reactiveWebblenUserService];
 
   initialize({String? term}) async {
     setBusy(true);
@@ -56,7 +65,7 @@ class SearchViewModel extends BaseViewModel {
       return;
     }
     setBusy(true);
-    if (searchTerm == null || searchTerm.trim().isEmpty) {
+    if (searchTerm.trim().isEmpty) {
       streamResults = [];
       eventResults = [];
       userResults = [];
@@ -74,7 +83,9 @@ class SearchViewModel extends BaseViewModel {
     if (searchTerm.trim().isNotEmpty) {
       searchTextController.text = searchTerm;
       notifyListeners();
-      _algoliaSearchService!.storeSearchTerm(uid: webblenBaseViewModel!.uid, searchTerm: searchTerm);
+      if (isLoggedIn) {
+        _algoliaSearchService!.storeSearchTerm(uid: user.id, searchTerm: searchTerm);
+      }
       await _navigationService!.navigateTo(Routes.AllSearchResultsViewRoute(term: searchTerm));
       searchTextController.selection = TextSelection(baseOffset: 0, extentOffset: searchTextController.text.length);
       FocusScope.of(context!).previousFocus();
@@ -103,6 +114,7 @@ class SearchViewModel extends BaseViewModel {
   clearSearchTextField() {
     searchTextController.clear();
   }
+
 // replaceWithPage() {
 //   _navigationService.replaceWith(PageRouteName);
 // }

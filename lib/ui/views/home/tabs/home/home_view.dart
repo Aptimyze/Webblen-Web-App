@@ -10,7 +10,7 @@ import 'package:webblen_web_app/ui/widgets/common/buttons/custom_button.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
 import 'package:webblen_web_app/ui/widgets/common/navigation/tab_bar/custom_tab_bar.dart';
 import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_circle_progress_indicator.dart';
-import 'package:webblen_web_app/ui/widgets/list_builders/list_events/list_events.dart';
+import 'package:webblen_web_app/ui/widgets/list_builders/list_events/home/list_home_events.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_live_streams/home/list_home_live_streams.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_posts/home/list_home_posts.dart';
 
@@ -41,12 +41,7 @@ class HomeView extends StatelessWidget {
                       if (screenSize.isDesktop) {
                         return _DesktopHomeBody();
                       } else {
-                        return Column(
-                          children: [
-                            SizedBox(height: 16),
-                            _HomeBody(),
-                          ],
-                        );
+                        return _HomeBody();
                       }
                     },
                   ),
@@ -130,34 +125,10 @@ class _DesktopHomeBody extends HookViewModelWidget<HomeViewModel> {
                     ListHomePosts(),
 
                     ///STREAMS & VIDEO
-                    ListHomeLiveStreams(
-                      showStreamOptions: (content) => model.customBottomSheetService.showContentOptions(content: content),
-                    ),
+                    ListHomeLiveStreams(),
 
                     ///EVENTS
-                    // model.eventResults.isEmpty && !model.loadingEvents
-                    //     ? ZeroStateView(
-                    //         scrollController: null,
-                    //         imageAssetName: "calendar",
-                    //         imageSize: 200,
-                    //         header: "No Events in ${model.cityName} Found",
-                    //         subHeader: model.eventPromo != null
-                    //             ? "Schedule an Event for ${model.cityName} Now and Earn ${model.eventPromo.toStringAsFixed(2)} WBLN!"
-                    //             : "Schedule an Event for ${model.cityName} Now!",
-                    //         mainActionButtonTitle: model.eventPromo != null ? "Earn ${model.eventPromo.toStringAsFixed(2)} WBLN" : "Create Event",
-                    //         mainAction: () => model.createEventWithPromo(),
-                    //         secondaryActionButtonTitle: null,
-                    //         secondaryAction: null,
-                    //         refreshData: () async {},
-                    //       )
-                    //     :
-                    ListEvents(
-                      refreshData: () async {},
-                      dataResults: [], //model.eventResults,
-                      pageStorageKey: PageStorageKey('home-events'),
-                      scrollController: null,
-                      showEventOptions: (event) => model.customBottomSheetService.showContentOptions(content: event),
-                    ),
+                    ListHomeEvents(),
                   ],
                 ),
               ),
@@ -190,6 +161,7 @@ class _HomeBody extends HookViewModelWidget<HomeViewModel> {
         ),
         SizedBox(height: 4),
         Expanded(
+          //width: screenWidth(context),
           child: DefaultTabController(
             length: 3,
             child: TabBarView(
@@ -206,34 +178,10 @@ class _HomeBody extends HookViewModelWidget<HomeViewModel> {
                 ListHomePosts(),
 
                 ///STREAMS & VIDEO
-                ListHomeLiveStreams(
-                  showStreamOptions: (content) => model.customBottomSheetService.showContentOptions(content: content),
-                ),
+                ListHomeLiveStreams(),
 
                 ///EVENTS
-                // model.eventResults.isEmpty && !model.loadingEvents
-                //     ? ZeroStateView(
-                //         scrollController: null,
-                //         imageAssetName: "calendar",
-                //         imageSize: 200,
-                //         header: "No Events in ${model.cityName} Found",
-                //         subHeader: model.eventPromo != null
-                //             ? "Schedule an Event for ${model.cityName} Now and Earn ${model.eventPromo.toStringAsFixed(2)} WBLN!"
-                //             : "Schedule an Event for ${model.cityName} Now!",
-                //         mainActionButtonTitle: model.eventPromo != null ? "Earn ${model.eventPromo.toStringAsFixed(2)} WBLN" : "Create Event",
-                //         mainAction: () => model.createEventWithPromo(),
-                //         secondaryActionButtonTitle: null,
-                //         secondaryAction: null,
-                //         refreshData: () async {},
-                //       )
-                //     :
-                ListEvents(
-                  refreshData: () async {},
-                  dataResults: [], //model.eventResults,
-                  pageStorageKey: PageStorageKey('home-events'),
-                  scrollController: null,
-                  showEventOptions: (event) => model.customBottomSheetService.showContentOptions(content: event),
-                ),
+                ListHomeEvents(),
               ],
             ),
           ),

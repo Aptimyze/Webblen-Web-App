@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_sliders/sliders.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_xlider/flutter_xlider.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
+import 'package:webblen_web_app/constants/custom_colors.dart';
 import 'package:webblen_web_app/constants/venue_size_and_descriptions.dart';
+import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
 
@@ -19,19 +22,17 @@ class _EventVenueSizeSliderState extends State<EventVenueSizeSlider> {
   @override
   void initState() {
     super.initState();
-    if (widget.initialValue != null) {
-      String val = widget.initialValue;
-      if (val == "Small") {
-        sliderVal = 1;
-      } else if (val == "Medium") {
-        sliderVal = 2;
-      } else if (val == "Large") {
-        sliderVal = 3;
-      } else if (val == "Huge") {
-        sliderVal = 4;
-      }
-      setState(() {});
+    String val = widget.initialValue;
+    if (val == "Small") {
+      sliderVal = 1;
+    } else if (val == "Medium") {
+      sliderVal = 2;
+    } else if (val == "Large") {
+      sliderVal = 3;
+    } else if (val == "Huge") {
+      sliderVal = 4;
     }
+    setState(() {});
   }
 
   @override
@@ -43,24 +44,52 @@ class _EventVenueSizeSliderState extends State<EventVenueSizeSlider> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SfSlider(
-            min: 1.0,
-            max: 4.0,
-            value: sliderVal,
-            interval: 1,
-            stepSize: 1,
-            showTicks: true,
-            showLabels: false,
-            enableTooltip: false,
-            activeColor: appActiveColor(),
-            inactiveColor: appDividerColor(),
-            onChanged: (val) {
-              setState(() {
-                sliderVal = val;
-              });
+          FlutterSlider(
+            tooltip: FlutterSliderTooltip(
+              disabled: true,
+            ),
+            handler: FlutterSliderHandler(
+              decoration: BoxDecoration(),
+              child: Container(
+                height: 20,
+                width: 20,
+                decoration: BoxDecoration(
+                  color: appBackgroundColor,
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    width: 2,
+                    color: appActiveColor(),
+                  ),
+                ),
+              ),
+            ),
+            trackBar: FlutterSliderTrackBar(
+              activeTrackBarHeight: 15,
+              inactiveTrackBarHeight: 15,
+              inactiveTrackBar: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                color: Colors.black12,
+                border: Border.all(
+                  width: 3,
+                  color: appActiveColor(),
+                ),
+              ),
+              activeTrackBar: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                color: CustomColors.webblenRed.withOpacity(0.5),
+              ),
+            ),
+            jump: true,
+            min: 1,
+            max: 4,
+            values: [sliderVal!],
+            step: FlutterSliderStep(step: 1),
+            onDragging: (handlerIndex, lowerValue, upperValue) {
+              sliderVal = lowerValue;
+              setState(() {});
               widget.onChanged(sizeName.toLowerCase());
             },
-          ),
+          ).showCursorOnHover,
           CustomText(
             text: sizeName,
             textAlign: TextAlign.center,

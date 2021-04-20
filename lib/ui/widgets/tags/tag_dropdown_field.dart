@@ -6,11 +6,11 @@ import 'package:webblen_web_app/services/algolia/algolia_search_service.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
 import 'package:webblen_web_app/ui/widgets/common/text_field/text_field_container.dart';
 
-class TagDropdownField extends StatelessWidget {
+class TagAutoCompleteField extends StatelessWidget {
   final bool enabled;
   final TextEditingController controller;
   final Function(String?) onTagSelected;
-  TagDropdownField({required this.enabled, required this.controller, required this.onTagSelected});
+  TagAutoCompleteField({required this.enabled, required this.controller, required this.onTagSelected});
 
   final AlgoliaSearchService? _algoliaSearchService = locator<AlgoliaSearchService>();
 

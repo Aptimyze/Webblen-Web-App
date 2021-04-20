@@ -10,13 +10,13 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/app/app.router.dart';
-import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/constants/time.dart';
 import 'package:webblen_web_app/enums/bottom_sheet_type.dart';
 import 'package:webblen_web_app/extensions/custom_date_time_extensions.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
 import 'package:webblen_web_app/models/webblen_ticket_distro.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
+import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/firestore/common/firestore_storage_service.dart';
 import 'package:webblen_web_app/services/firestore/data/live_stream_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/platform_data_service.dart';
@@ -31,7 +31,7 @@ import 'package:webblen_web_app/utils/custom_string_methods.dart';
 import 'package:webblen_web_app/utils/webblen_image_picker.dart';
 
 class CreateLiveStreamViewModel extends ReactiveViewModel {
-  DialogService? _dialogService = locator<DialogService>();
+  CustomDialogService _customDialogService = locator<CustomDialogService>();
   NavigationService? _navigationService = locator<NavigationService>();
   PlatformDataService? _platformDataService = locator<PlatformDataService>();
   UserDataService? _userDataService = locator<UserDataService>();
@@ -41,7 +41,7 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
   BottomSheetService? _bottomSheetService = locator<BottomSheetService>();
   TicketDistroDataService? _ticketDistroDataService = locator<TicketDistroDataService>();
   StripeConnectAccountService? _stripeConnectAccountService = locator<StripeConnectAccountService>();
-  WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();
   ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
   ReactiveFileUploaderService _reactiveFileUploaderService = locator<ReactiveFileUploaderService>();
   late SharedPreferences _sharedPreferences;
@@ -159,10 +159,10 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
     _sharedPreferences = await SharedPreferences.getInstance();
 
     //generate new stream
-    stream = WebblenLiveStream().generateNewWebblenLiveStream(hostID: user.id, suggestedUIDs: user.followers == null ? [] : user.followers!);
+    stream = WebblenLiveStream().generateNewWebblenLiveStream(hostID: user.id!, suggestedUIDs: user.followers == null ? [] : user.followers!);
 
     //check if user has earnings account
-    hasEarningsAccount = await _stripeConnectAccountService!.isStripeConnectAccountSetup(webblenBaseViewModel!.user!.id);
+    hasEarningsAccount = await _stripeConnectAccountService!.isStripeConnectAccountSetup(user.id);
 
     //set timezone
     stream.timezone = getCurrentTimezone();
@@ -171,26 +171,23 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
     notifyListeners();
 
     //set previously used social accounts
-    fbUsernameTextController.text = _sharedPreferences.getString('fbUsername')!;
-    instaUsernameTextController.text = _sharedPreferences.getString('instaUsername')!;
-    twitterUsernameTextController.text = _sharedPreferences.getString('twitterUsername')!;
-    websiteTextController.text = _sharedPreferences.getString('website')!;
+    setPreviousUsernameData();
 
     id = streamID;
 
     //check if editing existing post
     if (id != "new") {
-      WebblenLiveStream? existingStream = await (_liveStreamDataService!.getStreamForEditingByID(id) as FutureOr<WebblenLiveStream?>);
-      if (existingStream != null) {
+      WebblenLiveStream existingStream = await _liveStreamDataService!.getStreamForEditingByID(id);
+      if (existingStream.isValid()) {
         stream = existingStream;
-        titleTextController.text = stream.title!;
-        descTextController.text = stream.description!;
+        titleTextController.text = stream.title == null ? "" : stream.title!;
+        descTextController.text = stream.description == null ? "" : stream.description!;
         startDateTextController.text = stream.startDate!;
         endDateTextController.text = stream.endDate!;
-        fbUsernameTextController.text = stream.fbUsername!;
-        instaUsernameTextController.text = stream.instaUsername!;
-        twitterUsernameTextController.text = stream.twitterUsername!;
-        websiteTextController.text = stream.website!;
+        fbUsernameTextController.text = stream.fbUsername == null ? "" : stream.fbUsername!;
+        instaUsernameTextController.text = stream.instaUsername == null ? "" : stream.instaUsername!;
+        twitterUsernameTextController.text = stream.twitterUsername == null ? "" : stream.twitterUsername!;
+        websiteTextController.text = stream.website == null ? "" : stream.website!;
         selectedStartDate = dateFormatter.parse(stream.startDate!);
         selectedEndDate = dateFormatter.parse(stream.endDate!);
         isEditing = true;
@@ -200,26 +197,6 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
         }
       }
     }
-
-    // listener for uploader
-    // webblenBaseViewModel!.addListener(() {
-    //   bool uploadStatusChanged = false;
-    //   if (uploadProgress != webblenBaseViewModel!.uploadProgress) {
-    //     uploadStatusChanged = true;
-    //     uploadProgress = webblenBaseViewModel!.uploadProgress;
-    //   }
-    //   if (imgToUpload != webblenBaseViewModel!.imgToUpload) {
-    //     uploadStatusChanged = true;
-    //     imgToUpload = webblenBaseViewModel!.imgToUpload;
-    //   }
-    //   if (imgToUploadByteMemory != webblenBaseViewModel!.imgToUploadByteMemory) {
-    //     uploadStatusChanged = true;
-    //     imgToUploadByteMemory = webblenBaseViewModel!.imgToUploadByteMemory;
-    //   }
-    //   if (uploadStatusChanged) {
-    //     notifyListeners();
-    //   }
-    // });
 
     //get webblen rates
     newStreamTaxRate = await _platformDataService!.getNewStreamTaxRate();
@@ -232,6 +209,30 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
 
     notifyListeners();
     setBusy(false);
+  }
+
+  ///SHARE PREF
+  setPreviousUsernameData() {
+    String? prevFbUsername = _sharedPreferences.getString('fbUsername');
+    String? prevInstaUsername = _sharedPreferences.getString('instaUsername');
+    String? prevTwitterUsername = _sharedPreferences.getString('twitterUsername');
+    String? prevWebsite = _sharedPreferences.getString('website');
+    if (prevFbUsername != null) {
+      fbUsernameTextController.text = prevFbUsername;
+      stream.fbUsername = prevFbUsername;
+    }
+    if (prevInstaUsername != null) {
+      instaUsernameTextController.text = prevInstaUsername;
+      stream.instaUsername = prevInstaUsername;
+    }
+    if (prevTwitterUsername != null) {
+      twitterUsernameTextController.text = prevTwitterUsername;
+      stream.twitterUsername = prevTwitterUsername;
+    }
+    if (prevWebsite != null) {
+      websiteTextController.text = prevWebsite;
+      stream.website = prevWebsite;
+    }
   }
 
   ///STREAM IMAGE
@@ -247,10 +248,7 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
     if (!tags.contains(tag)) {
       //check if tag limit has been reached
       if (tags.length == 3) {
-        _dialogService!.showDialog(
-          title: "Tag Limit Reached",
-          description: "You can only add up to 3 tags for your stream",
-        );
+        _customDialogService.showErrorDialog(description: "You can only add up to 3 tags for your stream");
       } else {
         //add tag
         tags.add(tag);
@@ -288,7 +286,7 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
   Future<bool> setStreamAudienceLocation(Map<String, dynamic> details) async {
     bool success = true;
 
-    if (details == null || details.isEmpty) {
+    if (details.isEmpty) {
       return false;
     }
 
@@ -388,14 +386,12 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
 
   addTicket() {
     if (ticketNameTextController.text.trim().isEmpty) {
-      _dialogService!.showDialog(
-        title: 'Ticket Name Required',
+      _customDialogService.showErrorDialog(
         description: 'Please add a name for this ticket',
       );
       return;
     } else if (ticketQuantityTextController.text.trim().isEmpty) {
-      _dialogService!.showDialog(
-        title: 'Ticket Quantity Required',
+      _customDialogService.showErrorDialog(
         description: 'Please set a quantity for this ticket',
       );
       return;
@@ -453,8 +449,7 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
 
   addFee() {
     if (feeNameTextController.text.trim().isEmpty) {
-      _dialogService!.showDialog(
-        title: 'Fee Name Required',
+      _customDialogService.showErrorDialog(
         description: 'Please add a name for this fee',
       );
       return;
@@ -510,14 +505,12 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
 
   addDiscount() {
     if (discountNameTextController.text.trim().isEmpty) {
-      _dialogService!.showDialog(
-        title: 'Discount Code Required',
+      _customDialogService.showErrorDialog(
         description: 'Please add a code for this discount',
       );
       return;
     } else if (discountLimitTextController.text.trim().isEmpty) {
-      _dialogService!.showDialog(
-        title: 'Discount Limit Required',
+      _customDialogService.showErrorDialog(
         description: 'Please set a limit for the number of times this discount can be used',
       );
       return;
@@ -643,59 +636,48 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
 
   bool formIsValid() {
     bool isValid = false;
-    if (fileToUpload.relativePath!.isEmpty && stream.imageURL == null) {
-      _dialogService!.showDialog(
-        title: 'Stream Image Error',
+    if (fileToUploadByteMemory.isEmpty && stream.imageURL == null) {
+      _customDialogService.showErrorDialog(
         description: 'Your stream must have an image',
       );
     } else if (!tagsAreValid()) {
-      _dialogService!.showDialog(
-        title: 'Tag Error',
+      _customDialogService.showErrorDialog(
         description: 'Your stream must contain at least 1 tag',
       );
     } else if (!titleIsValid()) {
-      _dialogService!.showDialog(
-        title: 'Stream Title Required',
+      _customDialogService.showErrorDialog(
         description: 'The title for your stream cannot be empty',
       );
     } else if (!descIsValid()) {
-      _dialogService!.showDialog(
-        title: 'Stream Description Required',
+      _customDialogService.showErrorDialog(
         description: 'The description for your stream cannot be empty',
       );
     } else if (!audienceLocationIsValid()) {
-      _dialogService!.showDialog(
-        title: 'Stream Audiences Location Required',
+      _customDialogService.showErrorDialog(
         description: 'The target location for your stream cannot be empty',
       );
     } else if (!startDateIsValid()) {
-      _dialogService!.showDialog(
-        title: 'Stream Start Date Required',
+      _customDialogService.showErrorDialog(
         description: 'The start date & time for your stream cannot be empty',
       );
     } else if (!endDateIsValid()) {
-      _dialogService!.showDialog(
-        title: 'Stream End Date Error',
+      _customDialogService.showErrorDialog(
         description: "End date & time must be set after the start date & time",
       );
     } else if (stream.fbUsername != null && stream.fbUsername!.isNotEmpty && !fbUsernameIsValid()) {
-      _dialogService!.showDialog(
-        title: 'Facebook Username Error',
+      _customDialogService.showErrorDialog(
         description: "Facebook username must be valid",
       );
     } else if (stream.instaUsername != null && stream.instaUsername!.isNotEmpty && !instaUsernameIsValid()) {
-      _dialogService!.showDialog(
-        title: 'Instagram Username Error',
+      _customDialogService.showErrorDialog(
         description: "Instagram username must be valid",
       );
     } else if (stream.twitterUsername != null && stream.twitterUsername!.isNotEmpty && !twitterUsernameIsValid()) {
-      _dialogService!.showDialog(
-        title: 'Twitter Username Error',
+      _customDialogService.showErrorDialog(
         description: "Twitter username must be valid",
       );
     } else if (stream.website != null && stream.website!.isNotEmpty && !websiteIsValid()) {
-      _dialogService!.showDialog(
-        title: "Website URL Error",
+      _customDialogService.showErrorDialog(
         description: "Website URL must be valid",
       );
     } else {
@@ -712,9 +694,8 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
       String imageURL =
           await _firestoreStorageService!.uploadImage(imgFile: fileToUpload, storageBucket: 'images', folderName: 'streams', fileName: stream.id!);
       if (imageURL.isEmpty) {
-        _dialogService!.showDialog(
-          title: "Website URL Error",
-          description: "Website URL must be valid",
+        _customDialogService.showErrorDialog(
+          description: "There was an issue uploading your stream. Please try again.",
         );
         return false;
       }
@@ -733,18 +714,17 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
     }
 
     if (uploadResult is String) {
-      _dialogService!.showDialog(
-        title: 'Stream Upload Error',
+      _customDialogService.showErrorDialog(
         description: 'There was an issue uploading your stream. Please try again.',
       );
       return false;
     }
 
     //cache username data
-    await _sharedPreferences.setString('fbUsername', stream.fbUsername!);
-    await _sharedPreferences.setString('instaUsername', stream.instaUsername!);
-    await _sharedPreferences.setString('twitterUsername', stream.twitterUsername!);
-    await _sharedPreferences.setString('website', stream.website!);
+    await _sharedPreferences.setString('fbUsername', stream.fbUsername == null ? "" : stream.fbUsername!);
+    await _sharedPreferences.setString('instaUsername', stream.instaUsername == null ? "" : stream.instaUsername!);
+    await _sharedPreferences.setString('twitterUsername', stream.twitterUsername == null ? "" : stream.twitterUsername!);
+    await _sharedPreferences.setString('website', stream.website == null ? "" : stream.website!);
 
     return success;
   }
@@ -794,8 +774,7 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
 
       //get image from camera or gallery
       if (res == "insufficient funds") {
-        _dialogService!.showDialog(
-          title: 'Insufficient Funds',
+        _customDialogService.showErrorDialog(
           description: 'You do no have enough WBLN to schedule this stream',
         );
       } else if (res == "confirmed") {
@@ -812,9 +791,9 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
   displayUploadSuccessBottomSheet() async {
     //deposit and/or withdraw webblen & promo
     if (promo != null) {
-      _userDataService!.depositWebblen(uid: webblenBaseViewModel!.uid, amount: promo!);
+      _userDataService!.depositWebblen(uid: user.id, amount: promo!);
     }
-    _userDataService!.withdrawWebblen(uid: webblenBaseViewModel!.uid, amount: newStreamTaxRate!);
+    _userDataService!.withdrawWebblen(uid: user.id, amount: newStreamTaxRate!);
 
     //display success
     var sheetResponse = await _bottomSheetService!.showCustomSheet(
@@ -825,38 +804,20 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
         title: isEditing ? "Your Stream has been Updated" : "Your Stream has been Scheduled! 🎉");
 
     if (sheetResponse == null || sheetResponse.responseData == "done") {
+      _reactiveFileUploaderService.clearUploaderData();
       _navigationService!.pushNamedAndRemoveUntil(Routes.WebblenBaseViewRoute);
     }
   }
 
   ///NAVIGATION
   navigateBack() async {
-    DialogResponse? response = await _dialogService!.showDialog(
-      title: isEditing ? "Cancel Editing Stream?" : "Cancel Creating Stream?",
-      description: isEditing ? "Changes to this stream will not be saved" : "The details for this stream will not be saved",
-      cancelTitle: "Cancel",
-      cancelTitleColor: appDestructiveColor(),
-      buttonTitle: isEditing ? "Discard Changes" : "Discard Stream",
-      buttonTitleColor: appTextButtonColor(),
-      barrierDismissible: true,
-    );
-    if (response != null && !response.confirmed) {
-      _navigationService!.back();
-    }
+    _customDialogService.showCancelContentDialog(isEditing: isEditing, contentType: "Stream");
   }
 
   navigateBackToWalletPage() async {
-    DialogResponse? response = await _dialogService!.showDialog(
-      title: "Create an Earnings Account?",
-      description: isEditing ? "Changes to this stream will not be saved" : "The details for this stream will not be saved",
-      cancelTitle: "Continue Editing",
-      cancelTitleColor: appTextButtonColor(),
-      buttonTitle: "Create Earnings Account",
-      buttonTitleColor: appTextButtonColor(),
-      barrierDismissible: true,
-    );
-    if (response != null && response.confirmed) {
-      webblenBaseViewModel!.navigateToHomeWithIndex(2);
+    bool navigateToWallet = await _customDialogService.showNavigateToEarningsAccountDialog(isEditing: isEditing, contentType: "Stream");
+    if (navigateToWallet) {
+      webblenBaseViewModel.navigateToHomeWithIndex(2);
     }
   }
 }

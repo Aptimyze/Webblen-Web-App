@@ -25,6 +25,15 @@ class UserBankingInfo {
         'bankName': this.bankName,
         'last4': this.last4,
       };
+
+  //checks if obj is valid
+  bool isValid() {
+    bool isValid = true;
+    if (last4 == null) {
+      isValid = false;
+    }
+    return isValid;
+  }
 }
 
 class UserCardInfo {
@@ -58,6 +67,15 @@ class UserCardInfo {
         'funding': this.cardType,
         'last4': this.last4,
       };
+
+  //checks if obj is valid
+  bool isValid() {
+    bool isValid = true;
+    if (last4 == null) {
+      isValid = false;
+    }
+    return isValid;
+  }
 }
 
 class UserStripeInfo {
@@ -67,6 +85,7 @@ class UserStripeInfo {
   double? pendingBalance;
   String? stripeUID;
   String? verified;
+  bool? actionRequired;
 
   UserStripeInfo({
     this.availableBalance,
@@ -75,6 +94,7 @@ class UserStripeInfo {
     this.pendingBalance,
     this.stripeUID,
     this.verified,
+    this.actionRequired,
   });
 
   UserStripeInfo.fromMap(Map<String, dynamic> data)
@@ -85,6 +105,7 @@ class UserStripeInfo {
           pendingBalance: data['pendingBalance'],
           stripeUID: data['stripeUID'],
           verified: data['verified'],
+          actionRequired: data['actionRequired'],
         );
 
   Map<String, dynamic> toMap() => {
@@ -94,5 +115,15 @@ class UserStripeInfo {
         'pendingBalance': this.pendingBalance,
         'stripeUID': this.stripeUID,
         'verified': this.verified,
+        'actionRequired': this.actionRequired,
       };
+
+  //checks if obj is valid
+  bool isValid() {
+    bool isValid = true;
+    if (stripeUID == null) {
+      isValid = false;
+    }
+    return isValid;
+  }
 }

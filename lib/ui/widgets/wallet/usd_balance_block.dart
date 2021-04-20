@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
+import 'package:webblen_web_app/extensions/hover_extensions.dart';
 
 class USDBalanceBlock extends StatelessWidget {
   final double? balance;
@@ -65,6 +66,6 @@ class USDBalanceBlock extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ).showCursorOnHover;
   }
 }

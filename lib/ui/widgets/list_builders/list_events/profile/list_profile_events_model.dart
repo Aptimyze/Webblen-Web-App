@@ -5,19 +5,31 @@ import 'package:flutter/cupertino.dart';
 import 'package:stacked/stacked.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/services/bottom_sheets/custom_bottom_sheet_service.dart';
-import 'package:webblen_web_app/services/firestore/data/post_data_service.dart';
+import 'package:webblen_web_app/services/firestore/data/event_data_service.dart';
+import 'package:webblen_web_app/services/reactive/content_filter/reactive_content_filter_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
+import 'package:webblen_web_app/utils/custom_string_methods.dart';
 
-class ListUserPostsModel extends BaseViewModel {
-  PostDataService? _postDataService = locator<PostDataService>();
+class ListProfileEventsModel extends ReactiveViewModel {
+  EventDataService _eventDataService = locator<EventDataService>();
   WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
   CustomBottomSheetService customBottomSheetService = locator<CustomBottomSheetService>();
+  ReactiveContentFilterService _reactiveContentFilterService = locator<ReactiveContentFilterService>();
 
   ///HELPERS
   ScrollController scrollController = ScrollController();
+  String listKey = "initial-profile-events-key";
+  String id = "";
 
-  ///USER DATA
-  String? uid;
+  ///FILTER DATA
+  String listAreaCode = "";
+  String listTagFilter = "";
+  String listSortByFilter = "Latest";
+
+  String get cityName => _reactiveContentFilterService.areaCode;
+  String get areaCode => _reactiveContentFilterService.areaCode;
+  String get tagFilter => _reactiveContentFilterService.tagFilter;
+  String get sortByFilter => _reactiveContentFilterService.sortByFilter;
 
   ///DATA
   List<DocumentSnapshot> dataResults = [];
@@ -25,20 +37,36 @@ class ListUserPostsModel extends BaseViewModel {
   bool loadingAdditionalData = false;
   bool moreDataAvailable = true;
 
-  int resultsLimit = 5;
+  int resultsLimit = 10;
 
-  initialize({required String? id}) async {
-    // load additional data on scroll
-    uid = id;
+  @override
+  List<ReactiveServiceMixin> get reactiveServices => [_reactiveContentFilterService];
+
+  initialize({required String uid, ScrollController? embeddedScrollController}) async {
+    id = uid;
+    if (embeddedScrollController != null) {
+      scrollController = embeddedScrollController;
+    }
     notifyListeners();
 
-    scrollController.addListener(() {
-      double triggerFetchMoreSize = 0.9 * scrollController.position.maxScrollExtent;
-      if (scrollController.position.pixels > triggerFetchMoreSize) {
-        loadAdditionalData();
+    // get content filter
+    syncContentFilter();
+
+    _reactiveContentFilterService.addListener(() {
+      if (areaCode != listAreaCode || listTagFilter != tagFilter || listSortByFilter != sortByFilter) {
+        syncContentFilter();
+        refreshData();
       }
     });
+
     await loadData();
+  }
+
+  syncContentFilter() {
+    listAreaCode = areaCode;
+    listTagFilter = listTagFilter;
+    listSortByFilter = sortByFilter;
+    notifyListeners();
   }
 
   Future<void> refreshData() async {
@@ -58,8 +86,8 @@ class ListUserPostsModel extends BaseViewModel {
     setBusy(true);
 
     //load data with params
-    dataResults = await _postDataService!.loadPostsByUserID(
-      id: uid,
+    dataResults = await _eventDataService.loadEventsByUserID(
+      id: id,
       resultsLimit: resultsLimit,
     );
     notifyListeners();
@@ -78,10 +106,10 @@ class ListUserPostsModel extends BaseViewModel {
     notifyListeners();
 
     //load additional posts
-    List<DocumentSnapshot> newResults = await _postDataService!.loadAdditionalPostsByUserID(
-      id: uid,
-      resultsLimit: resultsLimit,
+    List<DocumentSnapshot> newResults = await _eventDataService.loadAdditionalEventsByUserID(
+      id: id,
       lastDocSnap: dataResults[dataResults.length - 1],
+      resultsLimit: resultsLimit,
     );
 
     //notify if no more posts available
@@ -100,6 +128,7 @@ class ListUserPostsModel extends BaseViewModel {
     String val = await customBottomSheetService.showContentOptions(content: content);
     if (val == "deleted content") {
       dataResults.removeWhere((doc) => doc.id == content.id);
+      listKey = getRandomString(5);
       notifyListeners();
     }
   }

@@ -34,43 +34,49 @@ class CalendarBottomSheet extends StatelessWidget {
             color: appBackgroundColor,
             borderRadius: BorderRadius.circular(15),
           ),
-          child: Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CustomText(
-                  text: request!.title,
-                  textAlign: TextAlign.center,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: appFontColor(),
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              Container(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    CustomText(
+                      text: request!.title,
+                      textAlign: TextAlign.center,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: appFontColor(),
+                    ),
+                    CalendarCarousel(
+                      isScrollable: false,
+                      width: 300,
+                      height: 370,
+                      headerTextStyle: TextStyle(
+                        color: appFontColor(),
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      daysTextStyle: TextStyle(color: appFontColor()),
+                      iconColor: appIconColor(),
+                      todayButtonColor: appShadowColor(),
+                      todayTextStyle: TextStyle(color: appFontColor()),
+                      weekdayTextStyle: TextStyle(color: appFontColor()),
+                      selectedDayTextStyle: TextStyle(color: Colors.white),
+                      selectedDayButtonColor: appActiveColor(),
+                      dayPadding: 4,
+                      weekendTextStyle: TextStyle(
+                        color: appSavedContentColor(),
+                      ),
+                      selectedDateTime: request!.customData['selectedDate'],
+                      minSelectedDate: request!.customData['minSelectedDate'],
+                      onDayPressed: (DateTime date, List<Event> events) => completer!(SheetResponse(responseData: date)),
+                    ),
+                  ],
                 ),
-                CalendarCarousel(
-                  isScrollable: true,
-                  width: 300,
-                  height: 370,
-                  headerTextStyle: TextStyle(
-                    color: appFontColor(),
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  daysTextStyle: TextStyle(color: appFontColor()),
-                  iconColor: appIconColor(),
-                  todayButtonColor: appShadowColor(),
-                  todayTextStyle: TextStyle(color: appFontColor()),
-                  weekdayTextStyle: TextStyle(color: appFontColor()),
-                  selectedDayTextStyle: TextStyle(color: Colors.white),
-                  selectedDayButtonColor: appActiveColor(),
-                  weekendTextStyle: TextStyle(
-                    color: appSavedContentColor(),
-                  ),
-                  selectedDateTime: request!.customData['selectedDate'],
-                  minSelectedDate: request!.customData['minSelectedDate'],
-                  onDayPressed: (DateTime date, List<Event> events) => completer!(SheetResponse(responseData: date)),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

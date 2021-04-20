@@ -7,7 +7,6 @@ import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/search/search_view_model.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
 import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_linear_progress_indicator.dart';
-import 'package:webblen_web_app/ui/widgets/common/zero_state_view.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_events_search_results/list_events_search_results.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_search_results/list_streams_search_results.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_search_results/list_user_search_results.dart';
@@ -103,19 +102,7 @@ class SearchView extends StatelessWidget {
   Widget listResults(BuildContext context, SearchViewModel model) {
     return Expanded(
       child: model.streamResults.isEmpty && model.eventResults.isEmpty && model.userResults.isEmpty && model.searchTextController.text.trim().isEmpty
-          ? ZeroStateView(
-              imageAssetName: "search",
-              imageSize: 200,
-              opacity: 0.3,
-              header: "No Recent Searches Found",
-              subHeader: "Search for anything you'd like",
-              refreshData: null,
-              scrollController: null,
-              mainAction: () {},
-              secondaryActionButtonTitle: '',
-              secondaryAction: () {},
-              mainActionButtonTitle: '',
-            )
+          ? Container()
           : ListView(
               shrinkWrap: true,
               children: [
@@ -191,19 +178,16 @@ class SearchView extends StatelessWidget {
           onTap: () => FocusScope.of(context).unfocus(),
           child: Container(
             height: screenHeight(context),
+            width: screenWidth(context),
             color: appBackgroundColor,
-            child: SafeArea(
-              child: Container(
-                child: Column(
-                  children: [
-                    head(context, model),
-                    verticalSpaceSmall,
-                    model.isBusy ? CustomLinearProgressIndicator(color: appActiveColor()) : Container(),
-                    SizedBox(height: 8),
-                    model.isBusy ? Container() : listResults(context, model),
-                  ],
-                ),
-              ),
+            child: Column(
+              children: [
+                head(context, model),
+                verticalSpaceSmall,
+                model.isBusy ? CustomLinearProgressIndicator(color: appActiveColor()) : Container(),
+                SizedBox(height: 8),
+                model.isBusy ? Container() : listResults(context, model),
+              ],
             ),
           ),
         ),

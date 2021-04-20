@@ -105,12 +105,14 @@ class LiveStreamDataService {
 
   Future createStream({required WebblenLiveStream stream}) async {
     await streamsRef.doc(stream.id).set(stream.toMap()).catchError((e) {
+      print(e.message);
       return e.message;
     });
   }
 
   Future updateStream({required WebblenLiveStream stream}) async {
     await streamsRef.doc(stream.id).update(stream.toMap()).catchError((e) {
+      print(e.message);
       return e.message;
     });
   }
@@ -145,21 +147,26 @@ class LiveStreamDataService {
     return stream;
   }
 
-  FutureOr getStreamForEditingByID(String? id) async {
-    WebblenLiveStream? stream;
+  FutureOr<WebblenLiveStream> getStreamForEditingByID(String? id) async {
+    WebblenLiveStream stream = WebblenLiveStream();
+    String? error;
     DocumentSnapshot snapshot = await streamsRef.doc(id).get().catchError((e) {
       print(e.message);
       _dialogService!.showDialog(
         title: "Stream Error",
         description: e.message,
       );
-      return null;
+      error = e.message;
     });
+
+    if (error != null) {
+      return stream;
+    }
+
     if (snapshot.exists) {
       stream = WebblenLiveStream.fromMap(snapshot.data()!);
-    } else if (!snapshot.exists) {
-      return null;
     }
+
     return stream;
   }
 

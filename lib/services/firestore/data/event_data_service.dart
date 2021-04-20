@@ -4,13 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
+import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/firestore/common/firestore_storage_service.dart';
 import 'package:webblen_web_app/services/firestore/data/post_data_service.dart';
 
 class EventDataService {
   final CollectionReference eventsRef = FirebaseFirestore.instance.collection("webblen_events");
   PostDataService? _postDataService = locator<PostDataService>();
-
+  CustomDialogService _customDialogService = locator<CustomDialogService>();
   SnackbarService? _snackbarService = locator<SnackbarService>();
   FirestoreStorageService? _firestoreStorageService = locator<FirestoreStorageService>();
 
@@ -127,26 +128,21 @@ class EventDataService {
     await _postDataService!.deleteEventOrStreamPost(eventOrStreamID: event.id, postType: 'event');
   }
 
-  Future getEventByID(String id) async {
-    WebblenEvent? event;
+  Future<WebblenEvent> getEventByID(String id) async {
+    WebblenEvent event = WebblenEvent();
+    String? error;
     DocumentSnapshot snapshot = await eventsRef.doc(id).get().catchError((e) {
-      print(e.message);
-      _snackbarService!.showSnackbar(
-        title: 'Event Error',
-        message: e.message,
-        duration: Duration(seconds: 5),
-      );
-      return null;
+      error = e.message;
+      _customDialogService.showErrorDialog(description: error!);
     });
+    if (error != null) {
+      return event;
+    }
     if (snapshot.exists) {
       event = WebblenEvent.fromMap(snapshot.data()!);
     } else if (!snapshot.exists) {
-      _snackbarService!.showSnackbar(
-        title: 'This Event No Longer Exists',
-        message: 'This event has been deleted',
-        duration: Duration(seconds: 5),
-      );
-      return null;
+      _customDialogService.showErrorDialog(description: "This Event No Longer Exists");
+      return event;
     }
     return event;
   }
@@ -173,6 +169,7 @@ class EventDataService {
   }) async {
     Query query;
     List<DocumentSnapshot> docs = [];
+    String? error;
     if (areaCode.isEmpty) {
       query = eventsRef
           .where('startDateTimeInMilliseconds', isGreaterThan: dateTimeInMilliseconds2hrsAgog)
@@ -186,15 +183,15 @@ class EventDataService {
           .limit(resultsLimit);
     }
     QuerySnapshot snapshot = await query.get().catchError((e) {
-      if (!e.message.contains("insufficient permissions")) {
-        _snackbarService!.showSnackbar(
-          title: 'Error',
-          message: e.message,
-          duration: Duration(seconds: 5),
-        );
-      }
-      return [];
+      print(e.message);
+      error = e.message;
+      _customDialogService.showErrorDialog(description: error!);
     });
+
+    if (error != null) {
+      return docs;
+    }
+
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
       if (tagFilter.isNotEmpty) {
@@ -213,6 +210,7 @@ class EventDataService {
       {required DocumentSnapshot lastDocSnap, required String areaCode, required int resultsLimit, required String tagFilter, required String sortBy}) async {
     Query query;
     List<DocumentSnapshot> docs = [];
+    String? error;
     if (areaCode.isEmpty) {
       query = eventsRef
           .where('startDateTimeInMilliseconds', isGreaterThan: dateTimeInMilliseconds2hrsAgog)
@@ -228,15 +226,15 @@ class EventDataService {
           .limit(resultsLimit);
     }
     QuerySnapshot snapshot = await query.get().catchError((e) {
-      if (!e.message.contains("insufficient permissions")) {
-        _snackbarService!.showSnackbar(
-          title: 'Error',
-          message: e.message,
-          duration: Duration(seconds: 5),
-        );
-      }
-      return [];
+      print(e.message);
+      error = e.message;
+      _customDialogService.showErrorDialog(description: error!);
     });
+
+    if (error != null) {
+      return docs;
+    }
+
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
       if (tagFilter.isNotEmpty) {
@@ -253,17 +251,18 @@ class EventDataService {
 
   Future<List<DocumentSnapshot>> loadEventsByUserID({required String? id, required int resultsLimit}) async {
     List<DocumentSnapshot> docs = [];
+    String? error;
     Query query = eventsRef.where('authorID', isEqualTo: id).orderBy('startDateTimeInMilliseconds', descending: true).limit(resultsLimit);
     QuerySnapshot snapshot = await query.get().catchError((e) {
-      if (!e.message.contains("insufficient permissions")) {
-        _snackbarService!.showSnackbar(
-          title: 'Error',
-          message: e.message,
-          duration: Duration(seconds: 5),
-        );
-      }
-      return [];
+      print(e.message);
+      error = e.message;
+      _customDialogService.showErrorDialog(description: error!);
     });
+
+    if (error != null) {
+      return docs;
+    }
+
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
     }
@@ -276,18 +275,19 @@ class EventDataService {
     required int resultsLimit,
   }) async {
     List<DocumentSnapshot> docs = [];
+    String? error;
     Query query =
         eventsRef.where('authorID', isEqualTo: id).orderBy('startDateTimeInMilliseconds', descending: true).startAfterDocument(lastDocSnap).limit(resultsLimit);
     QuerySnapshot snapshot = await query.get().catchError((e) {
-      if (!e.message.contains("insufficient permissions")) {
-        _snackbarService!.showSnackbar(
-          title: 'Error',
-          message: e.message,
-          duration: Duration(seconds: 5),
-        );
-      }
-      return [];
+      print(e.message);
+      error = e.message;
+      _customDialogService.showErrorDialog(description: error!);
     });
+
+    if (error != null) {
+      return docs;
+    }
+
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
     }

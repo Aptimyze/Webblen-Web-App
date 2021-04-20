@@ -9,7 +9,9 @@ import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_top_
 import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_top_nav_bar/custom_top_nav_bar_item.dart';
 import 'package:webblen_web_app/ui/widgets/common/navigation/tab_bar/custom_tab_bar.dart';
 import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_linear_progress_indicator.dart';
-import 'package:webblen_web_app/ui/widgets/list_builders/list_posts/profile/user/list_user_posts.dart';
+import 'package:webblen_web_app/ui/widgets/list_builders/list_events/profile/list_profile_events.dart';
+import 'package:webblen_web_app/ui/widgets/list_builders/list_live_streams/profile/list_profile_live_streams.dart';
+import 'package:webblen_web_app/ui/widgets/list_builders/list_posts/profile/list_profile_posts.dart';
 import 'package:webblen_web_app/ui/widgets/user/follow_unfollow_button.dart';
 import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 
@@ -95,36 +97,25 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
       controller: _tabController,
       children: [
         //posts
-        ListUserPosts(
-          user: model.user,
+        ListProfilePosts(
+          id: model.user!.id!,
+          isCurrentUser: false,
           scrollController: model.scrollController,
         ),
 
         //scheduled streams
-        Container(),
-        Container(),
-        // ZeroStateView(
-        //   imageAssetName: "video_phone",
-        //   imageSize: 200,
-        //   header: "@${model.user!.username} Has Not Scheduled Any Streams",
-        //   subHeader: "",
-        //   mainActionButtonTitle: null,
-        //   mainAction: null,
-        //   secondaryActionButtonTitle: null,
-        //   secondaryAction: null,
-        //   refreshData: () async {},
-        // ),
-        // ZeroStateView(
-        //   imageAssetName: "calendar",
-        //   imageSize: 200,
-        //   header: "@${model.user!.username} Has Not Scheduled Any Events",
-        //   subHeader: "",
-        //   mainActionButtonTitle: null,
-        //   mainAction: null,
-        //   secondaryActionButtonTitle: null,
-        //   secondaryAction: null,
-        //   refreshData: () async {}, scrollController: null,
-        // ),
+        ListProfileLiveStreams(
+          id: model.user!.id!,
+          isCurrentUser: false,
+          scrollController: model.scrollController,
+        ),
+
+        //scheduled streams
+        ListProfileEvents(
+          id: model.user!.id!,
+          isCurrentUser: false,
+          scrollController: model.scrollController,
+        ),
       ],
     );
   }

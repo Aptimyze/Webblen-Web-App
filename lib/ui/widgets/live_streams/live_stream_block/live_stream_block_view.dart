@@ -159,7 +159,7 @@ class LiveStreamBlockView extends StatelessWidget {
                                   ),
                                   child: Center(
                                     child: Text(
-                                      "Happening Now",
+                                      "LIVE NOW",
                                       style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                                     ),
                                   ),

@@ -23,7 +23,18 @@
   <meta name="msapplication-TileImage" content="icons/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
   <title>Webblen</title>
+
+  <!-- Google Auth -->
   <meta name="google-signin-client_id" content="618036466482-2ch7gmahk38212m5qvaehk6bkd7erdhj.apps.googleusercontent.com">
+
+  <!-- Apple Auth -->
+  <script type="text/javascript" src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
+
+  <meta name="appleid-signin-client-id" content="io.webblen.app">
+  <meta name="appleid-signin-scope" content="email">
+  <meta name="appleid-signin-redirect-uri" content="https://app.webblen.io/redirect">
+  <meta name="appleid-signin-use-popup" content="true"> <!-- or false defaults to false -->
+
   <script defer src="main.dart.js" type="application/javascript"></script>
 </head>
 
@@ -64,15 +75,15 @@
 
   <!--Facebook SDK config -->
   <script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId            : '1366128250170949',
-      autoLogAppEvents : true,
-      xfbml            : true,
-      version          : 'v7.0'
-    });
-  };
-</script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId            : '1366128250170949',
+        autoLogAppEvents : true,
+        xfbml            : true,
+        version          : 'v7.0'
+      });
+    };
+  </script>
 
   <!-- Facebook JS CDN SDK -->
   <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>

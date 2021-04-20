@@ -10,17 +10,9 @@ import 'package:webblen_web_app/ui/widgets/live_streams/live_stream_block/live_s
 import 'list_home_live_streams_model.dart';
 
 class ListHomeLiveStreams extends StatelessWidget {
-  final Function(WebblenLiveStream) showStreamOptions;
-
-  ListHomeLiveStreams({
-    required this.showStreamOptions,
-  });
-
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ListHomeLiveStreamsModel>.reactive(
-      disposeViewModel: false,
-      initialiseSpecialViewModelsOnce: true,
       onModelReady: (model) => model.initialize(),
       viewModelBuilder: () => ListHomeLiveStreamsModel(),
       builder: (context, model, child) => model.isBusy
@@ -30,7 +22,7 @@ class ListHomeLiveStreams extends StatelessWidget {
               scrollController: model.scrollController,
               imageAssetName: "video_phone",
               imageSize: 200,
-              header: "No Streams in ${model.webblenBaseViewModel!.cityName} Found",
+              header: "No Streams in ${model.cityName} Found",
               subHeader: model.webblenBaseViewModel!.streamPromo != null
                   ? "Schedule a Stream for ${model.cityName} Now and Earn ${model.webblenBaseViewModel!.streamPromo!.toStringAsFixed(2)} WBLN!"
                   : "Schedule a Stream for ${model.cityName} Now!",
@@ -62,11 +54,13 @@ class ListHomeLiveStreams extends StatelessWidget {
                       stream = WebblenLiveStream.fromMap(model.dataResults[index].data()!);
                       return LiveStreamBlockView(
                         stream: stream,
-                        showStreamOptions: (stream) => showStreamOptions(stream),
+                        showStreamOptions: (stream) => model.showContentOptions(stream),
                       );
                     } else {
                       if (model.moreDataAvailable) {
-                        model.loadAdditionalData();
+                        WidgetsBinding.instance!.addPostFrameCallback((_) {
+                          model.loadAdditionalData();
+                        });
                         return Align(
                           alignment: Alignment.center,
                           child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),

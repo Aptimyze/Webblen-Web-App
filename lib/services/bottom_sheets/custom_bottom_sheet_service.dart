@@ -12,6 +12,7 @@ import 'package:webblen_web_app/services/auth/auth_service.dart';
 import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/dynamic_links/dynamic_link_service.dart';
 import 'package:webblen_web_app/services/firestore/data/event_data_service.dart';
+import 'package:webblen_web_app/services/firestore/data/live_stream_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/post_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
 import 'package:webblen_web_app/services/reactive/content_filter/reactive_content_filter_service.dart';
@@ -30,10 +31,11 @@ class CustomBottomSheetService {
   ShareService _shareService = locator<ShareService>();
   PostDataService _postDataService = locator<PostDataService>();
   EventDataService _eventDataService = locator<EventDataService>();
+  LiveStreamDataService _liveStreamDataService = locator<LiveStreamDataService>();
 
   //filters
   openFilter() async {
-    var sheetResponse = await _bottomSheetService.showCustomSheet(
+    _bottomSheetService.showCustomSheet(
       barrierDismissible: true,
       variant: BottomSheetType.homeFilter,
       takesInput: true,
@@ -44,12 +46,12 @@ class CustomBottomSheetService {
         'currentTagFilter': _reactiveContentFilterService.tagFilter,
       },
     );
-    if (sheetResponse != null && sheetResponse.responseData != null) {
-      _reactiveContentFilterService.updateCityName(sheetResponse.responseData['cityName']);
-      _reactiveContentFilterService.updateAreaCode(sheetResponse.responseData['areaCode']);
-      _reactiveContentFilterService.updateTagFilter(sheetResponse.responseData['sortBy']);
-      _reactiveContentFilterService.updateSortByFilter(sheetResponse.responseData['tagFilter']);
-    }
+    // if (sheetResponse != null && sheetResponse.responseData != null) {
+    //   _reactiveContentFilterService.updateCityName(sheetResponse.responseData['cityName']);
+    //   _reactiveContentFilterService.updateAreaCode(sheetResponse.responseData['areaCode']);
+    //   _reactiveContentFilterService.updateTagFilter(sheetResponse.responseData['sortBy']);
+    //   _reactiveContentFilterService.updateSortByFilter(sheetResponse.responseData['tagFilter']);
+    // }
   }
 
   showCurrentUserOptions(WebblenUser user) async {
@@ -87,7 +89,7 @@ class CustomBottomSheetService {
       } else if (res == "new stream") {
         _navigationService.navigateTo(Routes.CreateLiveStreamViewRoute(id: "new", promo: 0));
       } else if (res == "new event") {
-        // _navigationService.navigateTo(Routes.CreateLiveStreamViewRoute(id: "new", promo: 0));
+        _navigationService.navigateTo(Routes.CreateEventViewRoute(id: "new", promo: 0));
       }
     }
   }
@@ -114,9 +116,7 @@ class CustomBottomSheetService {
           _navigationService.navigateTo(Routes.CreatePostViewRoute(id: content.id, promo: 0));
         } else if (content is WebblenEvent) {
           //edit event
-          // _navigationService.navigateTo(Routes.CreateEventViewRoute, arguments: {
-          //   'id': content.id,
-          // });
+          _navigationService.navigateTo(Routes.CreateEventViewRoute(id: content.id, promo: 0));
         } else if (content is WebblenLiveStream) {
           //edit stream
           _navigationService.navigateTo(Routes.CreateLiveStreamViewRoute(id: content.id, promo: 0));
@@ -156,9 +156,7 @@ class CustomBottomSheetService {
             _eventDataService.reportEvent(eventID: content.id, reporterID: user.id);
           } else if (content is WebblenLiveStream) {
             //report stream
-
-            //_liveStreamDataService.reportStream(streamID: content.id, reporterID: user.id);
-
+            _liveStreamDataService.reportStream(streamID: content.id, reporterID: user.id);
           }
         }
       } else if (res == "delete") {
@@ -219,13 +217,32 @@ class CustomBottomSheetService {
       if (sheetResponse != null) {
         String? res = sheetResponse.responseData;
         if (res == "confirmed") {
-          // _liveStreamDataService.deleteStream(stream: content);
+          _liveStreamDataService.deleteStream(stream: content);
           _customDialogService.showStreamDeletedDialog();
           return true;
         }
       }
     }
     return false;
+  }
+
+  showStripeBottomSheet() async {
+    var sheetResponse = await _bottomSheetService.showCustomSheet(
+      barrierDismissible: true,
+      variant: BottomSheetType.stripeAccount,
+    );
+    if (sheetResponse != null) {
+      String? res = sheetResponse.responseData;
+      if (res == "instant payout") {
+        //perform instant payout
+      } else if (res == "payout methods") {
+        //navigate to payout methods
+        _navigationService.navigateTo(Routes.PayoutMethodsViewRoute);
+      } else if (res == "how do earnings work") {
+        //navigate to how earnings work
+        _navigationService.navigateTo(Routes.HowEarningsWorkViewRoute);
+      }
+    }
   }
 
   showLogoutBottomSheet() async {

@@ -33,7 +33,7 @@ class LiveStreamBlockViewModel extends BaseViewModel {
     //check if event is happening now
     isStreamLive(stream);
 
-    WebblenUser author = await _userDataService.getWebblenUserByID(stream.id);
+    WebblenUser author = await _userDataService.getWebblenUserByID(stream.hostID);
     if (author.isValid()) {
       hostImageURL = author.profilePicURL;
       hostUsername = author.username;
