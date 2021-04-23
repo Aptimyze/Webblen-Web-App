@@ -29,6 +29,7 @@ class EditProfileViewModel extends ReactiveViewModel {
   FirestoreStorageService _firestoreStorageService = locator<FirestoreStorageService>();
   CustomDialogService _customDialogService = locator<CustomDialogService>();
 
+  TextEditingController usernameTextController = TextEditingController();
   TextEditingController bioTextController = TextEditingController();
   TextEditingController websiteTextController = TextEditingController();
 
@@ -57,6 +58,7 @@ class EditProfileViewModel extends ReactiveViewModel {
   initialize() async {
     setBusy(true);
     _reactiveFileUploaderService.clearUploaderData();
+    usernameTextController.text = user.username ?? "";
     initialProfilePicURL = user.profilePicURL ?? "";
     bioTextController.text = user.bio ?? "";
     websiteTextController.text = user.website ?? "";
@@ -92,9 +94,31 @@ class EditProfileViewModel extends ReactiveViewModel {
         _customDialogService.showErrorDialog(
           description: "There was an issue updating your profile. Please try again.",
         );
+        updatingData = false;
+        notifyListeners();
         return false;
       }
       await _userDataService.updateProfilePicURL(id: user.id!, url: imageURL);
+    }
+
+    //update username
+    if (user.username != usernameTextController.text) {
+      String username = usernameTextController.text.trim().toLowerCase();
+      if (isValidUsername(username)) {
+        updateSuccessful = await _userDataService.updateUsername(username: username, id: user.id!);
+      } else {
+        _customDialogService.showErrorDialog(
+          description: "Invalid Username",
+        );
+        updatingData = false;
+        notifyListeners();
+        return false;
+      }
+      if (!updateSuccessful) {
+        updatingData = false;
+        notifyListeners();
+        return false;
+      }
     }
 
     //update bio

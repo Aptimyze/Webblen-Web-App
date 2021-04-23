@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
+import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/models/webblen_ticket_distro.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
@@ -321,6 +322,7 @@ class TicketPurchaseViewModel extends ReactiveViewModel {
           if (discountCode != null && discountCodeDescription != null) {
             _ticketDistroDataService.updateUsedDiscountCode(eventID: event!.id!, ticketDistro: ticketDistro!, discountCode: discountCode!);
           }
+          _navigationService.navigateTo(Routes.TicketsPurchaseSuccessViewRoute(email: emailAddress!));
         } else {
           customDialogService.showErrorDialog(description: status!);
         }

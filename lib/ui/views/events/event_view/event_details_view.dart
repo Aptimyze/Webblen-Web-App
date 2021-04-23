@@ -356,10 +356,6 @@ class EventDetailsView extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Container(
-                      alignment: Alignment.bottomCenter,
-                      child: Container(),
-                    ),
                   ],
                 ),
         ),

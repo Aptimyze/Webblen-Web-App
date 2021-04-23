@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/models/stripe_transaction.dart';
-import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_circle_progress_indicator.dart';
 import 'package:webblen_web_app/ui/widgets/common/zero_state_view.dart';
 import 'package:webblen_web_app/ui/widgets/wallet/stripe/stripe_transactions/stripe_transaction_block.dart';
@@ -34,7 +33,6 @@ class ListStripeTransactions extends StatelessWidget {
               refreshData: model.refreshData,
             )
           : Container(
-              height: screenHeight(context),
               color: appBackgroundColor,
               child: RefreshIndicator(
                 onRefresh: model.refreshData,

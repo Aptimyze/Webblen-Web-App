@@ -7,7 +7,7 @@ import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/search/search_view_model.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
 import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_linear_progress_indicator.dart';
-import 'package:webblen_web_app/ui/widgets/list_builders/list_events_search_results/list_events_search_results.dart';
+import 'package:webblen_web_app/ui/widgets/list_builders/list_search_results/list_events_search_results.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_search_results/list_streams_search_results.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_search_results/list_user_search_results.dart';
 import 'package:webblen_web_app/ui/widgets/search/search_field.dart';

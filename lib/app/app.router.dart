@@ -23,6 +23,7 @@ import '../ui/views/events/tickets/my_tickets/my_tickets_view.dart';
 import '../ui/views/events/tickets/ticket_details/ticket_details_view.dart';
 import '../ui/views/events/tickets/ticket_purchase/ticket_purchase_view.dart';
 import '../ui/views/events/tickets/ticket_selection/ticket_selection_view.dart';
+import '../ui/views/events/tickets/tickets_purchase_success/tickets_purchase_success_view.dart';
 import '../ui/views/live_streams/create_live_stream_view/create_live_stream_view.dart';
 import '../ui/views/live_streams/live_stream_details_view/live_stream_details_view.dart';
 import '../ui/views/posts/create_post_view/create_post_view.dart';
@@ -83,6 +84,10 @@ class Routes {
   static const String _TicketDetailsViewRoute = '/tickets/view/:id';
   static String TicketDetailsViewRoute({@required dynamic id}) =>
       '/tickets/view/$id';
+  static const String _TicketsPurchaseSuccessViewRoute =
+      '/ticket_purchase_success/:email';
+  static String TicketsPurchaseSuccessViewRoute({@required dynamic email}) =>
+      '/ticket_purchase_success/$email';
   static const String USDBalanceHistoryViewRoute = '/usd-balance-history';
   static const String PayoutMethodsViewRoute = '/payout-methods';
   static const String HowEarningsWorkViewRoute = '/how-earnings-work';
@@ -108,6 +113,7 @@ class Routes {
     MyTicketsViewRoute,
     _EventTicketsViewRoute,
     _TicketDetailsViewRoute,
+    _TicketsPurchaseSuccessViewRoute,
     USDBalanceHistoryViewRoute,
     PayoutMethodsViewRoute,
     HowEarningsWorkViewRoute,
@@ -139,6 +145,8 @@ class StackedRouter extends RouterBase {
     RouteDef(Routes.MyTicketsViewRoute, page: MyTicketsView),
     RouteDef(Routes._EventTicketsViewRoute, page: EventTicketsView),
     RouteDef(Routes._TicketDetailsViewRoute, page: TicketDetailsView),
+    RouteDef(Routes._TicketsPurchaseSuccessViewRoute,
+        page: TicketsPurchaseSuccessView),
     RouteDef(Routes.USDBalanceHistoryViewRoute, page: USDBalanceHistoryView),
     RouteDef(Routes.PayoutMethodsViewRoute, page: PayoutMethodsView),
     RouteDef(Routes.HowEarningsWorkViewRoute, page: HowEarningsWorkView),
@@ -303,6 +311,14 @@ class StackedRouter extends RouterBase {
       return PageRouteBuilder<dynamic>(
         pageBuilder: (context, animation, secondaryAnimation) =>
             TicketDetailsView(data.pathParams['id'].value),
+        settings: data,
+        transitionDuration: const Duration(milliseconds: 0),
+      );
+    },
+    TicketsPurchaseSuccessView: (data) {
+      return PageRouteBuilder<dynamic>(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            TicketsPurchaseSuccessView(data.pathParams['email'].value),
         settings: data,
         transitionDuration: const Duration(milliseconds: 0),
       );

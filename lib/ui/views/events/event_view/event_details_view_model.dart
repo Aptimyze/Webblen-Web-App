@@ -101,6 +101,7 @@ class EventDetailsViewModel extends ReactiveViewModel {
     } else {
       liveNow = false;
     }
+    print(liveNow);
     notifyListeners();
   }
 

@@ -155,7 +155,8 @@ class AuthService {
         });
       });
     }).catchError((e) {
-      _customDialogService.showErrorDialog(description: e.message);
+      print(e.message);
+      //_customDialogService.showErrorDialog(description: e.message);
     });
     return signedIn;
   }

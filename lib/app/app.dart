@@ -41,6 +41,7 @@ import 'package:webblen_web_app/ui/views/events/tickets/my_tickets/my_tickets_vi
 import 'package:webblen_web_app/ui/views/events/tickets/ticket_details/ticket_details_view.dart';
 import 'package:webblen_web_app/ui/views/events/tickets/ticket_purchase/ticket_purchase_view.dart';
 import 'package:webblen_web_app/ui/views/events/tickets/ticket_selection/ticket_selection_view.dart';
+import 'package:webblen_web_app/ui/views/events/tickets/tickets_purchase_success/tickets_purchase_success_view.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/home/home_view_model.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/search/recent_search_view_model.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/wallet/wallet_view_model.dart';
@@ -214,6 +215,13 @@ import 'package:webblen_web_app/ui/views/users/saved/saved_content_view.dart';
       page: TicketDetailsView,
       name: "TicketDetailsViewRoute",
       path: "/tickets/view/:id",
+      //transitionsBuilder: TransitionsBuilders.fadeIn,
+      durationInMilliseconds: 0,
+    ),
+    CustomRoute(
+      page: TicketsPurchaseSuccessView,
+      name: "TicketsPurchaseSuccessViewRoute",
+      path: "/ticket_purchase_success/:email",
       //transitionsBuilder: TransitionsBuilders.fadeIn,
       durationInMilliseconds: 0,
     ),

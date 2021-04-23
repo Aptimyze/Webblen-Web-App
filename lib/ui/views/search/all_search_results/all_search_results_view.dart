@@ -10,6 +10,9 @@ import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_top_
 import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_top_nav_bar/custom_top_nav_bar_item.dart';
 import 'package:webblen_web_app/ui/widgets/common/navigation/tab_bar/custom_tab_bar.dart';
 import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_linear_progress_indicator.dart';
+import 'package:webblen_web_app/ui/widgets/list_builders/list_events/search/list_full_event_search_results.dart';
+import 'package:webblen_web_app/ui/widgets/list_builders/list_live_streams/search/list_full_live_stream_search_results.dart';
+import 'package:webblen_web_app/ui/widgets/list_builders/list_posts/search/list_full_post_search_results.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_users.dart';
 import 'package:webblen_web_app/ui/widgets/search/search_field.dart';
 
@@ -73,9 +76,9 @@ class _AllSearchResultsViewState extends State<AllSearchResultsView> with Single
     return TabBarView(
       controller: _tabController,
       children: [
-        noResultsFound(model),
-        Container(),
-        Container(),
+        ListFullPostSearchResults(searchTerm: widget.term!),
+        ListFullLiveStreamSearchResults(searchTerm: widget.term!),
+        ListFullEventSearchResults(searchTerm: widget.term!),
         model.userResults.isNotEmpty
             ? ListUsers(
                 refreshData: model.refreshUsers,

@@ -90,6 +90,21 @@ class EditProfileView extends StatelessWidget {
                       ),
                       verticalSpaceMedium,
                       CustomText(
+                        text: "Username",
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: appFontColor(),
+                      ),
+                      verticalSpaceSmall,
+                      SingleLineTextField(
+                        controller: model.usernameTextController,
+                        hintText: "Username",
+                        textLimit: 50,
+                        isPassword: false,
+                      ),
+                      verticalSpaceMedium,
+
+                      CustomText(
                         text: "Short Bio",
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

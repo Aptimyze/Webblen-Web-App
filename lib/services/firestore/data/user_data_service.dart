@@ -100,6 +100,30 @@ class UserDataService {
     return updated;
   }
 
+  Future<bool> updateUsername({required String username, required String id}) async {
+    bool updated = true;
+    String? error;
+    bool usernameExists = await checkIfUsernameExists(username);
+    if (usernameExists) {
+      _customDialogService.showErrorDialog(description: "Username already exists, please choose another.");
+      updated = false;
+    } else if (username.startsWith("user")) {
+      _customDialogService.showErrorDialog(description: "invalid username");
+      updated = false;
+    } else {
+      await userRef.doc(id).update({
+        "username": username,
+      }).catchError((e) {
+        error = e.message;
+      });
+      if (error != null) {
+        updated = false;
+      }
+    }
+
+    return updated;
+  }
+
   Future<bool> updateBio({String? id, String? bio}) async {
     bool updated = true;
     String? error;

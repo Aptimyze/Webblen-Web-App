@@ -21,12 +21,6 @@ import 'package:webblen_web_app/ui/widgets/common/text_field/auto_complete_addre
 import 'package:webblen_web_app/ui/widgets/common/text_field/icon_text_field.dart';
 import 'package:webblen_web_app/ui/widgets/common/text_field/multi_line_text_field.dart';
 import 'package:webblen_web_app/ui/widgets/common/text_field/single_line_text_field.dart';
-import 'package:webblen_web_app/ui/widgets/events/ticketing_fees_and_discount_forms/discount_form.dart';
-import 'package:webblen_web_app/ui/widgets/events/ticketing_fees_and_discount_forms/fee_form.dart';
-import 'package:webblen_web_app/ui/widgets/events/ticketing_fees_and_discount_forms/ticketing_form.dart';
-import 'package:webblen_web_app/ui/widgets/list_builders/list_discounts/list_discounts.dart';
-import 'package:webblen_web_app/ui/widgets/list_builders/list_fees/list_fees.dart';
-import 'package:webblen_web_app/ui/widgets/list_builders/list_tickets.dart';
 import 'package:webblen_web_app/ui/widgets/tags/tag_button.dart';
 import 'package:webblen_web_app/ui/widgets/tags/tag_dropdown_field.dart';
 
@@ -330,130 +324,130 @@ class CreateLiveStreamView extends StatelessWidget {
                         ),
 
                         ///EVENT TICKETING, FEES, AND DISCOUNTS
-                        model.hasEarningsAccount == null || !model.hasEarningsAccount!
-                            ? Container()
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  formSectionDivider(sectionName: "TICKETING"),
-
-                                  textFieldHeader(
-                                    header: "Ticketing",
-                                    subHeader: "Add ticketing, fees, and discount info for your event",
-                                    required: false,
-                                  ),
-                                  verticalSpaceSmall,
-
-                                  //list tickets
-                                  model.ticketDistro!.tickets!.isEmpty
-                                      ? Container()
-                                      : ListTicketsForEditing(
-                                          ticketDistro: model.ticketDistro,
-                                          editTicketAtIndex: (index) => model.toggleTicketForm(ticketIndex: index),
-                                        ),
-
-                                  //list fees
-                                  model.ticketDistro!.fees!.isEmpty || model.ticketDistro!.tickets!.isEmpty ? Container() : verticalSpaceSmall,
-                                  model.ticketDistro!.fees!.isEmpty || model.ticketDistro!.tickets!.isEmpty
-                                      ? Container()
-                                      : ListFeesForEditing(
-                                          ticketDistro: model.ticketDistro,
-                                          editFeeAtIndex: (index) => model.toggleFeeForm(feeIndex: index),
-                                        ),
-
-                                  //list discount codes
-                                  model.ticketDistro!.discountCodes!.isEmpty || model.ticketDistro!.discountCodes!.isEmpty ? Container() : verticalSpaceSmall,
-                                  model.ticketDistro!.discountCodes!.isEmpty || model.ticketDistro!.discountCodes!.isEmpty
-                                      ? Container()
-                                      : ListDiscountsForEditing(
-                                          ticketDistro: model.ticketDistro,
-                                          editDiscountAtIndex: (index) => model.toggleDiscountsForm(discountIndex: index),
-                                        ),
-                                  verticalSpaceSmall,
-
-                                  //ticket form
-                                  model.showTicketForm
-                                      ? TicketingForm(
-                                          editingTicket: model.ticketToEditIndex != null ? true : false,
-                                          ticketNameTextController: model.ticketNameTextController,
-                                          ticketQuantityTextController: model.ticketQuantityTextController,
-                                          ticketPriceTextController: model.ticketPriceTextController,
-                                          validateAndSubmitTicket: () => model.addTicket(),
-                                          deleteTicket: () => model.deleteTicket(),
-                                        )
-
-                                      //fee form
-                                      : model.showFeeForm
-                                      ? FeeForm(
-                                          editingFee: model.feeToEditIndex != null ? true : false,
-                                          feeNameTextController: model.feeNameTextController,
-                                          feePriceTextController: model.feePriceTextController,
-                                          validateAndSubmitFee: () => model.addFee(),
-                                          deleteFee: () => model.deleteFee(),
-                                        )
-
-                                      //discount form
-                                      : model.showDiscountCodeForm
-                                      ? DiscountForm(
-                                          editingDiscount: model.discountToEditIndex != null ? true : false,
-                                          discountNameTextController: model.discountNameTextController,
-                                          discountLimitTextController: model.discountLimitTextController,
-                                          discountValueTextController: model.discountValueTextController,
-                                          validateAndSubmitDiscount: () => model.addDiscount(),
-                                          deleteDiscount: () => model.deleteDiscount(),
-                                        )
-
-                                      //new ticket, fee, and discount buttons
-                                      : Container(
-                                          child: Row(
-                                            children: [
-                                              CustomIconButton(
-                                                height: 40,
-                                                width: 40,
-                                                icon: Icon(
-                                                  FontAwesomeIcons.ticketAlt,
-                                                  size: 16,
-                                                  color: appIconColor(),
-                                                ),
-                                                onPressed: () => model.toggleTicketForm(ticketIndex: null),
-                                                centerContent: true,
-                                                backgroundColor: appButtonColorAlt(),
-                                              ),
-                                              horizontalSpaceSmall,
-                                              model.ticketDistro!.tickets!.isEmpty
-                                                  ? Container()
-                                                  : CustomIconButton(
-                                                      height: 40,
-                                                      width: 40,
-                                                      icon: Icon(
-                                                        FontAwesomeIcons.dollarSign,
-                                                        size: 16,
-                                                        color: appIconColor(),
-                                                      ),
-                                                      onPressed: () => model.toggleFeeForm(feeIndex: null),
-                                                      centerContent: true,
-                                                      backgroundColor: appButtonColorAlt(),
-                                                    ),
-                                              horizontalSpaceSmall,
-                                              model.ticketDistro!.tickets!.isEmpty
-                                                  ? Container()
-                                                  : CustomIconButton(
-                                                      height: 40,
-                                                      width: 40,
-                                                      icon: Icon(
-                                                        FontAwesomeIcons.percent,
-                                                        size: 16,
-                                                        color: appIconColor(),
-                                                      ),
-                                                      onPressed: () => model.toggleDiscountsForm(discountIndex: null),
-                                                      centerContent: true,
-                                                      backgroundColor: appButtonColorAlt(),
-                                                    ),
-                                            ],
-                                          ),
-                                        ),
-                                ],
-                              ),
+                        // model.hasEarningsAccount == null || !model.hasEarningsAccount!
+                        //     ? Container()
+                        //     : Column(
+                        //         crossAxisAlignment: CrossAxisAlignment.stretch,
+                        //         children: [
+                        //           formSectionDivider(sectionName: "TICKETING"),
+                        //
+                        //           textFieldHeader(
+                        //             header: "Ticketing",
+                        //             subHeader: "Add ticketing, fees, and discount info for your event",
+                        //             required: false,
+                        //           ),
+                        //           verticalSpaceSmall,
+                        //
+                        //           //list tickets
+                        //           model.ticketDistro!.tickets!.isEmpty
+                        //               ? Container()
+                        //               : ListTicketsForEditing(
+                        //                   ticketDistro: model.ticketDistro,
+                        //                   editTicketAtIndex: (index) => model.toggleTicketForm(ticketIndex: index),
+                        //                 ),
+                        //
+                        //           //list fees
+                        //           model.ticketDistro!.fees!.isEmpty || model.ticketDistro!.tickets!.isEmpty ? Container() : verticalSpaceSmall,
+                        //           model.ticketDistro!.fees!.isEmpty || model.ticketDistro!.tickets!.isEmpty
+                        //               ? Container()
+                        //               : ListFeesForEditing(
+                        //                   ticketDistro: model.ticketDistro,
+                        //                   editFeeAtIndex: (index) => model.toggleFeeForm(feeIndex: index),
+                        //                 ),
+                        //
+                        //           //list discount codes
+                        //           model.ticketDistro!.discountCodes!.isEmpty || model.ticketDistro!.discountCodes!.isEmpty ? Container() : verticalSpaceSmall,
+                        //           model.ticketDistro!.discountCodes!.isEmpty || model.ticketDistro!.discountCodes!.isEmpty
+                        //               ? Container()
+                        //               : ListDiscountsForEditing(
+                        //                   ticketDistro: model.ticketDistro,
+                        //                   editDiscountAtIndex: (index) => model.toggleDiscountsForm(discountIndex: index),
+                        //                 ),
+                        //           verticalSpaceSmall,
+                        //
+                        //           //ticket form
+                        //           model.showTicketForm
+                        //               ? TicketingForm(
+                        //                   editingTicket: model.ticketToEditIndex != null ? true : false,
+                        //                   ticketNameTextController: model.ticketNameTextController,
+                        //                   ticketQuantityTextController: model.ticketQuantityTextController,
+                        //                   ticketPriceTextController: model.ticketPriceTextController,
+                        //                   validateAndSubmitTicket: () => model.addTicket(),
+                        //                   deleteTicket: () => model.deleteTicket(),
+                        //                 )
+                        //
+                        //               //fee form
+                        //               : model.showFeeForm
+                        //               ? FeeForm(
+                        //                   editingFee: model.feeToEditIndex != null ? true : false,
+                        //                   feeNameTextController: model.feeNameTextController,
+                        //                   feePriceTextController: model.feePriceTextController,
+                        //                   validateAndSubmitFee: () => model.addFee(),
+                        //                   deleteFee: () => model.deleteFee(),
+                        //                 )
+                        //
+                        //               //discount form
+                        //               : model.showDiscountCodeForm
+                        //               ? DiscountForm(
+                        //                   editingDiscount: model.discountToEditIndex != null ? true : false,
+                        //                   discountNameTextController: model.discountNameTextController,
+                        //                   discountLimitTextController: model.discountLimitTextController,
+                        //                   discountValueTextController: model.discountValueTextController,
+                        //                   validateAndSubmitDiscount: () => model.addDiscount(),
+                        //                   deleteDiscount: () => model.deleteDiscount(),
+                        //                 )
+                        //
+                        //               //new ticket, fee, and discount buttons
+                        //               : Container(
+                        //                   child: Row(
+                        //                     children: [
+                        //                       CustomIconButton(
+                        //                         height: 40,
+                        //                         width: 40,
+                        //                         icon: Icon(
+                        //                           FontAwesomeIcons.ticketAlt,
+                        //                           size: 16,
+                        //                           color: appIconColor(),
+                        //                         ),
+                        //                         onPressed: () => model.toggleTicketForm(ticketIndex: null),
+                        //                         centerContent: true,
+                        //                         backgroundColor: appButtonColorAlt(),
+                        //                       ),
+                        //                       horizontalSpaceSmall,
+                        //                       model.ticketDistro!.tickets!.isEmpty
+                        //                           ? Container()
+                        //                           : CustomIconButton(
+                        //                               height: 40,
+                        //                               width: 40,
+                        //                               icon: Icon(
+                        //                                 FontAwesomeIcons.dollarSign,
+                        //                                 size: 16,
+                        //                                 color: appIconColor(),
+                        //                               ),
+                        //                               onPressed: () => model.toggleFeeForm(feeIndex: null),
+                        //                               centerContent: true,
+                        //                               backgroundColor: appButtonColorAlt(),
+                        //                             ),
+                        //                       horizontalSpaceSmall,
+                        //                       model.ticketDistro!.tickets!.isEmpty
+                        //                           ? Container()
+                        //                           : CustomIconButton(
+                        //                               height: 40,
+                        //                               width: 40,
+                        //                               icon: Icon(
+                        //                                 FontAwesomeIcons.percent,
+                        //                                 size: 16,
+                        //                                 color: appIconColor(),
+                        //                               ),
+                        //                               onPressed: () => model.toggleDiscountsForm(discountIndex: null),
+                        //                               centerContent: true,
+                        //                               backgroundColor: appButtonColorAlt(),
+                        //                             ),
+                        //                     ],
+                        //                   ),
+                        //                 ),
+                        //         ],
+                        //       ),
 
                         formSectionDivider(sectionName: "ADDITIONAL INFO"),
 
