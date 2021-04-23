@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stacked_services/stacked_services.dart';
@@ -76,63 +75,57 @@ class UserDataService {
   }
 
   Future<bool> updateWebblenUser(WebblenUser user) async {
+    bool updated = true;
+    String? error;
     await userRef.doc(user.id).update(user.toMap()).catchError((e) {
-      _snackbarService!.showSnackbar(
-        title: 'Account Update Error',
-        message: e.message,
-        duration: Duration(seconds: 5),
-      );
-      return false;
+      error = e.message;
     });
-    return true;
+    if (error != null) {
+      updated = false;
+    }
+    return updated;
   }
 
-  updateProfilePic(String? id, File? img) async {
-    // String imgURL = await _firestoreStorageService.uploadImage(
-    //   img: img,
-    //   storageBucket: 'webblen_users',
-    //   folderName: id,
-    //   fileName: getRandomString(10) + ".png",
-    // );
-    // await userRef.doc(id).update({
-    //   "profilePicURL": imgURL,
-    // }).catchError((e) {
-    //   _snackbarService.showSnackbar(
-    //     title: 'Photo Upload Error',
-    //     message: e.message,
-    //     duration: Duration(seconds: 5),
-    //   );
-    //   return false;
-    // });
-    // return true;
+  Future<bool> updateProfilePicURL({required String id, required String url}) async {
+    bool updated = true;
+    String? error;
+    await userRef.doc(id).update({
+      "profilePicURL": url,
+    }).catchError((e) {
+      error = e.message;
+    });
+    if (error != null) {
+      updated = false;
+    }
+    return updated;
   }
 
   Future<bool> updateBio({String? id, String? bio}) async {
+    bool updated = true;
+    String? error;
     await userRef.doc(id).update({
       "bio": bio,
     }).catchError((e) {
-      _snackbarService!.showSnackbar(
-        title: 'Error',
-        message: 'There was an issue updating your profile. Please try again.',
-        duration: Duration(seconds: 3),
-      );
-      return false;
+      error = e.message;
     });
-    return true;
+    if (error != null) {
+      updated = false;
+    }
+    return updated;
   }
 
   Future<bool> updateWebsite({String? id, String? website}) async {
+    bool updated = true;
+    String? error;
     await userRef.doc(id).update({
       "website": website,
     }).catchError((e) {
-      _snackbarService!.showSnackbar(
-        title: 'Error',
-        message: 'There was an issue updating your profile. Please try again.',
-        duration: Duration(seconds: 3),
-      );
-      return false;
+      error = e.message;
     });
-    return true;
+    if (error != null) {
+      updated = false;
+    }
+    return updated;
   }
 
   Future<bool> updateLastSeenZipcode({String? id, String? zip}) async {

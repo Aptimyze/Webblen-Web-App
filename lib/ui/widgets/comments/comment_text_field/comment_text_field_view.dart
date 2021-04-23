@@ -159,7 +159,7 @@ class CommentTextFieldView extends StatelessWidget {
                                 child: Row(
                                   children: [
                                     UserProfilePic(
-                                      userPicUrl: user!.profilePicURL,
+                                      userPicUrl: user.profilePicURL,
                                       size: 35,
                                       isBusy: false,
                                     ),

@@ -48,6 +48,18 @@ class StripeAccountBottomSheet extends StatelessWidget {
               ),
               SizedBox(height: 16),
               CustomButton(
+                onPressed: () => completer!(SheetResponse(responseData: "balance history")),
+                text: "Balance History",
+                textSize: 16,
+                textColor: appFontColor(),
+                height: 45,
+                width: getValueForScreenType(context: context, mobile: screenWidth(context), tablet: 600, desktop: 700),
+                backgroundColor: appButtonColor(),
+                elevation: 1.0,
+                isBusy: false,
+              ),
+              SizedBox(height: 16),
+              CustomButton(
                 onPressed: () => completer!(SheetResponse(responseData: "payout methods")),
                 text: "Payout Methods",
                 textSize: 16,

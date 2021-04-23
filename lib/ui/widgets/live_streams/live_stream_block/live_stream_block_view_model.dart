@@ -71,10 +71,10 @@ class LiveStreamBlockViewModel extends BaseViewModel {
 // }
 //
   navigateToStreamView(String? id) async {
-    _navigationService!.navigateTo(Routes.LiveStreamViewRoute(id: id));
+    _navigationService.navigateTo(Routes.LiveStreamViewRoute(id: id));
   }
 
   navigateToUserView(String? id) {
-    _navigationService!.navigateTo(Routes.UserProfileView(id: id));
+    _navigationService.navigateTo(Routes.UserProfileView(id: id));
   }
 }

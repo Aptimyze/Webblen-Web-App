@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:html';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_oauth/firebase_auth_oauth.dart';
@@ -96,6 +97,13 @@ class AuthService {
         WebblenUser user = WebblenUser().generateNewUser(credential.user!.uid);
         await _userDataService.createWebblenUser(user);
       }
+
+      //hide captcha container
+      var captcha = querySelector('#__ff-recaptcha-container');
+      if (captcha != null) {
+        captcha.hidden = true;
+      }
+
       signedIn = true;
     }).catchError((e) {
       _customDialogService.showErrorDialog(description: e.message);

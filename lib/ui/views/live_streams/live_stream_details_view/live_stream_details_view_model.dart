@@ -57,7 +57,7 @@ class LiveStreamDetailsViewModel extends ReactiveViewModel {
     //get stream data
     var res = await _streamDataService!.getStreamByID(id);
     if (res == null) {
-      _navigationService!.back();
+      _navigationService.back();
       return;
     } else {
       stream = res;

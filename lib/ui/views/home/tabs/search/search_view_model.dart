@@ -6,20 +6,18 @@ import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/models/search_result.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/algolia/algolia_search_service.dart';
-import 'package:webblen_web_app/services/auth/auth_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
 import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/search/recent_search_view_model.dart';
 
 class SearchViewModel extends ReactiveViewModel {
-  AuthService? _authService = locator<AuthService>();
-  DialogService? _dialogService = locator<DialogService>();
-  NavigationService? _navigationService = locator<NavigationService>();
-  AlgoliaSearchService? _algoliaSearchService = locator<AlgoliaSearchService>();
-  UserDataService? _userDataService = locator<UserDataService>();
+  DialogService _dialogService = locator<DialogService>();
+  NavigationService _navigationService = locator<NavigationService>();
+  AlgoliaSearchService _algoliaSearchService = locator<AlgoliaSearchService>();
+  UserDataService _userDataService = locator<UserDataService>();
   RecentSearchViewModel? _recentSearchViewModel = locator<RecentSearchViewModel>();
-  WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();
   ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
 
   ///HELPERS
@@ -70,10 +68,11 @@ class SearchViewModel extends ReactiveViewModel {
       eventResults = [];
       userResults = [];
     } else {
-      streamResults = await _algoliaSearchService!.searchStreams(searchTerm: searchTerm, resultsLimit: streamResultsLimit);
-      eventResults = await _algoliaSearchService!.searchEvents(searchTerm: searchTerm, resultsLimit: eventResultsLimit);
-      userResults = await _algoliaSearchService!.searchUsers(searchTerm: searchTerm, resultsLimit: userResultsLimit);
+      streamResults = await _algoliaSearchService.searchStreams(searchTerm: searchTerm, resultsLimit: streamResultsLimit);
+      eventResults = await _algoliaSearchService.searchEvents(searchTerm: searchTerm, resultsLimit: eventResultsLimit);
+      userResults = await _algoliaSearchService.searchUsers(searchTerm: searchTerm, resultsLimit: userResultsLimit);
     }
+    print(eventResults);
     notifyListeners();
     setBusy(false);
   }
@@ -84,31 +83,27 @@ class SearchViewModel extends ReactiveViewModel {
       searchTextController.text = searchTerm;
       notifyListeners();
       if (isLoggedIn) {
-        _algoliaSearchService!.storeSearchTerm(uid: user.id, searchTerm: searchTerm);
+        _algoliaSearchService.storeSearchTerm(uid: user.id, searchTerm: searchTerm);
       }
-      await _navigationService!.navigateTo(Routes.AllSearchResultsViewRoute(term: searchTerm));
+      await _navigationService.navigateTo(Routes.AllSearchResultsViewRoute(term: searchTerm));
       searchTextController.selection = TextSelection(baseOffset: 0, extentOffset: searchTextController.text.length);
       FocusScope.of(context!).previousFocus();
     }
   }
 
-  navigateToCauseView(String id) {
-    //_navigationService.navigateTo(Routes.CauseViewRoute, arguments: {'id': id});
-  }
-
   navigateToUserView(Map<String, dynamic> userData) {
-    //_algoliaSearchService.storeSearchTerm(uid: webblenBaseViewModel.uid, searchTerm: userData['username']);
-    _navigationService!.navigateTo(Routes.UserProfileView(id: userData['id']));
+    _algoliaSearchService.storeSearchTerm(uid: user.id, searchTerm: userData['username']);
+    _navigationService.navigateTo(Routes.UserProfileView(id: userData['id']));
   }
 
   navigateToLiveStreamView(Map<String, dynamic> streamData) {
-    //_algoliaSearchService.storeSearchTerm(uid: webblenBaseViewModel.uid, searchTerm: streamData['name']);
-    //_navigationService.navigateTo(Routes.LiveStreamViewRoute, arguments: {'id': streamData['id']});
+    _algoliaSearchService.storeSearchTerm(uid: user.id, searchTerm: streamData['name']);
+    _navigationService.navigateTo(Routes.LiveStreamViewRoute(id: streamData['id']));
   }
 
   navigateToEventView(Map<String, dynamic> eventData) {
-    //_algoliaSearchService.storeSearchTerm(uid: webblenBaseViewModel.uid, searchTerm: eventData['name']);
-    //_navigationService.navigateTo(Routes.EventViewRoute, arguments: {'id': eventData['id']});
+    _algoliaSearchService.storeSearchTerm(uid: user.id, searchTerm: eventData['name']);
+    _navigationService.navigateTo(Routes.EventDetailsViewRoute(id: eventData['id']));
   }
 
   clearSearchTextField() {

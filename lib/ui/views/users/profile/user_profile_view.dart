@@ -77,7 +77,7 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
             ),
           ),
           SizedBox(height: 8),
-          model.isFollowingUser == null
+          !model.currentUser.isValid() || model.isFollowingUser == null
               ? Container()
               : FollowUnfollowButton(isFollowing: model.isFollowingUser, followUnfollowAction: () => model.followUnfollowUser()),
         ],
@@ -198,7 +198,7 @@ class _UserProfileViewState extends State<UserProfileView> with SingleTickerProv
                                 floating: true,
                                 snap: true,
                                 forceElevated: innerBoxIsScrolled,
-                                expandedHeight: model.isFollowingUser == null ? 150 : 200,
+                                expandedHeight: !model.currentUser.isValid() || model.isFollowingUser == null ? 150 : 200,
                                 leading: Container(),
                                 backgroundColor: appBackgroundColor,
                                 flexibleSpace: FlexibleSpaceBar(

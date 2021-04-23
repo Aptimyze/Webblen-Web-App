@@ -12,14 +12,11 @@ class ListUsersSearchResults extends StatelessWidget {
   final bool isScrollable;
 
   ListUsersSearchResults(
-      {required this.onSearchTermSelected,
-      required this.results,
-      required this.usersFollowing,
-      required this.isScrollable,
-      required this.scrollController});
+      {required this.onSearchTermSelected, required this.results, required this.usersFollowing, required this.isScrollable, required this.scrollController});
 
   Widget listResults() {
     return ListView.builder(
+      cacheExtent: 8000,
       controller: scrollController,
       physics: isScrollable ? AlwaysScrollableScrollPhysics() : NeverScrollableScrollPhysics(),
       addAutomaticKeepAlives: true,

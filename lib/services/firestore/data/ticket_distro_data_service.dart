@@ -84,9 +84,9 @@ class TicketDistroDataService {
   }
 
   updateUsedDiscountCode({required String eventID, required WebblenTicketDistro ticketDistro, required String discountCode}) {
-    int discountCodeIndex = ticketDistro!.discountCodes!.indexWhere((code) => code['discountName'] == discountCode);
+    int discountCodeIndex = ticketDistro.discountCodes!.indexWhere((code) => code['discountName'] == discountCode);
     if (discountCodeIndex >= 0) {
-      Map<String, dynamic> code = ticketDistro!.discountCodes![discountCodeIndex];
+      Map<String, dynamic> code = ticketDistro.discountCodes![discountCodeIndex];
       int discountLimit = int.parse(code['discountLimit']);
       discountLimit = discountLimit - 1;
       ticketDistro.discountCodes![discountCodeIndex]['discountLimit'] = discountLimit.toString();

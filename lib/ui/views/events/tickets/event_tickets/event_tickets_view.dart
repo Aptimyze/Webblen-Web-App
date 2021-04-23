@@ -107,13 +107,16 @@ class _EventTicketsHead extends HookViewModelWidget<EventTicketsViewModel> {
           SizedBox(
             height: 16.0,
           ),
-          CustomText(
-            text: model.event!.title,
-            textAlign: TextAlign.center,
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-            color: appFontColor(),
-          ),
+          GestureDetector(
+            onTap: () => model.navigateToEventView(),
+            child: CustomText(
+              text: model.event!.title,
+              textAlign: TextAlign.center,
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              color: appFontColor(),
+            ),
+          ).showCursorOnHover,
           SizedBox(
             height: 4.0,
           ),
@@ -127,7 +130,7 @@ class _EventTicketsHead extends HookViewModelWidget<EventTicketsViewModel> {
                 color: appFontColor(),
               ),
               CustomTextButton(
-                onTap: () {},
+                onTap: () => model.navigateToHostProfile(),
                 text: "@${model.host!.username}",
                 fontSize: 16,
                 fontWeight: FontWeight.bold,

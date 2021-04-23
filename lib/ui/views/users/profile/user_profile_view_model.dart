@@ -81,7 +81,7 @@ class UserProfileViewModel extends StreamViewModel<WebblenUser> {
         var res = await _userDataService!.getWebblenUserByID(uid);
         if (res is String) {
         } else {
-          yield res!;
+          yield res;
         }
       }
     }

@@ -7,10 +7,12 @@ import 'package:webblen_web_app/services/bottom_sheets/custom_bottom_sheet_servi
 import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
 import 'package:webblen_web_app/services/stripe/stripe_connect_account_service.dart';
+import 'package:webblen_web_app/services/stripe/stripe_payment_service.dart';
 
 class StripeAccountBlockViewModel extends StreamViewModel<UserStripeInfo> with ReactiveServiceMixin {
   NavigationService _navigationService = locator<NavigationService>();
   StripeConnectAccountService _stripeConnectAccountService = locator<StripeConnectAccountService>();
+  StripePaymentService _stripePaymentService = locator<StripePaymentService>();
   CustomBottomSheetService _customBottomSheetService = locator<CustomBottomSheetService>();
   // StripePaymentService? _stripePaymentService = locator<StripePaymentService>();
   // WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
@@ -26,8 +28,11 @@ class StripeAccountBlockViewModel extends StreamViewModel<UserStripeInfo> with R
   bool stripeAccountIsSetup = false;
   bool dismissedSetupAccountNotice = false;
 
+  bool initializedAccountUpdate = false;
   bool retrievingAccountStatus = true;
   bool retrievedAccountStatus = false;
+
+  bool performingInstantPayout = false;
 
   initialize() {
     setBusy(true);
@@ -53,7 +58,9 @@ class StripeAccountBlockViewModel extends StreamViewModel<UserStripeInfo> with R
       await Future.delayed(Duration(seconds: 1));
       UserStripeInfo stripeInfo = UserStripeInfo();
       stripeInfo = await _stripeConnectAccountService.getStripeConnectAccountByUID(user.id);
-      if (stripeInfo.isValid() && !retrievedAccountStatus && retrievingAccountStatus) {
+      if (stripeInfo.isValid() && !initializedAccountUpdate) {
+        initializedAccountUpdate = true;
+        notifyListeners();
         retrieveAndUpdateStripeAccountStatus();
       }
       yield stripeInfo;
@@ -84,8 +91,24 @@ class StripeAccountBlockViewModel extends StreamViewModel<UserStripeInfo> with R
     _customDialogService.showEarningsAccountPendingAlert();
   }
 
-  showStripeAccountMenu() {
-    _customBottomSheetService.showStripeBottomSheet();
+  showStripeAccountMenu() async {
+    bool performInstantPayout = await _customBottomSheetService.showStripeBottomSheet();
+    if (performInstantPayout) {
+      if (userStripeInfo!.availableBalance == null || userStripeInfo!.availableBalance! < 5) {
+        _customDialogService.showErrorDialog(description: "Balance must be at least \$5.00 to perform an instant payout");
+      } else {
+        performingInstantPayout = true;
+        notifyListeners();
+        String status = await _stripePaymentService.processInstantPayout(uid: user.id!);
+        if (status == "passed") {
+          retrievingAccountStatus = true;
+          performingInstantPayout = false;
+          notifyListeners();
+          await retrieveAndUpdateStripeAccountStatus();
+          _customDialogService.showSuccessDialog(title: "Instant Payout Success", description: "Please allow up to an hour for you funds to be deposited");
+        }
+      }
+    }
   }
 
   ///NAVIGATION

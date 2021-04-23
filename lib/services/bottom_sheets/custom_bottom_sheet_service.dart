@@ -18,6 +18,7 @@ import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
 import 'package:webblen_web_app/services/reactive/content_filter/reactive_content_filter_service.dart';
 import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
 import 'package:webblen_web_app/services/share/share_service.dart';
+import 'package:webblen_web_app/services/stripe/stripe_payment_service.dart';
 
 class CustomBottomSheetService {
   BottomSheetService _bottomSheetService = locator<BottomSheetService>();
@@ -32,6 +33,7 @@ class CustomBottomSheetService {
   PostDataService _postDataService = locator<PostDataService>();
   EventDataService _eventDataService = locator<EventDataService>();
   LiveStreamDataService _liveStreamDataService = locator<LiveStreamDataService>();
+  StripePaymentService _stripePaymentService = locator<StripePaymentService>();
 
   //filters
   openFilter() async {
@@ -63,9 +65,10 @@ class CustomBottomSheetService {
       String? res = sheetResponse.responseData;
       if (res == "saved") {
         //saved
+        _navigationService.navigateTo(Routes.SavedContentViewRoute);
       } else if (res == "edit profile") {
         //edit profile
-        //navigateToEditProfileView();
+        _navigationService.navigateTo(Routes.EditProfileViewRoute);
       } else if (res == "share profile") {
         //share profile
         String? url = await _dynamicLinkService.createProfileLink(user: user);
@@ -226,7 +229,8 @@ class CustomBottomSheetService {
     return false;
   }
 
-  showStripeBottomSheet() async {
+  Future<bool> showStripeBottomSheet() async {
+    bool performInstantPayout = false;
     var sheetResponse = await _bottomSheetService.showCustomSheet(
       barrierDismissible: true,
       variant: BottomSheetType.stripeAccount,
@@ -234,7 +238,10 @@ class CustomBottomSheetService {
     if (sheetResponse != null) {
       String? res = sheetResponse.responseData;
       if (res == "instant payout") {
-        //perform instant payout
+        performInstantPayout = true;
+      } else if (res == "balance history") {
+        //navigate to payout methods
+        _navigationService.navigateTo(Routes.USDBalanceHistoryViewRoute);
       } else if (res == "payout methods") {
         //navigate to payout methods
         _navigationService.navigateTo(Routes.PayoutMethodsViewRoute);
@@ -243,6 +250,7 @@ class CustomBottomSheetService {
         _navigationService.navigateTo(Routes.HowEarningsWorkViewRoute);
       }
     }
+    return performInstantPayout;
   }
 
   showLogoutBottomSheet() async {

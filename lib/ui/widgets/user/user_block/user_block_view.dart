@@ -17,7 +17,7 @@ class UserBlockView extends StatelessWidget {
   final bool? displayBottomBorder;
   UserBlockView({this.user, this.displayBottomBorder});
 
-  final WebblenBaseViewModel? _webblenBaseViewModel = locator<WebblenBaseViewModel>();
+  final WebblenBaseViewModel _webblenBaseViewModel = locator<WebblenBaseViewModel>();
 
   Widget isFollowingUser() {
     return Container(
@@ -60,7 +60,7 @@ class UserBlockView extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _webblenBaseViewModel!.user != null && _webblenBaseViewModel!.user!.following!.contains(user!.id) ? isFollowingUser() : Container(),
+                _webblenBaseViewModel.user.isValid() && _webblenBaseViewModel.user.following!.contains(user!.id) ? isFollowingUser() : Container(),
                 CustomText(
                   text: "@${user!.username}",
                   fontSize: 16,

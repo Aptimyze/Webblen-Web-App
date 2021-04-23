@@ -293,4 +293,52 @@ class EventDataService {
     }
     return docs;
   }
+
+  Future<List<DocumentSnapshot>> loadSavedEvents({required String? id, required int resultsLimit}) async {
+    List<DocumentSnapshot> docs = [];
+    String? error;
+    Query query = eventsRef.where('savedBy', arrayContains: id).orderBy('startDateTimeInMilliseconds', descending: true).limit(resultsLimit);
+    QuerySnapshot snapshot = await query.get().catchError((e) {
+      print(e.message);
+      error = e.message;
+      _customDialogService.showErrorDialog(description: error!);
+    });
+
+    if (error != null) {
+      return docs;
+    }
+
+    if (snapshot.docs.isNotEmpty) {
+      docs = snapshot.docs;
+    }
+    return docs;
+  }
+
+  Future<List<DocumentSnapshot>> loadAdditionalSavedEvents({
+    required String? id,
+    required DocumentSnapshot lastDocSnap,
+    required int resultsLimit,
+  }) async {
+    List<DocumentSnapshot> docs = [];
+    String? error;
+    Query query = eventsRef
+        .where('savedBy', arrayContains: id)
+        .orderBy('startDateTimeInMilliseconds', descending: true)
+        .startAfterDocument(lastDocSnap)
+        .limit(resultsLimit);
+    QuerySnapshot snapshot = await query.get().catchError((e) {
+      print(e.message);
+      error = e.message;
+      _customDialogService.showErrorDialog(description: error!);
+    });
+
+    if (error != null) {
+      return docs;
+    }
+
+    if (snapshot.docs.isNotEmpty) {
+      docs = snapshot.docs;
+    }
+    return docs;
+  }
 }

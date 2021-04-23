@@ -28,93 +28,69 @@ class EventTicketBlock extends StatelessWidget {
     return GestureDetector(
       onTap: viewEventTickets,
       child: Container(
+        margin: EdgeInsets.only(bottom: 16),
+        padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(
-            Radius.circular(8.0),
-          ),
+          color: appBackgroundColor,
           boxShadow: [
             BoxShadow(
-              color: Colors.black12,
+              color: appShadowColor(),
               spreadRadius: 1.5,
               blurRadius: 1.0,
               offset: Offset(0.0, 0.0),
             ),
           ],
+          borderRadius: BorderRadius.all(
+            Radius.circular(8.0),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-              height: 150,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(8.0),
+            CustomText(
+              text: eventTitle,
+              textAlign: TextAlign.left,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: appFontColor(),
+            ),
+            SizedBox(height: 12.0),
+            CustomText(
+              text: eventAddress,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: appFontColorAlt(),
+            ),
+            SizedBox(height: 2.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                CustomText(
+                  text: "$eventStartDate | $eventStartTime - $eventEndTime $eventTimezone",
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: appFontColorAlt(),
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: CustomText(
-                      text: eventTitle,
-                      textAlign: TextAlign.left,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: appFontColor(),
-                    ),
-                  ),
-                  SizedBox(height: 2.0),
-                  Row(
+                Container(
+                  child: Row(
                     children: <Widget>[
-                      Icon(
-                        FontAwesomeIcons.mapMarkerAlt,
-                        size: 14.0,
-                        color: Colors.black38,
+                      CustomText(
+                        text: numOfTicsForEvent.toString(),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: appFontColorAlt(),
                       ),
                       SizedBox(width: 4.0),
-                      CustomText(
-                        text: eventAddress,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: appFontColorAlt(),
+                      Icon(
+                        FontAwesomeIcons.ticketAlt,
+                        size: 18.0,
+                        color: Colors.black45,
                       ),
                     ],
                   ),
-                  SizedBox(height: 6.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      CustomText(
-                        text: "$eventStartDate | $eventStartTime - $eventEndTime $eventTimezone",
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: appFontColorAlt(),
-                      ),
-                      Container(
-                        child: Row(
-                          children: <Widget>[
-                            CustomText(
-                              text: numOfTicsForEvent.toString(),
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: appFontColorAlt(),
-                            ),
-                            SizedBox(width: 4.0),
-                            Icon(
-                              FontAwesomeIcons.ticketAlt,
-                              size: 18.0,
-                              color: Colors.black45,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),

@@ -53,15 +53,15 @@ class PostImgBlockViewModel extends BaseViewModel {
     }
     HapticFeedback.lightImpact();
     notifyListeners();
-    await _postDataService!.saveUnsavePost(userID: _reactiveWebblenUserService.user.id, postID: postID, savedPost: savedPost);
+    await _postDataService.saveUnsavePost(userID: _reactiveWebblenUserService.user.id, postID: postID, savedPost: savedPost);
   }
 
   ///NAVIGATION
   navigateToPostView(String? id) async {
-    _navigationService!.navigateTo(Routes.PostViewRoute(id: id));
+    _navigationService.navigateTo(Routes.PostViewRoute(id: id));
   }
 
   navigateToUserView(String? id) {
-    _navigationService!.navigateTo(Routes.UserProfileView(id: id));
+    _navigationService.navigateTo(Routes.UserProfileView(id: id));
   }
 }

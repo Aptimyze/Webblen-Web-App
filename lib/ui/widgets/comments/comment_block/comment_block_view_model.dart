@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
@@ -46,7 +44,7 @@ class CommentBlockViewModel extends BaseViewModel {
       errorLoadingData = true;
     } else {
       //set author data
-      authorUID = res!.id;
+      authorUID = res.id;
       username = res.username;
       authorProfilePicURL = res.profilePicURL;
 
@@ -76,7 +74,7 @@ class CommentBlockViewModel extends BaseViewModel {
       WebblenUser user = await _userDataService.getWebblenUserByUsername(username);
       loadingUser = false;
       notifyListeners();
-      if (user.isValid()){
+      if (user.isValid()) {
         navigateToUserPage(user.id);
       }
     }

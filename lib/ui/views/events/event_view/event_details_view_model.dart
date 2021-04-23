@@ -57,9 +57,9 @@ class EventDetailsViewModel extends ReactiveViewModel {
     String id = eventID;
 
     //get stream data
-    var res = await _eventDataService!.getEventByID(id);
+    var res = await _eventDataService.getEventByID(id);
     if (!res.isValid()) {
-      _navigationService!.back();
+      _navigationService.back();
       return;
     } else {
       event = res;

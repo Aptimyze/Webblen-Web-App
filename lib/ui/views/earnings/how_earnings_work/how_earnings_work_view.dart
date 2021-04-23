@@ -20,22 +20,22 @@ class HowEarningsWorkView extends StatelessWidget {
           child: CustomTopNavBar(
             navBarItems: [
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(0),
+                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(0),
                 iconData: FontAwesomeIcons.home,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(1),
+                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(1),
                 iconData: FontAwesomeIcons.search,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(2),
+                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(2),
                 iconData: FontAwesomeIcons.wallet,
                 isActive: false,
               ),
               CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel!.navigateToHomeWithIndex(3),
+                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(3),
                 iconData: FontAwesomeIcons.user,
                 isActive: false,
               ),

@@ -319,4 +319,50 @@ class LiveStreamDataService {
     }
     return docs;
   }
+
+  Future<List<DocumentSnapshot>> loadSavedStreams({required String? id, required int resultsLimit}) async {
+    List<DocumentSnapshot> docs = [];
+    Query query = streamsRef.where('savedBy', arrayContains: id).orderBy('startDateTimeInMilliseconds', descending: false).limit(resultsLimit);
+    QuerySnapshot snapshot = await query.get().catchError((e) {
+      if (!e.message.contains("insufficient permissions")) {
+        print(e.message);
+        _dialogService!.showDialog(
+          title: "Stream Error",
+          description: e.message,
+        );
+      }
+      return [];
+    });
+    if (snapshot.docs.isNotEmpty) {
+      docs = snapshot.docs;
+    }
+    return docs;
+  }
+
+  Future<List<DocumentSnapshot>> loadAdditionalSavedStreams({
+    required String? id,
+    required DocumentSnapshot lastDocSnap,
+    required int resultsLimit,
+  }) async {
+    List<DocumentSnapshot> docs = [];
+    Query query = streamsRef
+        .where('savedBy', arrayContains: id)
+        .orderBy('startDateTimeInMilliseconds', descending: false)
+        .startAfterDocument(lastDocSnap)
+        .limit(resultsLimit);
+    QuerySnapshot snapshot = await query.get().catchError((e) {
+      if (!e.message.contains("insufficient permissions")) {
+        print(e.message);
+        _dialogService!.showDialog(
+          title: "Stream Error",
+          description: e.message,
+        );
+      }
+      return [];
+    });
+    if (snapshot.docs.isNotEmpty) {
+      docs = snapshot.docs;
+    }
+    return docs;
+  }
 }

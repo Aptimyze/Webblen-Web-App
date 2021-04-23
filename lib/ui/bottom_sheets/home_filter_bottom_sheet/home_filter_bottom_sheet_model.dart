@@ -19,6 +19,8 @@ class HomeFilterBottomSheetModel extends BaseViewModel {
   AlgoliaSearchService algoliaSearchService = locator<AlgoliaSearchService>();
   CustomDialogService _customDialogService = locator<CustomDialogService>();
 
+  bool updatingData = false;
+
   ///DATA
   String get cityName => _reactiveContentFilterService.cityName;
   String get areaCode => _reactiveContentFilterService.areaCode;
@@ -79,16 +81,20 @@ class HomeFilterBottomSheetModel extends BaseViewModel {
 
   ///GET LOCATION DETAILS
   getPlaceDetails(String place) async {
+    updatingData = true;
+    notifyListeners();
     String placeID = placeSearchResults[place];
-    Map<String, dynamic> details = await googlePlacesService.getDetailsFromPlaceID(key: googleAPIKey, placeID: placeID);
-    setPlacesSearchResults(details);
-    if (details.isNotEmpty) {
-      tempCityName = details['cityName'];
-      tempAreaCode = details['areaCode'];
-      notifyListeners();
-    } else {
-      _customDialogService.showErrorDialog(description: "There was an issue getting the details of this location. Please try again.");
-    }
+    await googlePlacesService.getDetailsFromPlaceID(key: googleAPIKey, placeID: placeID).then((details) {
+      if (details.isNotEmpty) {
+        setPlacesSearchResults(details);
+        tempCityName = details['cityName'];
+        tempAreaCode = details['areaCode'];
+        updatingData = false;
+        notifyListeners();
+      } else {
+        _customDialogService.showErrorDialog(description: "There was an issue getting the details of this location. Please try again.");
+      }
+    });
   }
 
   ///UPDATE PREFERENCES

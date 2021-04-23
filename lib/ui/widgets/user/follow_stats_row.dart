@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
+import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
 
 class FollowStatsRow extends StatelessWidget {
@@ -39,7 +40,7 @@ class FollowStatsRow extends StatelessWidget {
                 ),
               ],
             ),
-          ),
+          ).showCursorOnHover,
           SizedBox(width: 32.0),
           GestureDetector(
             onTap: viewFollowingAction,
@@ -59,7 +60,7 @@ class FollowStatsRow extends StatelessWidget {
                 ),
               ],
             ),
-          ),
+          ).showCursorOnHover,
         ],
       ),
     );

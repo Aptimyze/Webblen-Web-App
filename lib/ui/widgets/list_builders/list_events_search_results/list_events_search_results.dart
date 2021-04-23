@@ -14,6 +14,7 @@ class ListEventSearchResults extends StatelessWidget {
 
   Widget listResults() {
     return ListView.builder(
+      cacheExtent: 8000,
       controller: scrollController,
       physics: isScrollable ? AlwaysScrollableScrollPhysics() : NeverScrollableScrollPhysics(),
       addAutomaticKeepAlives: true,

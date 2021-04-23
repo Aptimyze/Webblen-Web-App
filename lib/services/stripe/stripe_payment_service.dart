@@ -147,4 +147,27 @@ class StripePaymentService {
     }
     return status;
   }
+
+  Future<String> processInstantPayout({
+    required String uid,
+  }) async {
+    String status = "passed";
+    final HttpsCallable callable = FirebaseFunctions.instance.httpsCallable(
+      'processInstantPayout',
+    );
+
+    final HttpsCallableResult result = await callable.call(<String, dynamic>{
+      'uid': uid,
+    }).catchError((e) {
+      print(e);
+    });
+
+    if (result.data != null) {
+      if (result.data != "passed") {
+        status = "failed";
+        _customDialogService.showErrorDialog(description: result.data['raw']['message']);
+      }
+    }
+    return status;
+  }
 }

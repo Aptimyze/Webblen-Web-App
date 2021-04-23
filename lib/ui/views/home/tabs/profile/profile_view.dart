@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
+import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/profile/profile_view_model.dart';
@@ -147,8 +148,8 @@ class _ProfileBody extends HookViewModelWidget<ProfileViewModel> {
                           user: user,
                           followerCount: user.followers!.length,
                           followingCount: user.following!.length,
-                          viewFollowers: () {},
-                          viewFollowing: () {},
+                          viewFollowers: () => model.navigateToFollowers(),
+                          viewFollowing: () => model.navigateToFollowing(),
                           viewWebsite: () => model.openWebsite(),
                         ),
                       ],
@@ -284,7 +285,7 @@ class _UserDetails extends StatelessWidget {
                             ],
                           ),
                         ),
-                      )
+                      ).showCursorOnHover
                     : Container(),
               ],
             ),

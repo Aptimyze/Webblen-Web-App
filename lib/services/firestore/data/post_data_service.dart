@@ -311,12 +311,52 @@ class PostDataService {
     Query query =
         postsRef.where('authorID', isEqualTo: id).orderBy('postDateTimeInMilliseconds', descending: true).startAfterDocument(lastDocSnap).limit(resultsLimit);
     QuerySnapshot snapshot = await query.get().catchError((e) {
-      if (!e.message.contains("insufficient permissions")) {
-        _dialogService!.showDialog(
-          title: "insufficient permissions",
-          description: e.message,
-        );
-      }
+      print(e.message);
+      error = e.message;
+    });
+    if (error != null) {
+      return docs;
+    }
+    if (snapshot.docs.isNotEmpty) {
+      docs = snapshot.docs;
+    }
+    return docs;
+  }
+
+  Future<List<DocumentSnapshot>> loadSavedPosts({
+    required String? id,
+    required int resultsLimit,
+  }) async {
+    List<DocumentSnapshot> docs = [];
+    String? error;
+    Query query = postsRef.where('savedBy', arrayContains: id).orderBy('postDateTimeInMilliseconds', descending: true).limit(resultsLimit);
+    QuerySnapshot snapshot = await query.get().catchError((e) {
+      print(e.message);
+      error = e.message;
+    });
+    if (error != null) {
+      return docs;
+    }
+    if (snapshot.docs.isNotEmpty) {
+      docs = snapshot.docs;
+    }
+    return docs;
+  }
+
+  Future<List<DocumentSnapshot>> loadAdditionalSavedPosts({
+    required String? id,
+    required DocumentSnapshot lastDocSnap,
+    required int resultsLimit,
+  }) async {
+    List<DocumentSnapshot> docs = [];
+    String? error;
+    Query query = postsRef
+        .where('savedBy', arrayContains: id)
+        .orderBy('postDateTimeInMilliseconds', descending: true)
+        .startAfterDocument(lastDocSnap)
+        .limit(resultsLimit);
+    QuerySnapshot snapshot = await query.get().catchError((e) {
+      print(e.message);
       error = e.message;
     });
     if (error != null) {

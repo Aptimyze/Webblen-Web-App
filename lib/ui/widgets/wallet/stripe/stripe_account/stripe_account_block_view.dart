@@ -30,6 +30,7 @@ class StripeAccountBlockView extends StatelessWidget {
           : _StripeAccountBlock(
               usdBalance: model.userStripeInfo!.availableBalance!,
               pendingBalance: model.userStripeInfo!.pendingBalance!,
+              updatingData: model.performingInstantPayout || model.retrievingAccountStatus ? true : false,
               onPressed: () => model.showStripeAccountMenu(),
             ),
     );
@@ -145,8 +146,9 @@ class _StripeAccountPendingBlock extends StatelessWidget {
 class _StripeAccountBlock extends StatelessWidget {
   final double usdBalance;
   final double pendingBalance;
+  final bool updatingData;
   final VoidCallback onPressed;
-  _StripeAccountBlock({required this.usdBalance, required this.pendingBalance, required this.onPressed});
+  _StripeAccountBlock({required this.usdBalance, required this.pendingBalance, required this.updatingData, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -181,24 +183,31 @@ class _StripeAccountBlock extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "\$${usdBalance.toStringAsFixed(2)}",
-                      style: TextStyle(fontSize: 18.0, color: appFontColor(), fontWeight: FontWeight.w500),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      '\$${pendingBalance.toStringAsFixed(2)} pending',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: appFontColorAlt(),
-                        fontWeight: FontWeight.w500,
+                updatingData
+                    ? Container(
+                        child: CustomCircleProgressIndicator(
+                          size: 10,
+                          color: appActiveColor(),
+                        ),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            "\$${usdBalance.toStringAsFixed(2)}",
+                            style: TextStyle(fontSize: 18.0, color: appFontColor(), fontWeight: FontWeight.w500),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            '\$${pendingBalance.toStringAsFixed(2)} pending',
+                            style: TextStyle(
+                              fontSize: 12.0,
+                              color: appFontColorAlt(),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
               ],
             ),
           ],

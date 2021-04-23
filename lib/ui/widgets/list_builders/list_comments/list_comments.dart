@@ -32,6 +32,7 @@ class ListComments extends StatelessWidget {
         child: Column(
           children: [
             ListView.builder(
+              cacheExtent: 8000,
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               itemCount: results.length,

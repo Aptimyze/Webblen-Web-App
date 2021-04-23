@@ -172,7 +172,7 @@ class HomeFilterBottomSheet extends HookWidget {
                         autofocus: false,
                       ),
                       suggestionsCallback: (searchTerm) async {
-                        return await model.algoliaSearchService!.queryTags(searchTerm);
+                        return await model.algoliaSearchService.queryTags(searchTerm);
                       },
                       itemBuilder: (context, dynamic tag) {
                         return ListTile(
@@ -216,7 +216,7 @@ class HomeFilterBottomSheet extends HookWidget {
                     backgroundColor: appButtonColor(),
                     textColor: appFontColor(),
                     elevation: 2,
-                    isBusy: false,
+                    isBusy: model.updatingData,
                   ),
                   verticalSpaceMedium,
                 ],

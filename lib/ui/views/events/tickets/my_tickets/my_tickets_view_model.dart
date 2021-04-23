@@ -62,8 +62,6 @@ class MyTicketsViewModel extends ReactiveViewModel {
         ticsPerEvent[ticket.eventID!] += 1;
       }
       if (eventTickets.last == ticket) {
-        print(ticsPerEvent);
-        print(loadedEvents);
         notifyListeners();
       }
     });

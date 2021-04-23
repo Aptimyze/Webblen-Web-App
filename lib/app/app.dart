@@ -33,6 +33,7 @@ import 'package:webblen_web_app/ui/views/earnings/how_earnings_work/how_earnings
 import 'package:webblen_web_app/ui/views/earnings/payout_methods/payout_methods_view.dart';
 import 'package:webblen_web_app/ui/views/earnings/set_up_direct_deposit/set_up_direct_deposit_view.dart';
 import 'package:webblen_web_app/ui/views/earnings/set_up_instant_deposit/set_up_instant_deposit_view.dart';
+import 'package:webblen_web_app/ui/views/earnings/usd_balance_history/usd_balance_history_view.dart';
 import 'package:webblen_web_app/ui/views/events/create_event_view/create_event_view.dart';
 import 'package:webblen_web_app/ui/views/events/event_view/event_details_view.dart';
 import 'package:webblen_web_app/ui/views/events/tickets/event_tickets/event_tickets_view.dart';
@@ -52,6 +53,7 @@ import 'package:webblen_web_app/ui/views/users/edit_profile/edit_profile_view.da
 import 'package:webblen_web_app/ui/views/users/followers/user_followers_view.dart';
 import 'package:webblen_web_app/ui/views/users/following/user_following_view.dart';
 import 'package:webblen_web_app/ui/views/users/profile/user_profile_view.dart';
+import 'package:webblen_web_app/ui/views/users/saved/saved_content_view.dart';
 
 @StackedApp(
   routes: [
@@ -163,7 +165,14 @@ import 'package:webblen_web_app/ui/views/users/profile/user_profile_view.dart';
     CustomRoute(
       page: EditProfileView,
       name: "EditProfileViewRoute",
-      path: "/profile/edit",
+      path: "/edit_profile",
+      //transitionsBuilder: TransitionsBuilders.fadeIn,
+      durationInMilliseconds: 0,
+    ),
+    CustomRoute(
+      page: SavedContentView,
+      name: "SavedContentViewRoute",
+      path: "/saved",
       //transitionsBuilder: TransitionsBuilders.fadeIn,
       durationInMilliseconds: 0,
     ),
@@ -210,6 +219,12 @@ import 'package:webblen_web_app/ui/views/users/profile/user_profile_view.dart';
     ),
 
     //EARNINGS
+    CustomRoute(
+      page: USDBalanceHistoryView,
+      name: "USDBalanceHistoryViewRoute",
+      path: "/usd-balance-history",
+      durationInMilliseconds: 0,
+    ),
     CustomRoute(
       page: PayoutMethodsView,
       name: "PayoutMethodsViewRoute",

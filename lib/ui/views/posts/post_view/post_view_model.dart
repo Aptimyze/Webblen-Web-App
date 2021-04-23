@@ -237,7 +237,7 @@ class PostViewModel extends ReactiveViewModel {
       postID: post!.id,
       receiverUID: post!.authorID,
       senderUID: user.id,
-      commenterUsername: "@${webblenBaseViewModel!.user!.username}",
+      commenterUsername: "@${webblenBaseViewModel.user.username}",
       comment: comment,
     );
     _notificationDataService!.sendNotification(notif: notification);
@@ -248,7 +248,7 @@ class PostViewModel extends ReactiveViewModel {
       postID: post!.id,
       receiverUID: receiverUID,
       senderUID: user.id,
-      commenterUsername: "@${webblenBaseViewModel!.user!.username}",
+      commenterUsername: "@${webblenBaseViewModel.user.username}",
       comment: comment,
     );
     _notificationDataService!.sendNotification(notif: notification);
@@ -259,7 +259,7 @@ class PostViewModel extends ReactiveViewModel {
       postID: post!.id,
       receiverUID: receiverUID,
       senderUID: user.id,
-      commenterUsername: "@${webblenBaseViewModel!.user!.username}",
+      commenterUsername: "@${webblenBaseViewModel.user.username}",
       comment: comment,
     );
     _notificationDataService!.sendNotification(notif: notification);

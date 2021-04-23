@@ -106,6 +106,10 @@ class SearchView extends StatelessWidget {
           : ListView(
               shrinkWrap: true,
               children: [
+                model.eventResults.isNotEmpty ? listEventResults(model) : Container(),
+                (model.streamResults.isNotEmpty || model.eventResults.isNotEmpty) && model.userResults.isNotEmpty
+                    ? eventUserSearchDivider(context)
+                    : Container(),
                 model.streamResults.isNotEmpty ? listStreamResults(model) : Container(),
                 (model.streamResults.isNotEmpty || model.eventResults.isNotEmpty) && model.userResults.isNotEmpty
                     ? eventUserSearchDivider(context)
@@ -159,7 +163,11 @@ class SearchView extends StatelessWidget {
         usersHeader(),
         ListUsersSearchResults(
           results: model.userResults,
-          usersFollowing: model.webblenBaseViewModel!.user == null ? [] : model.webblenBaseViewModel!.user!.following,
+          usersFollowing: model.user.isValid()
+              ? model.user.followers != null
+                  ? model.user.followers
+                  : []
+              : [],
           scrollController: null,
           isScrollable: false,
           onSearchTermSelected: (val) => model.navigateToUserView(val),

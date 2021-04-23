@@ -16,6 +16,8 @@ class UserFollowingViewModel extends BaseViewModel {
   WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
   ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
 
+  String? id;
+
   ///USER DATA
   bool get isLoggedIn => _reactiveWebblenUserService.userLoggedIn;
   WebblenUser get user => _reactiveWebblenUserService.user;
@@ -37,9 +39,12 @@ class UserFollowingViewModel extends BaseViewModel {
   //search
   List<WebblenUser> userSearchResults = [];
 
-  initialize() async {
+  initialize({required String uid}) async {
     //set busy status
     setBusy(true);
+
+    id = uid;
+    notifyListeners();
 
     //load additional data on scroll
     scrollController.addListener(() {

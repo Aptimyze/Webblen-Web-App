@@ -15,6 +15,7 @@ class AutoCompleteAddressTextFieldModel extends BaseViewModel {
   TextEditingController locationTextController = TextEditingController();
 
   ///RESULTS
+  bool settingLocation = false;
   Map<String, dynamic> placeSearchResults = {};
 
   ///API KEYS
@@ -36,19 +37,27 @@ class AutoCompleteAddressTextFieldModel extends BaseViewModel {
 
   ///GET LOCATION DETAILS
   Future<Map<String, dynamic>> getPlaceDetails(String place) async {
-    Map<String, dynamic> details = {};
+    settingLocation = true;
+    locationTextController.text = "Setting Location...";
+    notifyListeners();
+
+    Map<String, dynamic> result = {};
     String? placeID = placeSearchResults[place];
+
+    await googlePlacesService!.getDetailsFromPlaceID(key: googleAPIKey, placeID: placeID).then((details) {
+      if (details.isEmpty) {
+        _dialogService!.showDialog(
+          title: 'Error',
+          description: "There was an issue getting the details of this location. Please Try Again.",
+        );
+      } else {
+        result = details;
+      }
+    });
+    settingLocation = false;
     locationTextController.text = place;
     notifyListeners();
-    details = await googlePlacesService!.getDetailsFromPlaceID(key: googleAPIKey, placeID: placeID);
-    setPlacesSearchResults(details);
-    notifyListeners();
-    if (details.isEmpty) {
-      _dialogService!.showDialog(
-        title: 'Error',
-        description: "There was an issue getting the details of this location. Please Try Again.",
-      );
-    }
-    return details;
+
+    return result;
   }
 }

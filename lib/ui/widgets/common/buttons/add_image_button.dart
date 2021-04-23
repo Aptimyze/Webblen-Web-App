@@ -6,6 +6,7 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
+import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 
 import '../custom_text.dart';
 
@@ -95,6 +96,37 @@ class ImagePreviewButton extends StatelessWidget {
                 )
               : Image.memory(imgByteMemory!, fit: BoxFit.contain, filterQuality: FilterQuality.medium),
         ),
+      ),
+    ).showCursorOnHover;
+  }
+}
+
+class UserProfilePicButtonPreview extends StatelessWidget {
+  final VoidCallback onTap;
+  final Uint8List? imgByteMemory;
+  final String? imgURL;
+
+  UserProfilePicButtonPreview({required this.onTap, required this.imgByteMemory, required this.imgURL});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: 100,
+          maxWidth: 100,
+        ),
+        child: imgByteMemory == null
+            ? UserProfilePic(
+                isBusy: false,
+                userPicUrl: imgURL,
+                size: 100,
+              )
+            : ClipRRect(
+                borderRadius: BorderRadius.circular(50.0),
+                child: Image.memory(imgByteMemory!, fit: BoxFit.contain, filterQuality: FilterQuality.medium),
+              ),
       ),
     ).showCursorOnHover;
   }

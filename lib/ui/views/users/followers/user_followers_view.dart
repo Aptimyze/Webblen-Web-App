@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked/stacked_annotations.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/views/users/followers/user_followers_view_model.dart';
@@ -9,6 +10,9 @@ import 'package:webblen_web_app/ui/widgets/list_builders/list_users.dart';
 import 'package:webblen_web_app/ui/widgets/search/search_field.dart';
 
 class UserFollowersView extends StatelessWidget {
+  final String? id;
+  UserFollowersView(@PathParam() this.id);
+
   Widget appBar(UserFollowersViewModel model) {
     return CustomAppBar().basicAppBar(
       title: "Followers",
@@ -60,7 +64,7 @@ class UserFollowersView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<UserFollowersViewModel>.reactive(
-      onModelReady: (model) => model.initialize(),
+      onModelReady: (model) => model.initialize(uid: id!),
       viewModelBuilder: () => UserFollowersViewModel(),
       builder: (context, model, child) => Scaffold(
         appBar: appBar(model) as PreferredSizeWidget?,

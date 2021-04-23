@@ -3,11 +3,15 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:devicelocale/devicelocale.dart';
+import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/user_stripe_info.dart';
+import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/utils/url_handler.dart';
 
 class StripeConnectAccountService {
   CollectionReference stripeRef = FirebaseFirestore.instance.collection('stripe');
+  CollectionReference stripeActivityRef = FirebaseFirestore.instance.collection('stripe_connect_activity');
+  CustomDialogService _customDialogService = locator<CustomDialogService>();
 
   Future<bool> isStripeConnectAccountSetup(String? uid) async {
     bool isSetup = false;
@@ -175,5 +179,49 @@ class StripeConnectAccountService {
       status = result.data['status'];
     }
     return status;
+  }
+
+  Future<List<DocumentSnapshot>> loadStripeTransactions({required String? id, required int resultsLimit}) async {
+    List<DocumentSnapshot> docs = [];
+    String? error;
+    Query query = stripeActivityRef.where('uid', isEqualTo: id).orderBy('timePosted', descending: true).limit(resultsLimit);
+    QuerySnapshot snapshot = await query.get().catchError((e) {
+      print(e.message);
+      error = e.message;
+      _customDialogService.showErrorDialog(description: error!);
+    });
+
+    if (error != null) {
+      return docs;
+    }
+
+    if (snapshot.docs.isNotEmpty) {
+      docs = snapshot.docs;
+    }
+    return docs;
+  }
+
+  Future<List<DocumentSnapshot>> loadAdditionalTransactions({
+    required String? id,
+    required DocumentSnapshot lastDocSnap,
+    required int resultsLimit,
+  }) async {
+    List<DocumentSnapshot> docs = [];
+    String? error;
+    Query query = stripeActivityRef.where('uid', isEqualTo: id).orderBy('timePosted', descending: true).startAfterDocument(lastDocSnap).limit(resultsLimit);
+    QuerySnapshot snapshot = await query.get().catchError((e) {
+      print(e.message);
+      error = e.message;
+      _customDialogService.showErrorDialog(description: error!);
+    });
+
+    if (error != null) {
+      return docs;
+    }
+
+    if (snapshot.docs.isNotEmpty) {
+      docs = snapshot.docs;
+    }
+    return docs;
   }
 }

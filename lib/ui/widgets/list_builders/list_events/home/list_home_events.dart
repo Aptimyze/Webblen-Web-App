@@ -42,6 +42,7 @@ class ListHomeEvents extends StatelessWidget {
               child: RefreshIndicator(
                 onRefresh: model.refreshData,
                 child: ListView.builder(
+                  cacheExtent: 8000,
                   controller: model.scrollController,
                   key: PageStorageKey(model.listKey),
                   addAutomaticKeepAlives: true,

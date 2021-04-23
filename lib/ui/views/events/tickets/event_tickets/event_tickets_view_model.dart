@@ -44,9 +44,13 @@ class EventTicketsViewModel extends ReactiveViewModel {
     setBusy(false);
   }
 
-  navigateToHostView() {}
+  navigateToHostProfile() {
+    _navigationService.navigateTo(Routes.UserProfileView(id: event!.authorID));
+  }
 
-  navigateToEventView() {}
+  navigateToEventView() {
+    _navigationService.navigateTo(Routes.EventDetailsViewRoute(id: event!.id));
+  }
 
   navigateToTicketView({required String ticketID}) {
     _navigationService.navigateTo(Routes.TicketDetailsViewRoute(id: ticketID));
