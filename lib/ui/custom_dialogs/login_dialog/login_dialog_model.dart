@@ -6,12 +6,13 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/auth/auth_service.dart';
+import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
 import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
 
 class LoginDialogModel extends BaseViewModel {
   AuthService _authService = locator<AuthService>();
-  DialogService? _dialogService = locator<DialogService>();
+  CustomDialogService _customDialogService = locator<CustomDialogService>();
   NavigationService _navigationService = locator<NavigationService>();
   ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
   UserDataService _userDataService = locator<UserDataService>();
@@ -141,5 +142,9 @@ class LoginDialogModel extends BaseViewModel {
     _reactiveWebblenUserService.updateWebblenUser(user);
     notifyListeners();
     _navigationService.popRepeated(1);
+  }
+
+  showLoginExplanationDialog() {
+    _customDialogService.showLoginExplanationDialog();
   }
 }

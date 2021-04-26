@@ -32,6 +32,7 @@ import 'package:webblen_web_app/ui/widgets/list_builders/list_fees/list_fees.dar
 import 'package:webblen_web_app/ui/widgets/list_builders/list_tickets.dart';
 import 'package:webblen_web_app/ui/widgets/tags/tag_button.dart';
 import 'package:webblen_web_app/ui/widgets/tags/tag_dropdown_field.dart';
+import 'package:webblen_web_app/ui/widgets/wallet/stripe/create_earnings_account/create_earnings_account_block_view.dart';
 
 class CreateEventView extends StatelessWidget {
   final String? id;
@@ -95,6 +96,10 @@ class CreateEventView extends StatelessWidget {
                           ),
                           child: Column(
                             children: [
+                              model.hasEarningsAccount != null && !model.hasEarningsAccount!
+                                  ? CreateEarningsAccountBlockView(dismissNotice: () => model.dismissEarningsAccountNotice())
+                                  : Container(),
+
                               ///IMAGE
                               model.fileToUploadByteMemory.isEmpty && model.event.imageURL == null
                                   ? _ImageButton(
@@ -639,75 +644,75 @@ class _EventTicketingForm extends HookViewModelWidget<CreateEventViewModel> {
 
             //fee form
             : model.showFeeForm
-            ? FeeForm(
-                editingFee: model.feeToEditIndex != null ? true : false,
-                feeNameTextController: model.feeNameTextController,
-                feePriceTextController: model.feePriceTextController,
-                validateAndSubmitFee: () => model.addFee(),
-                deleteFee: () => model.deleteFee(),
-              )
+                ? FeeForm(
+                    editingFee: model.feeToEditIndex != null ? true : false,
+                    feeNameTextController: model.feeNameTextController,
+                    feePriceTextController: model.feePriceTextController,
+                    validateAndSubmitFee: () => model.addFee(),
+                    deleteFee: () => model.deleteFee(),
+                  )
 
-            //discount form
-            : model.showDiscountCodeForm
-            ? DiscountForm(
-                editingDiscount: model.discountToEditIndex != null ? true : false,
-                discountNameTextController: model.discountNameTextController,
-                discountLimitTextController: model.discountLimitTextController,
-                discountValueTextController: model.discountValueTextController,
-                validateAndSubmitDiscount: () => model.addDiscount(),
-                deleteDiscount: () => model.deleteDiscount(),
-              )
+                //discount form
+                : model.showDiscountCodeForm
+                    ? DiscountForm(
+                        editingDiscount: model.discountToEditIndex != null ? true : false,
+                        discountNameTextController: model.discountNameTextController,
+                        discountLimitTextController: model.discountLimitTextController,
+                        discountValueTextController: model.discountValueTextController,
+                        validateAndSubmitDiscount: () => model.addDiscount(),
+                        deleteDiscount: () => model.deleteDiscount(),
+                      )
 
-            //new ticket, fee, and discount buttons
-            : Container(
-                height: 50,
-                child: Row(
-                  children: [
-                    CustomIconButton(
-                      height: 40,
-                      width: 40,
-                      icon: Icon(
-                        FontAwesomeIcons.ticketAlt,
-                        size: 16,
-                        color: appIconColor(),
+                    //new ticket, fee, and discount buttons
+                    : Container(
+                        height: 50,
+                        child: Row(
+                          children: [
+                            CustomIconButton(
+                              height: 40,
+                              width: 40,
+                              icon: Icon(
+                                FontAwesomeIcons.ticketAlt,
+                                size: 16,
+                                color: appIconColor(),
+                              ),
+                              onPressed: () => model.toggleTicketForm(ticketIndex: null),
+                              centerContent: true,
+                              backgroundColor: appButtonColorAlt(),
+                            ),
+                            horizontalSpaceSmall,
+                            model.ticketDistro.tickets!.isEmpty
+                                ? Container()
+                                : CustomIconButton(
+                                    height: 40,
+                                    width: 40,
+                                    icon: Icon(
+                                      FontAwesomeIcons.dollarSign,
+                                      size: 16,
+                                      color: appIconColor(),
+                                    ),
+                                    onPressed: () => model.toggleFeeForm(feeIndex: null),
+                                    centerContent: true,
+                                    backgroundColor: appButtonColorAlt(),
+                                  ),
+                            horizontalSpaceSmall,
+                            model.ticketDistro.tickets!.isEmpty
+                                ? Container()
+                                : CustomIconButton(
+                                    height: 40,
+                                    width: 40,
+                                    icon: Icon(
+                                      FontAwesomeIcons.percent,
+                                      size: 16,
+                                      color: appIconColor(),
+                                    ),
+                                    onPressed: () => model.toggleDiscountsForm(discountIndex: null),
+                                    centerContent: true,
+                                    backgroundColor: appButtonColorAlt(),
+                                  ),
+                          ],
+                        ),
                       ),
-                      onPressed: () => model.toggleTicketForm(ticketIndex: null),
-                      centerContent: true,
-                      backgroundColor: appButtonColorAlt(),
-                    ),
-                    horizontalSpaceSmall,
-                    model.ticketDistro.tickets!.isEmpty
-                        ? Container()
-                        : CustomIconButton(
-                            height: 40,
-                            width: 40,
-                            icon: Icon(
-                              FontAwesomeIcons.dollarSign,
-                              size: 16,
-                              color: appIconColor(),
-                            ),
-                            onPressed: () => model.toggleFeeForm(feeIndex: null),
-                            centerContent: true,
-                            backgroundColor: appButtonColorAlt(),
-                          ),
-                    horizontalSpaceSmall,
-                    model.ticketDistro.tickets!.isEmpty
-                        ? Container()
-                        : CustomIconButton(
-                            height: 40,
-                            width: 40,
-                            icon: Icon(
-                              FontAwesomeIcons.percent,
-                              size: 16,
-                              color: appIconColor(),
-                            ),
-                            onPressed: () => model.toggleDiscountsForm(discountIndex: null),
-                            centerContent: true,
-                            backgroundColor: appButtonColorAlt(),
-                          ),
-                  ],
-                ),
-              ),
       ],
     );
   }

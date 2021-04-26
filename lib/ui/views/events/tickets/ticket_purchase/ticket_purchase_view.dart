@@ -480,56 +480,56 @@ class _DiscountCodeStatus extends HookViewModelWidget<TicketPurchaseViewModel> {
     return model.discountCodeStatus == null
         ? Container()
         : model.discountCodeStatus == 'duplicate'
-        ? Container(
-            constraints: BoxConstraints(
-              maxWidth: 500,
-            ),
-            child: CustomText(
-              text: "This Code Has Already Been Used",
-              textAlign: TextAlign.left,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: appDestructiveColor(),
-            ),
-          )
-        : model.discountCodeStatus == 'passed'
-        ? Container(
-            constraints: BoxConstraints(
-              maxWidth: 500,
-            ),
-            child: CustomText(
-              text: "Discount Applied Successfully",
-              textAlign: TextAlign.left,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: Colors.green,
-            ),
-          )
-        : model.discountCodeStatus == 'multiple'
-        ? Container(
-            constraints: BoxConstraints(
-              maxWidth: 500,
-            ),
-            child: CustomText(
-              text: "Only One Code Can Be Used at a Time",
-              textAlign: TextAlign.left,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: appDestructiveColor(),
-            ),
-          )
-        : Container(
-            constraints: BoxConstraints(
-              maxWidth: 500,
-            ),
-            child: CustomText(
-              text: "Invalid Code",
-              textAlign: TextAlign.left,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: appDestructiveColor(),
-            ),
-          );
+            ? Container(
+                constraints: BoxConstraints(
+                  maxWidth: 500,
+                ),
+                child: CustomText(
+                  text: "This Code Has Already Been Used",
+                  textAlign: TextAlign.left,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: appDestructiveColor(),
+                ),
+              )
+            : model.discountCodeStatus == 'passed'
+                ? Container(
+                    constraints: BoxConstraints(
+                      maxWidth: 500,
+                    ),
+                    child: CustomText(
+                      text: "Discount Applied Successfully",
+                      textAlign: TextAlign.left,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.green,
+                    ),
+                  )
+                : model.discountCodeStatus == 'multiple'
+                    ? Container(
+                        constraints: BoxConstraints(
+                          maxWidth: 500,
+                        ),
+                        child: CustomText(
+                          text: "Only One Code Can Be Used at a Time",
+                          textAlign: TextAlign.left,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: appDestructiveColor(),
+                        ),
+                      )
+                    : Container(
+                        constraints: BoxConstraints(
+                          maxWidth: 500,
+                        ),
+                        child: CustomText(
+                          text: "Invalid Code",
+                          textAlign: TextAlign.left,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: appDestructiveColor(),
+                        ),
+                      );
   }
 }
 
@@ -830,7 +830,7 @@ class _PurchaseTicketsButton extends HookViewModelWidget<TicketPurchaseViewModel
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CustomText(
-            text: "Please confirm your card details before submission. \n Incorrect details may lead to delayed payments.",
+            text: "Please confirm your card details before submission.",
             fontSize: 16,
             fontWeight: FontWeight.w500,
             color: appFontColor(),

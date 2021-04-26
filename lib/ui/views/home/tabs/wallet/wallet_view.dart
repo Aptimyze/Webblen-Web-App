@@ -123,23 +123,23 @@ class _WalletBody extends StatelessWidget {
           isBusy
               ? Container()
               : stripeAccountSetup
-              ? Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(height: 8.0),
-                      StripeAccountBlockView(),
-                      //stripeAccountMenu(verificationStatus, balance),
-                    ],
-                  ),
-                )
-              // ),
-              : dismissedNotice
-              ? CreateEarningsAccountBlockView(
-                  dismissNotice: dismissNotice,
-                )
-              : Container(),
+                  ? Container(
+                      margin: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SizedBox(height: 8.0),
+                          StripeAccountBlockView(),
+                          //stripeAccountMenu(verificationStatus, balance),
+                        ],
+                      ),
+                    )
+                  // ),
+                  : dismissedNotice
+                      ? CreateEarningsAccountBlockView(
+                          dismissNotice: dismissNotice,
+                        )
+                      : Container(),
           SizedBox(height: 16.0),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
@@ -192,30 +192,30 @@ class _WalletBody extends StatelessWidget {
           //   // ).transitionToRedeemedRewardsPage(),
           //   () => model.navigateToRedeemedRewardsView(),
           // ),
-          SizedBox(height: 8.0),
-          _WalletMenuOption(
-            icon: Icon(
-              FontAwesomeIcons.lightbulb,
-              color: appIconColor(),
-              size: 18.0,
-            ),
-            name: "Give Feedback",
-            color: appFontColor(),
-            onPressed: giveFeedback,
-          ).showCursorOnHover,
-          SizedBox(height: 8.0),
-          _WalletMenuOption(
-            icon: Icon(FontAwesomeIcons.questionCircle, color: appIconColor(), size: 18.0),
-            name: "Help/FAQ",
-            color: appFontColor(),
-            onPressed: viewHelpFAQ,
-          ).showCursorOnHover,
-          SizedBox(height: 8.0),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 16),
-            color: appDividerColor(),
-            height: 0.5,
-          ),
+          // SizedBox(height: 8.0),
+          // _WalletMenuOption(
+          //   icon: Icon(
+          //     FontAwesomeIcons.lightbulb,
+          //     color: appIconColor(),
+          //     size: 18.0,
+          //   ),
+          //   name: "Give Feedback",
+          //   color: appFontColor(),
+          //   onPressed: giveFeedback,
+          // ).showCursorOnHover,
+          // SizedBox(height: 8.0),
+          // _WalletMenuOption(
+          //   icon: Icon(FontAwesomeIcons.questionCircle, color: appIconColor(), size: 18.0),
+          //   name: "Help/FAQ",
+          //   color: appFontColor(),
+          //   onPressed: viewHelpFAQ,
+          // ).showCursorOnHover,
+          // SizedBox(height: 8.0),
+          // Container(
+          //   margin: EdgeInsets.symmetric(horizontal: 16),
+          //   color: appDividerColor(),
+          //   height: 0.5,
+          // ),
         ],
       ),
     );

@@ -5,6 +5,7 @@ import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
+import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
 import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_top_nav_bar/custom_top_nav_bar.dart';
 import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_top_nav_bar/custom_top_nav_bar_item.dart';
 import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_circle_progress_indicator.dart';
@@ -95,29 +96,37 @@ class _TicketsList extends HookViewModelWidget<MyTicketsViewModel> {
         maxWidth: 500,
       ),
       margin: EdgeInsets.symmetric(vertical: 8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          verticalSpaceMedium,
-          ListView.builder(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: model.loadedEvents.length,
-            itemBuilder: (BuildContext context, int index) {
-              return EventTicketBlock(
-                eventTitle: model.loadedEvents[index]['eventTitle'],
-                eventAddress: model.loadedEvents[index]['eventAddress'],
-                eventStartDate: model.loadedEvents[index]['eventStartDate'],
-                eventStartTime: model.loadedEvents[index]['eventStartTime'],
-                eventEndTime: model.loadedEvents[index]['eventEndTime'],
-                eventTimezone: model.loadedEvents[index]['eventTimezone'],
-                numOfTicsForEvent: model.ticsPerEvent[model.loadedEvents[index]['id']],
-                viewEventTickets: () => model.navigateToEventTickets(eventID: model.loadedEvents[index]['id']),
-              );
-            },
-          ),
-        ],
-      ),
+      child: model.loadedEvents.isEmpty
+          ? CustomText(
+              text: "No Tickets Found in Your Wallet\nIf this is a mistake, please contact team@webblen.com",
+              textAlign: TextAlign.center,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: appFontColorAlt(),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                verticalSpaceMedium,
+                ListView.builder(
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: model.loadedEvents.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return EventTicketBlock(
+                      eventTitle: model.loadedEvents[index]['eventTitle'],
+                      eventAddress: model.loadedEvents[index]['eventAddress'],
+                      eventStartDate: model.loadedEvents[index]['eventStartDate'],
+                      eventStartTime: model.loadedEvents[index]['eventStartTime'],
+                      eventEndTime: model.loadedEvents[index]['eventEndTime'],
+                      eventTimezone: model.loadedEvents[index]['eventTimezone'],
+                      numOfTicsForEvent: model.ticsPerEvent[model.loadedEvents[index]['id']],
+                      viewEventTickets: () => model.navigateToEventTickets(eventID: model.loadedEvents[index]['id']),
+                    );
+                  },
+                ),
+              ],
+            ),
     );
   }
 }

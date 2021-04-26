@@ -183,7 +183,7 @@ class LoginDialog extends StatelessWidget {
                       color: appFontColor(),
                     ),
                     CustomTextButton(
-                      onTap: () {},
+                      onTap: () => model.showLoginExplanationDialog(),
                       text: "Why do I have to login?",
                       fontSize: 14,
                       fontWeight: FontWeight.bold,

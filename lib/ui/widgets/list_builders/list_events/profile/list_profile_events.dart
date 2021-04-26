@@ -26,70 +26,70 @@ class ListProfileEvents extends StatelessWidget {
       builder: (context, model, child) => model.isBusy
           ? Container()
           : model.dataResults.isEmpty
-          ? isCurrentUser
-              ? ZeroStateView(
-                  imageAssetName: "calendar",
-                  imageSize: 200,
-                  header: "You Do Not Have Any Events",
-                  subHeader: "Schedule and New Event to Share with the Community",
-                  mainActionButtonTitle: "Create Post",
-                  mainAction: () => model.webblenBaseViewModel!.navigateToCreateEventPage(
-                    id: null,
-                    addPromo: false,
+              ? isCurrentUser
+                  ? ZeroStateView(
+                      imageAssetName: "calendar",
+                      imageSize: 200,
+                      header: "You Do Not Have Any Events",
+                      subHeader: "Schedule and New Event to Share with the Community",
+                      mainActionButtonTitle: "Create Event",
+                      mainAction: () => model.webblenBaseViewModel!.navigateToCreateEventPage(
+                        id: null,
+                        addPromo: false,
+                      ),
+                      secondaryActionButtonTitle: null,
+                      secondaryAction: null,
+                      refreshData: model.refreshData,
+                      scrollController: scrollController == null ? model.scrollController : scrollController,
+                    )
+                  : ZeroStateView(
+                      scrollController: scrollController == null ? model.scrollController : scrollController,
+                      imageAssetName: "umbrella_chair",
+                      imageSize: 200,
+                      header: "This Account Does Not Have Any Events",
+                      subHeader: "Check Back Later",
+                      mainActionButtonTitle: "",
+                      mainAction: null,
+                      secondaryActionButtonTitle: null,
+                      secondaryAction: null,
+                      refreshData: model.refreshData,
+                    )
+              : Container(
+                  height: screenHeight(context),
+                  color: appBackgroundColor,
+                  child: RefreshIndicator(
+                    onRefresh: model.refreshData,
+                    child: ListView.builder(
+                      cacheExtent: 8000,
+                      controller: scrollController == null ? model.scrollController : scrollController,
+                      key: PageStorageKey(model.listKey),
+                      addAutomaticKeepAlives: true,
+                      shrinkWrap: true,
+                      itemCount: model.dataResults.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index < model.dataResults.length) {
+                          WebblenEvent event;
+                          event = WebblenEvent.fromMap(model.dataResults[index].data()!);
+                          return EventBlockView(
+                            event: event,
+                            showEventOptions: (event) => model.showContentOptions(event),
+                          );
+                        } else {
+                          if (model.moreDataAvailable) {
+                            WidgetsBinding.instance!.addPostFrameCallback((_) {
+                              model.loadAdditionalData();
+                            });
+                            return Align(
+                              alignment: Alignment.center,
+                              child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
+                            );
+                          }
+                          return Container();
+                        }
+                      },
+                    ),
                   ),
-                  secondaryActionButtonTitle: null,
-                  secondaryAction: null,
-                  refreshData: model.refreshData,
-                  scrollController: scrollController == null ? model.scrollController : scrollController,
-                )
-              : ZeroStateView(
-                  scrollController: scrollController == null ? model.scrollController : scrollController,
-                  imageAssetName: "umbrella_chair",
-                  imageSize: 200,
-                  header: "This Account Does Not Have Any Events",
-                  subHeader: "Check Back Later",
-                  mainActionButtonTitle: "",
-                  mainAction: null,
-                  secondaryActionButtonTitle: null,
-                  secondaryAction: null,
-                  refreshData: model.refreshData,
-                )
-          : Container(
-              height: screenHeight(context),
-              color: appBackgroundColor,
-              child: RefreshIndicator(
-                onRefresh: model.refreshData,
-                child: ListView.builder(
-                  cacheExtent: 8000,
-                  controller: scrollController == null ? model.scrollController : scrollController,
-                  key: PageStorageKey(model.listKey),
-                  addAutomaticKeepAlives: true,
-                  shrinkWrap: true,
-                  itemCount: model.dataResults.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index < model.dataResults.length) {
-                      WebblenEvent event;
-                      event = WebblenEvent.fromMap(model.dataResults[index].data()!);
-                      return EventBlockView(
-                        event: event,
-                        showEventOptions: (event) => model.showContentOptions(event),
-                      );
-                    } else {
-                      if (model.moreDataAvailable) {
-                        WidgetsBinding.instance!.addPostFrameCallback((_) {
-                          model.loadAdditionalData();
-                        });
-                        return Align(
-                          alignment: Alignment.center,
-                          child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
-                        );
-                      }
-                      return Container();
-                    }
-                  },
                 ),
-              ),
-            ),
     );
   }
 }

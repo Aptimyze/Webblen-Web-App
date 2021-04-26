@@ -92,6 +92,7 @@ class CreateEventViewModel extends ReactiveViewModel {
 
   ///USER DATA
   bool? hasEarningsAccount;
+  bool dismissedEarningsAccountNotice = false;
   bool get isLoggedIn => _reactiveWebblenUserService.userLoggedIn;
   WebblenUser get user => _reactiveWebblenUserService.user;
 
@@ -201,6 +202,11 @@ class CreateEventViewModel extends ReactiveViewModel {
 
     notifyListeners();
     setBusy(false);
+  }
+
+  dismissEarningsAccountNotice() {
+    dismissedEarningsAccountNotice = true;
+    notifyListeners();
   }
 
   ///LOAD PREVIOUS DATA

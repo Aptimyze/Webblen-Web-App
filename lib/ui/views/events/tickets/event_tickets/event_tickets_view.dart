@@ -70,7 +70,7 @@ class EventTicketsView extends StatelessWidget {
                   ),
                 )
               : Align(
-                  alignment: getValueForScreenType(context: context, mobile: Alignment.topCenter, desktop: Alignment.center, tablet: Alignment.center),
+                  alignment: Alignment.topCenter,
                   child: ListView(
                     shrinkWrap: true,
                     children: [

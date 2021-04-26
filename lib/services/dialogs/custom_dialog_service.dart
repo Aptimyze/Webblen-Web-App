@@ -51,6 +51,15 @@ class CustomDialogService {
     }
   }
 
+  showLoginExplanationDialog() async {
+    await _dialogService.showDialog(
+      title: "Why is Login Required?",
+      description: "Logging in allows you to easily access your tickets and earn rewards for the events you attend",
+      barrierDismissible: true,
+      buttonTitle: "Ok",
+    );
+  }
+
   showAppOnlyDialog({required String description}) async {
     String? url = await _platformDataService.getWebblenDownloadLink();
     DialogResponse? response = await _dialogService.showDialog(

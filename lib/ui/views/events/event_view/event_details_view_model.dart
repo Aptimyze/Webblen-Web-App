@@ -42,6 +42,7 @@ class EventDetailsViewModel extends ReactiveViewModel {
   WebblenEvent? event;
   bool hasSocialAccounts = false;
   bool liveNow = false;
+  bool eventPassed = false;
 
   ///TICKETS
   WebblenTicketDistro? ticketDistro;
@@ -100,6 +101,9 @@ class EventDetailsViewModel extends ReactiveViewModel {
       liveNow = true;
     } else {
       liveNow = false;
+    }
+    if (currentDateInMilli > eventEndDateInMilli!) {
+      eventPassed = true;
     }
     print(liveNow);
     notifyListeners();

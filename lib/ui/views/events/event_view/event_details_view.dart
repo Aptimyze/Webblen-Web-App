@@ -359,8 +359,11 @@ class EventDetailsView extends StatelessWidget {
                   ],
                 ),
         ),
-        bottomNavigationBar: model.isBusy || model.event == null || !model.event!.hasTickets!
-            ? Container()
+        bottomNavigationBar: model.isBusy || model.event == null || !model.event!.hasTickets! || model.eventPassed
+            ? Container(
+                height: 0,
+                width: 0,
+              )
             : CustomBottomActionBar(
                 header: 'Tickets Available',
                 subHeader: "on Webblen",

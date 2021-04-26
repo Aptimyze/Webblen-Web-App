@@ -72,7 +72,10 @@ class USDBalanceHistoryView extends StatelessWidget {
                       SizedBox(height: 4),
                       _SearchBar(),
                       SizedBox(height: 4),
-                      ListStripeTransactions(searchFilter: model.searchTerm),
+                      Container(
+                        height: screenHeight(context),
+                        child: ListStripeTransactions(searchFilter: model.searchTerm),
+                      ),
                     ],
                   ),
                 ),
@@ -89,21 +92,14 @@ class _SearchBar extends HookViewModelWidget<USDBalanceHistoryViewModel> {
   @override
   Widget buildViewModelWidget(BuildContext context, USDBalanceHistoryViewModel model) {
     final searchTerm = useTextEditingController();
-    return Container(
-      constraints: BoxConstraints(
-        maxWidth: 500,
-      ),
-      child: SearchField(
-        heroTag: "transaction-search",
-        onTap: null,
-        enabled: true,
-        textEditingController: searchTerm,
-        onChanged: (val) {
-          searchTerm.selection = TextSelection.fromPosition(TextPosition(offset: searchTerm.text.length));
-          model.updateSearchTerm(val);
-        },
-        onFieldSubmitted: (val) {},
-      ),
+    return GeneralSearchField(
+      textEditingController: searchTerm,
+      onChanged: (val) {
+        searchTerm.selection = TextSelection.fromPosition(TextPosition(offset: searchTerm.text.length));
+        model.updateSearchTerm(val);
+      },
+      onFieldSubmitted: (val) {},
+      autoFocus: false,
     );
   }
 }
