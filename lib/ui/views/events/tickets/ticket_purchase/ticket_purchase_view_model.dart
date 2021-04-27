@@ -309,7 +309,6 @@ class TicketPurchaseViewModel extends ReactiveViewModel {
         );
         if (status == "passed") {
           List purchasedTickets = await _ticketDistroDataService.completeTicketPurchase(user.id!, ticketsToPurchase, event!);
-          print(purchasedTickets);
           _emailService.sendTicketPurchaseConfirmationEmail(
             emailAddress: emailAddress!,
             eventTitle: event!.title!,
