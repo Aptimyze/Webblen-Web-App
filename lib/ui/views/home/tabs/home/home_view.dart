@@ -35,16 +35,16 @@ class HomeView extends StatelessWidget {
                     ),
                   )
                 : model.cityName.isEmpty
-                ? _ChooseLocationView(openFilter: () => model.customBottomSheetService.openFilter())
-                : ResponsiveBuilder(
-                    builder: (context, screenSize) {
-                      if (screenSize.isDesktop) {
-                        return _DesktopHomeBody();
-                      } else {
-                        return _HomeBody();
-                      }
-                    },
-                  ),
+                    ? _ChooseLocationView(openFilter: () => model.customBottomSheetService.openFilter())
+                    : ResponsiveBuilder(
+                        builder: (context, screenSize) {
+                          if (screenSize.isDesktop) {
+                            return _DesktopHomeBody();
+                          } else {
+                            return _HomeBody();
+                          }
+                        },
+                      ),
           ),
         ),
       ),
