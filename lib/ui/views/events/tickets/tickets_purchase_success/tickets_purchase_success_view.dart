@@ -78,7 +78,7 @@ class TicketsPurchaseSuccessView extends StatelessWidget {
                         ),
                         verticalSpaceSmall,
                         CustomText(
-                          text: "An email was sent to $email",
+                          text: "An email was sent to $email\n(Be sure to check your spam if you don't see it)",
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                           color: appFontColor(),

@@ -194,7 +194,16 @@ class TicketPurchaseViewModel extends ReactiveViewModel {
           } else {
             discountAmount = double.parse(code['discountValue'].replaceAll("\$", ""));
             discountCodeDescription = " \$${(discountAmount).toStringAsFixed(2)} off ";
-            chargeAmount = chargeAmount - discountAmount;
+            ticketCharge = ticketCharge - discountAmount;
+            if (ticketCharge <= 0) {
+              ticketFeeCharge = 0;
+              taxCharge = (ticketCharge + ticketFeeCharge) * taxRate!;
+              chargeAmount = ticketCharge + ticketFeeCharge + taxCharge;
+            } else {
+              ticketFeeCharge = numOfTicketsToPurchase * ticketRate!;
+              taxCharge = (ticketCharge + ticketFeeCharge) * taxRate!;
+              chargeAmount = ticketCharge + ticketFeeCharge + taxCharge;
+            }
             appliedDiscountCodes.add(discountCode!);
             discountCodeStatus = 'passed';
           }
@@ -289,7 +298,26 @@ class TicketPurchaseViewModel extends ReactiveViewModel {
 
   processPurchase() async {
     if (user.isValid()) {
-      if (formIsValid()) {
+      if (chargeAmount <= 0) {
+        if (emailAddress == null || !isValidEmail(emailAddress!)) {
+          customDialogService.showErrorDialog(description: "Please provide a valid email address");
+          return;
+        }
+        List purchasedTickets = await _ticketDistroDataService.completeTicketPurchase(user.id!, ticketsToPurchase, event!);
+        _emailService.sendTicketPurchaseConfirmationEmail(
+          emailAddress: emailAddress!,
+          eventTitle: event!.title!,
+          purchasedTickets: purchasedTickets,
+          additionalTaxesAndFees: "\$${(ticketFeeCharge + taxCharge).toStringAsFixed(2)}",
+          discountCodeDescription: discountCodeDescription == null ? "" : discountCodeDescription!,
+          discountValue: "- \$${discountAmount.toStringAsFixed(2)}",
+          totalCharge: "\$${chargeAmount.toStringAsFixed(2)}",
+        );
+        if (discountCode != null && discountCodeDescription != null) {
+          _ticketDistroDataService.updateUsedDiscountCode(eventID: event!.id!, ticketDistro: ticketDistro!, discountCode: discountCode!);
+        }
+        _navigationService.navigateTo(Routes.TicketsPurchaseSuccessViewRoute(email: emailAddress!));
+      } else if (formIsValid()) {
         processingPayment = true;
         notifyListeners();
         String? status = await _stripePaymentService.processTicketPurchase(

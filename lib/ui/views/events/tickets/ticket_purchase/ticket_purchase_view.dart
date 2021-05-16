@@ -112,104 +112,108 @@ class TicketPurchaseView extends StatelessWidget {
                             verticalSpaceMedium,
 
                             ///CARD FORM
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 16),
-                              constraints: BoxConstraints(
-                                maxWidth: 500,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  CustomText(
-                                    text: "Email Address",
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: appFontColor(),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                  verticalSpaceSmall,
-                                  _EmailAddressField(),
-                                  verticalSpaceMedium,
-                                  CustomText(
-                                    text: "Card Number",
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: appFontColor(),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                  verticalSpaceSmall,
-                                  _CardNumField(),
-                                  verticalSpaceMedium,
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Container(
-                                        width: 100,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                                          children: [
-                                            CustomText(
-                                              text: "Exp Month",
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              color: appFontColor(),
-                                              textAlign: TextAlign.left,
+                            model.chargeAmount <= 0
+                                ? Container()
+                                : Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 16),
+                                    constraints: BoxConstraints(
+                                      maxWidth: 500,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      children: [
+                                        CustomText(
+                                          text: "Card Number",
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: appFontColor(),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                        verticalSpaceSmall,
+                                        Container(
+                                          child: Column(
+                                            children: [],
+                                          ),
+                                        ),
+                                        _CardNumField(),
+                                        verticalSpaceMedium,
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            Container(
+                                              width: 100,
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                children: [
+                                                  CustomText(
+                                                    text: "Exp Month",
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: appFontColor(),
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                  SizedBox(height: 8.0),
+                                                  _ExpiryMonthField(),
+                                                ],
+                                              ),
                                             ),
-                                            SizedBox(height: 8.0),
-                                            _ExpiryMonthField(),
+                                            Container(
+                                              width: 100,
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                children: [
+                                                  CustomText(
+                                                    text: "Exp Year",
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: appFontColor(),
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                  SizedBox(height: 8.0),
+                                                  _ExpiryYearField(),
+                                                ],
+                                              ),
+                                            ),
+                                            Container(
+                                              width: 100,
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                children: [
+                                                  CustomText(
+                                                    text: "CVC",
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: appFontColor(),
+                                                    textAlign: TextAlign.left,
+                                                  ),
+                                                  SizedBox(height: 8.0),
+                                                  _CVCField(),
+                                                ],
+                                              ),
+                                            ),
                                           ],
                                         ),
-                                      ),
-                                      Container(
-                                        width: 100,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                                          children: [
-                                            CustomText(
-                                              text: "Exp Year",
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              color: appFontColor(),
-                                              textAlign: TextAlign.left,
-                                            ),
-                                            SizedBox(height: 8.0),
-                                            _ExpiryYearField(),
-                                          ],
+                                        SizedBox(height: 16.0),
+                                        CustomText(
+                                          text: "Card Holder Name",
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: appFontColor(),
+                                          textAlign: TextAlign.left,
                                         ),
-                                      ),
-                                      Container(
-                                        width: 100,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                                          children: [
-                                            CustomText(
-                                              text: "CVC",
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              color: appFontColor(),
-                                              textAlign: TextAlign.left,
-                                            ),
-                                            SizedBox(height: 8.0),
-                                            _CVCField(),
-                                          ],
+                                        SizedBox(height: 8.0),
+                                        _CardHolderNameField(),
+                                        SizedBox(height: 32.0),
+                                        CustomText(
+                                          text: "Please confirm your card details before submission.",
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: appFontColor(),
+                                          textAlign: TextAlign.center,
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                  SizedBox(height: 16.0),
-                                  CustomText(
-                                    text: "Card Holder Name",
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: appFontColor(),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                  SizedBox(height: 8.0),
-                                  _CardHolderNameField(),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 32.0),
                             _PurchaseTicketsButton(),
                             SizedBox(height: 32.0),
                           ],

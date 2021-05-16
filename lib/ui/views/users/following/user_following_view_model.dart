@@ -13,7 +13,6 @@ class UserFollowingViewModel extends BaseViewModel {
   NavigationService? _navigationService = locator<NavigationService>();
   AlgoliaSearchService? _algoliaSearchService = locator<AlgoliaSearchService>();
   UserDataService? _userDataService = locator<UserDataService>();
-  WebblenBaseViewModel? webblenBaseViewModel = locator<WebblenBaseViewModel>();
   ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
 
   String? id;

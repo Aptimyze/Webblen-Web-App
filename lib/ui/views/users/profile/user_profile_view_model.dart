@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
@@ -36,16 +35,6 @@ class UserProfileViewModel extends StreamViewModel<WebblenUser> {
 
   ///UI HELPERS
   ScrollController scrollController = ScrollController();
-
-  ///DATA
-  List<DocumentSnapshot> postResults = [];
-  DocumentSnapshot? lastPostDocSnap;
-
-  bool loadingAdditionalPosts = false;
-  bool morePostsAvailable = true;
-  bool reloadingPosts = false;
-
-  int resultsLimit = 20;
 
   ///USER DATA
   String? uid;
@@ -89,73 +78,8 @@ class UserProfileViewModel extends StreamViewModel<WebblenUser> {
 
   ///INITIALIZE
   initialize({String? id, TabController? tabController}) async {
-    //set busy status
     setBusy(true);
-
-    //get user
-
-    // .value will return the raw string value
     uid = id;
-    notifyListeners();
-
-    //load additional data on scroll
-    scrollController.addListener(() {
-      double triggerFetchMoreSize = 0.9 * scrollController.position.maxScrollExtent;
-      if (scrollController.position.pixels > triggerFetchMoreSize) {
-        if (tabController!.index == 0) {
-          // loadAdditionalPosts();
-        }
-      }
-    });
-    notifyListeners();
-
-    //setBusy(false);
-    //load profile data
-  }
-
-  loadData() async {
-    await loadPosts();
-    notifyListeners();
-    setBusy(false);
-  }
-
-  Future<void> refreshPosts() async {
-    await loadPosts();
-    notifyListeners();
-  }
-
-  ///Load Data
-  loadPosts() async {
-    //load posts with params
-    postResults = await _postDataService!.loadPostsByUserID(id: user!.id, resultsLimit: resultsLimit);
-  }
-
-  loadAdditionalPosts() async {
-    //check if already loading posts or no more posts available
-    if (loadingAdditionalPosts || !morePostsAvailable) {
-      return;
-    }
-
-    //set loading additional posts status
-    loadingAdditionalPosts = true;
-    notifyListeners();
-
-    //load additional posts
-    List<DocumentSnapshot> newResults = await _postDataService!.loadAdditionalPostsByUserID(
-      lastDocSnap: postResults[postResults.length - 1],
-      id: user!.id,
-      resultsLimit: resultsLimit,
-    );
-
-    //notify if no more posts available
-    if (newResults.length == 0) {
-      morePostsAvailable = false;
-    } else {
-      postResults.addAll(newResults);
-    }
-
-    //set loading additional posts status
-    loadingAdditionalPosts = false;
     notifyListeners();
   }
 
