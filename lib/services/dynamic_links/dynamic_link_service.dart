@@ -1,10 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:http/http.dart' as http;
-import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
-import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
 import 'package:webblen_web_app/models/webblen_post.dart';
@@ -172,42 +170,39 @@ class DynamicLinkService {
 
   Future handleDynamicLinks() async {
     CustomDialogService _customDialogService = locator<CustomDialogService>();
-    // get dynamic link on app open
-    final PendingDynamicLinkData? data = await FirebaseDynamicLinks.instance.getInitialLink();
 
-    _handleDynamicLink(data);
-
-    // get dynamic link if app already running
-    FirebaseDynamicLinks.instance.onLink(onSuccess: (PendingDynamicLinkData? linkData) async {
-      _handleDynamicLink(linkData);
-    }, onError: (OnLinkErrorException err) async {
-      _customDialogService.showErrorDialog(description: "App Link Error");
-    });
+    // It will handle app links while the app is already started - be it in
+    // // the foreground or in the background.
+    // StreamSubscription _sub = uriLinkStream.listen((Uri? uri) {
+    //   print('got uri: $uri');
+    // }, onError: (Object err) {
+    //   print('got err: $err');
+    // });
   }
 
-  void _handleDynamicLink(PendingDynamicLinkData? linkData) {
-    NavigationService _navigationService = locator<NavigationService>();
-    CustomDialogService _customDialogService = locator<CustomDialogService>();
-    final Uri? link = linkData?.link;
-    if (link != null) {
-      String? id = link.queryParameters['id'];
-      if (id != null) {
-        if (link.pathSegments.contains('profile')) {
-          _navigationService.navigateTo(Routes.UserProfileView(id: id));
-        } else if (link.pathSegments.contains('post')) {
-          _navigationService.navigateTo(Routes.PostViewRoute(id: id));
-        } else if (link.pathSegments.contains('event')) {
-          _navigationService.navigateTo(Routes.EventDetailsViewRoute(id: id));
-        } else if (link.pathSegments.contains('stream')) {
-          _navigationService.navigateTo(Routes.LiveStreamViewRoute(id: id));
-        } else if (link.pathSegments.contains('ticket')) {
-          _navigationService.navigateTo(Routes.TicketSelectionViewRoute(id: id));
-        } else {
-          _customDialogService.showErrorDialog(description: "There was an issue loading the desired link");
-        }
-      } else {
-        _customDialogService.showErrorDialog(description: "There was an issue loading the desired link");
-      }
-    }
-  }
+  // void _handleDynamicLink(PendingDynamicLinkData? linkData) {
+  //   NavigationService _navigationService = locator<NavigationService>();
+  //   CustomDialogService _customDialogService = locator<CustomDialogService>();
+  //   final Uri? link = linkData?.link;
+  //   if (link != null) {
+  //     String? id = link.queryParameters['id'];
+  //     if (id != null) {
+  //       if (link.pathSegments.contains('profile')) {
+  //         _navigationService.navigateTo(Routes.UserProfileView(id: id));
+  //       } else if (link.pathSegments.contains('post')) {
+  //         _navigationService.navigateTo(Routes.PostViewRoute(id: id));
+  //       } else if (link.pathSegments.contains('event')) {
+  //         _navigationService.navigateTo(Routes.EventDetailsViewRoute(id: id));
+  //       } else if (link.pathSegments.contains('stream')) {
+  //         _navigationService.navigateTo(Routes.LiveStreamViewRoute(id: id));
+  //       } else if (link.pathSegments.contains('ticket')) {
+  //         _navigationService.navigateTo(Routes.TicketSelectionViewRoute(id: id));
+  //       } else {
+  //         _customDialogService.showErrorDialog(description: "There was an issue loading the desired link");
+  //       }
+  //     } else {
+  //       _customDialogService.showErrorDialog(description: "There was an issue loading the desired link");
+  //     }
+  //   }
+  // }
 }

@@ -38,20 +38,22 @@ import '../ui/views/users/saved/saved_content_view.dart';
 class Routes {
   static const String AuthViewRoute = '/login';
   static const String WebblenBaseViewRoute = '/';
-  static const String _PostViewRoute = '/post/:id';
-  static String PostViewRoute({@required dynamic id}) => '/post/$id';
+  static const String _PostViewRoute = '/posts/post?id=:id';
+  static String PostViewRoute({@required dynamic id}) => '/posts/postid=$id';
   static const String _CreatePostViewRoute = '/post/publish/:id/:promo';
   static String CreatePostViewRoute(
           {@required dynamic id, @required dynamic promo}) =>
       '/post/publish/$id/$promo';
-  static const String _EventDetailsViewRoute = '/event/:id';
-  static String EventDetailsViewRoute({@required dynamic id}) => '/event/$id';
+  static const String _EventDetailsViewRoute = '/events/event?id=:id';
+  static String EventDetailsViewRoute({@required dynamic id}) =>
+      '/events/eventid=$id';
   static const String _CreateEventViewRoute = '/event/publish/:id/:promo';
   static String CreateEventViewRoute(
           {@required dynamic id, @required dynamic promo}) =>
       '/event/publish/$id/$promo';
-  static const String _LiveStreamViewRoute = '/stream/:id';
-  static String LiveStreamViewRoute({@required dynamic id}) => '/stream/$id';
+  static const String _LiveStreamViewRoute = '/streams/stream?id=:id';
+  static String LiveStreamViewRoute({@required dynamic id}) =>
+      '/streams/streamid=$id';
   static const String _CreateLiveStreamViewRoute = '/stream/publish/:id/:promo';
   static String CreateLiveStreamViewRoute(
           {@required dynamic id, @required dynamic promo}) =>
@@ -67,8 +69,9 @@ class Routes {
   static const String _AllSearchResultsViewRoute = '/all_results/:term';
   static String AllSearchResultsViewRoute({@required dynamic term}) =>
       '/all_results/$term';
-  static const String _UserProfileView = '/profile/:id';
-  static String UserProfileView({@required dynamic id}) => '/profile/$id';
+  static const String _UserProfileView = '/profiles/profile?id=:id';
+  static String UserProfileView({@required dynamic id}) =>
+      '/profiles/profileid=$id';
   static const String EditProfileViewRoute = '/edit_profile';
   static const String SavedContentViewRoute = '/saved';
   static const String _UserFollowersViewRoute = '/profile/followers/:id';

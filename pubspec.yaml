@@ -15,7 +15,6 @@ dependencies:
   url_launcher:
   js:
   url_strategy:
-  universal_io: ^2.0.4
 
   #ARCHITECTURE
   stacked: ^2.0.2
@@ -45,7 +44,6 @@ dependencies:
   firebase_auth: ^1.0.2
   firebase_auth_oauth: ^1.0.1
   cloud_functions: ^1.0.3
-  firebase_dynamic_links: ^2.0.2
 
   #Auth
   flutter_facebook_auth: ^3.3.2
