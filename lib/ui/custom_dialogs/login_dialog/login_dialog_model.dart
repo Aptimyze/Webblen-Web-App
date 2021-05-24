@@ -131,8 +131,8 @@ class LoginDialogModel extends BaseViewModel {
 
   signUserIn(String uid) async {
     WebblenUser user = WebblenUser();
-    bool userExists = await _userDataService.checkIfUserExists(uid);
-    if (!userExists) {
+    bool? userExists = await _userDataService.checkIfUserExists(uid);
+    if (userExists != null && !userExists) {
       user = WebblenUser().generateNewUser(uid);
       await _userDataService.createWebblenUser(user);
     } else {

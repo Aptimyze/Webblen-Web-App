@@ -1,56 +1,75 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:stacked/stacked.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/models/webblen_notification.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
+import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_circle_progress_indicator.dart';
+import 'package:webblen_web_app/ui/widgets/common/zero_state_view.dart';
 import 'package:webblen_web_app/ui/widgets/notifications/notification_block/notification_block_widget.dart';
 
+import 'list_notifications_model.dart';
+
 class ListNotifications extends StatelessWidget {
-  final List data;
-  final VoidCallback refreshData;
-  final PageStorageKey pageStorageKey;
-  final ScrollController scrollController;
-  ListNotifications({required this.refreshData, required this.data, required this.pageStorageKey, required this.scrollController});
-
-  Widget listCauses() {
-    return RefreshIndicator(
-      onRefresh: refreshData as Future<void> Function(),
-      backgroundColor: appBackgroundColor,
-      child: ListView.builder(
-        physics: AlwaysScrollableScrollPhysics(),
-        controller: scrollController,
-        key: pageStorageKey,
-        addAutomaticKeepAlives: true,
-        shrinkWrap: true,
-        padding: EdgeInsets.only(
-          top: 4.0,
-          bottom: 4.0,
-        ),
-        itemCount: data.length,
-        itemBuilder: (context, index) {
-          WebblenNotification notification;
-
-          ///GET CAUSE OBJECT
-          if (data[index] is DocumentSnapshot) {
-            notification = WebblenNotification.fromMap(data[index].data());
-          } else {
-            notification = data[index];
-          }
-
-          return NotificationBlockWidget(
-            notification: notification,
-          );
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: screenHeight(context),
-      color: appBackgroundColor,
-      child: listCauses(),
+    return ViewModelBuilder<ListNotificationsModel>.reactive(
+      onModelReady: (model) => model.initialize(),
+      viewModelBuilder: () => ListNotificationsModel(),
+      builder: (context, model, child) => model.isBusy
+          ? Container()
+          : model.dataResults.isEmpty
+              ? ZeroStateView(
+                  imageAssetName: 'beach_sun',
+                  imageSize: 150,
+                  header: "No Recent Activity Found",
+                  subHeader: "Check Back Later!",
+                  secondaryActionButtonTitle: '',
+                  scrollController: null,
+                  mainAction: () {},
+                  refreshData: () {},
+                  mainActionButtonTitle: '',
+                  secondaryAction: () {},
+                )
+              : Container(
+                  height: screenHeight(context),
+                  color: appBackgroundColor,
+                  child: RefreshIndicator(
+                    onRefresh: model.refreshData,
+                    backgroundColor: appBackgroundColor,
+                    child: ListView.builder(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      controller: model.scrollController,
+                      key: PageStorageKey(model.listKey),
+                      addAutomaticKeepAlives: true,
+                      shrinkWrap: true,
+                      padding: EdgeInsets.only(
+                        top: 4.0,
+                        bottom: 4.0,
+                      ),
+                      itemCount: model.dataResults.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index < model.dataResults.length) {
+                          WebblenNotification notification;
+                          notification = WebblenNotification.fromMap(model.dataResults[index].data()!);
+                          return NotificationBlockWidget(
+                            notification: notification,
+                          );
+                        } else {
+                          if (model.moreDataAvailable) {
+                            WidgetsBinding.instance!.addPostFrameCallback((_) {
+                              model.loadAdditionalData();
+                            });
+                            return Align(
+                              alignment: Alignment.center,
+                              child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
+                            );
+                          }
+                          return Container();
+                        }
+                      },
+                    ),
+                  ),
+                ),
     );
   }
 }

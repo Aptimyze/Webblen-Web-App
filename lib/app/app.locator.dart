@@ -29,6 +29,7 @@ import '../services/firestore/data/user_data_service.dart';
 import '../services/firestore/data/user_preference_data_service.dart';
 import '../services/location/google_places_service.dart';
 import '../services/location/location_service.dart';
+import '../services/navigation/custom_navigation_service.dart';
 import '../services/reactive/content_filter/reactive_content_filter_service.dart';
 import '../services/reactive/file_uploader/reactive_file_uploader_service.dart';
 import '../services/reactive/webblen_user/reactive_webblen_user_service.dart';
@@ -48,6 +49,7 @@ void setupLocator() {
   locator.registerLazySingleton(() => DialogService());
   locator.registerLazySingleton(() => BottomSheetService());
   locator.registerLazySingleton(() => SnackbarService());
+  locator.registerLazySingleton(() => CustomNavigationService());
   locator.registerLazySingleton(() => CustomBottomSheetService());
   locator.registerLazySingleton(() => CustomDialogService());
   locator.registerLazySingleton(() => AuthService());

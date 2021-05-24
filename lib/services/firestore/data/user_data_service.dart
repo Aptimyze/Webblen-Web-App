@@ -14,13 +14,16 @@ class UserDataService {
   SnackbarService? _snackbarService = locator<SnackbarService>();
   CustomDialogService _customDialogService = locator<CustomDialogService>();
 
-  FutureOr<bool> checkIfUserExists(String? id) async {
-    bool exists = false;
+  Future<bool?> checkIfUserExists(String? id) async {
+    bool exists;
     DocumentSnapshot snapshot = await userRef.doc(id).get().catchError((e) {
-      return e.message;
+      print(e.message);
     });
+
     if (snapshot.exists) {
       exists = true;
+    } else {
+      exists = false;
     }
     return exists;
   }
@@ -100,6 +103,18 @@ class UserDataService {
     return updated;
   }
 
+  Future<bool> updateAssociatedEmailAddress(String uid, String emailAddress) async {
+    bool updated = true;
+    String? error;
+    userRef.doc(uid).update({"emailAddress": emailAddress}).whenComplete(() {}).catchError((e) {
+          error = e.message;
+        });
+    if (error != null) {
+      updated = false;
+    }
+    return updated;
+  }
+
   Future<bool> updateUsername({required String username, required String id}) async {
     bool updated = true;
     String? error;
@@ -121,6 +136,18 @@ class UserDataService {
       }
     }
 
+    return updated;
+  }
+
+  Future<bool> updateInterests(String uid, List tags) async {
+    bool updated = true;
+    String? error;
+    await userRef.doc(uid).update({"tags": tags}).catchError((e) {
+      error = e.message;
+    });
+    if (error != null) {
+      updated = false;
+    }
     return updated;
   }
 
@@ -166,77 +193,73 @@ class UserDataService {
     return true;
   }
 
-  Future<bool> followUser(String? currentUID, String? targetUserID) async {
-    DocumentSnapshot currentUserSnapshot = await userRef.doc(currentUID).get();
-    DocumentSnapshot targetUserSnapshot = await userRef.doc(targetUserID).get();
-    Map<String, dynamic> currentUserData = currentUserSnapshot.data()!;
-    Map<String, dynamic> targetUserData = targetUserSnapshot.data()!;
-    List currentUserFollowing = currentUserData['following'];
-    List targetUserFollowers = targetUserData['followers'];
-    if (!currentUserFollowing.contains(targetUserID)) {
-      currentUserFollowing.add(targetUserID);
-      await userRef.doc(currentUID).update({'following': currentUserFollowing}).catchError((e) {
-        print(e);
-        return false;
-      });
-    }
-    if (!targetUserFollowers.contains(currentUID)) {
-      targetUserFollowers.add(currentUID);
-      await userRef.doc(targetUserID).update({'followers': targetUserFollowers}).catchError((e) {
-        print(e);
-        return false;
-      });
-    }
+  Future<bool> completeOnboarding({required String uid}) async {
+    bool updated = true;
+    await userRef.doc(uid).update({"onboarded": true}).catchError((e) {
+      print(e.meesage);
+    });
+    return updated;
+  }
+
+  Future<bool> followUser(String currentUID, String targetUserID) async {
+    String? error;
+    await userRef.doc(currentUID).update({
+      'following': FieldValue.arrayUnion([targetUserID])
+    }).catchError((e) {
+      error = e.message;
+    });
+    await userRef.doc(targetUserID).update({
+      'followers': FieldValue.arrayUnion([currentUID])
+    }).catchError((e) {
+      error = e.message;
+    });
 
     //follow posts by user
     QuerySnapshot postQuery = await postsRef.where('authorID', isEqualTo: targetUserID).get();
     postQuery.docs.forEach((doc) {
-      List followers = doc.data()['followers'].toList(growable: true);
-      if (!followers.contains(currentUID)) {
-        followers.add(currentUID);
-        postsRef.doc(doc.id).update({'followers': followers}).catchError((e) {
-          print(e);
-          return false;
-        });
-      }
+      postsRef.doc(doc.id).update({
+        'followers': FieldValue.arrayUnion([currentUID])
+      }).catchError((e) {
+        error = e.message;
+      });
     });
+
+    if (error != null) {
+      _customDialogService.showErrorDialog(description: "Unknown error. Please Try Again Later");
+      return false;
+    }
+
     return true;
   }
 
-  Future<bool> unFollowUser(String? currentUID, String? targetUserID) async {
-    DocumentSnapshot currentUserSnapshot = await userRef.doc(currentUID).get();
-    DocumentSnapshot targetUserSnapshot = await userRef.doc(targetUserID).get();
-    Map<String, dynamic> currentUserData = currentUserSnapshot.data()!;
-    Map<String, dynamic> targetUserData = targetUserSnapshot.data()!;
-    List currentUserFollowing = currentUserData['following'].toList(growable: true);
-    List targetUserFollowers = targetUserData['followers'].toList(growable: true);
-    if (currentUserFollowing.contains(targetUserID)) {
-      currentUserFollowing.remove(targetUserID);
-      await userRef.doc(currentUID).update({'following': currentUserFollowing}).catchError((e) {
-        print(e);
-        return false;
-      });
-    }
-    if (targetUserFollowers.contains(currentUID)) {
-      targetUserFollowers.remove(currentUID);
-      await userRef.doc(targetUserID).update({'followers': targetUserFollowers}).catchError((e) {
-        print(e);
-        return false;
-      });
-    }
-    QuerySnapshot postQuery = await postsRef.where('authorID', isEqualTo: targetUserID).get().catchError((e) {
-      print(e);
-      return false;
+  Future<bool> unFollowUser(String currentUID, String targetUserID) async {
+    String? error;
+    await userRef.doc(currentUID).update({
+      'following': FieldValue.arrayRemove([targetUserID])
+    }).catchError((e) {
+      error = e.message;
     });
+    await userRef.doc(targetUserID).update({
+      'followers': FieldValue.arrayRemove([currentUID])
+    }).catchError((e) {
+      error = e.message;
+    });
+
+    //unfollow posts by user
+    QuerySnapshot postQuery = await postsRef.where('authorID', isEqualTo: targetUserID).get();
     postQuery.docs.forEach((doc) {
-      List followers = doc.data()['followers'].toList(growable: true);
-      if (followers.contains(currentUID)) {
-        followers.remove(currentUID);
-        postsRef.doc(doc.id).update({'followers': followers}).catchError((e) {
-          print(e);
-        });
-      }
+      postsRef.doc(doc.id).update({
+        'followers': FieldValue.arrayRemove([currentUID])
+      }).catchError((e) {
+        error = e.message;
+      });
     });
+
+    if (error != null) {
+      _customDialogService.showErrorDialog(description: "Unknown error. Please Try Again Later");
+      return false;
+    }
+
     return true;
   }
 

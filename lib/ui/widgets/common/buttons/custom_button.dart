@@ -8,29 +8,29 @@ class CustomButton extends StatelessWidget {
   final String? text;
   final double height;
   final double width;
-  final double textSize;
+  final double? textSize;
   final VoidCallback? onPressed;
   final Color backgroundColor;
   final Color textColor;
-  final double elevation;
+  final double? elevation;
   final bool isBusy;
 
   CustomButton({
     required this.text,
-    required this.textSize,
+    this.textSize,
     required this.height,
     required this.width,
     required this.onPressed,
     required this.backgroundColor,
     required this.textColor,
-    required this.elevation,
+    this.elevation,
     required this.isBusy,
   });
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: elevation == null ? 2.0 : elevation,
+      elevation: elevation == null ? 2.0 : elevation!,
       color: backgroundColor,
       borderRadius: BorderRadius.circular(14.0),
       child: InkWell(

@@ -39,7 +39,7 @@ class EventBlockView extends StatelessWidget {
           ),
           verticalSpaceTiny,
           GestureDetector(
-            onTap: () => model.saveUnsaveEvent(eventID: event.id),
+            onTap: () => model.saveUnsaveEvent(event: event),
             child: Icon(
               model.savedEvent ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart,
               size: 18,
@@ -243,7 +243,7 @@ class EventBlockView extends StatelessWidget {
                 ),
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                 child: GestureDetector(
-                  onDoubleTap: () => model.saveUnsaveEvent(eventID: event.id),
+                  onDoubleTap: () => model.saveUnsaveEvent(event: event),
                   onLongPress: () {
                     HapticFeedback.lightImpact();
                     showEventOptions(event);

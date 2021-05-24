@@ -106,7 +106,7 @@ class CustomTopNavBar extends StatelessWidget {
             ),
           ),
           Container(
-            width: 300,
+            width: 350,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: navBarItems!,
@@ -162,7 +162,7 @@ class CustomTopNavBar extends StatelessWidget {
             ),
           ),
           Container(
-            width: 200,
+            width: 300,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: navBarItems!,
@@ -179,8 +179,8 @@ class CustomTopNavBar extends StatelessWidget {
       builder: (buildContext, screenType) => screenType.isDesktop
           ? desktopNavBar(context)
           : screenType.isTablet
-          ? tabletNavBar(context)
-          : mobileNavBar(context),
+              ? tabletNavBar(context)
+              : mobileNavBar(context),
     );
   }
 }

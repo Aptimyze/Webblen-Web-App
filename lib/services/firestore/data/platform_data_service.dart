@@ -9,16 +9,19 @@ class PlatformDataService {
   CollectionReference appReleaseRef = FirebaseFirestore.instance.collection("app_release_info");
   CollectionReference webblenCurrencyRef = FirebaseFirestore.instance.collection("webblen_currency");
 
-  Future<bool> isUpdateAvailable() async {
-    bool updateAvailable = false;
-    String currentVersion = "9.2.1";
-    DocumentSnapshot docSnapshot = await appReleaseRef.doc("general").get();
-    String? releasedVersion = docSnapshot.data()!["versionNumber"];
-    bool? versionIsRequired = docSnapshot.data()!["versionIsRequired"];
-    if (currentVersion != releasedVersion && versionIsRequired!) {
-      updateAvailable = true;
+  Future<double> getNewAccountReward() async {
+    double val = 1.001;
+    DocumentSnapshot snapshot = await webblenCurrencyRef.doc('APP_ECONOMY').get();
+    try {
+      val = snapshot.data()!['newAccountReward'].toDouble();
+    } catch (e) {
+      // _snackbarService.showSnackbar(
+      //   title: 'Promotion Error',
+      //   message: "There Was an Issue Getting Webblen Promotions",
+      //   duration: Duration(seconds: 5),
+      // );
     }
-    return updateAvailable;
+    return val;
   }
 
   ///NEW CONTENT RATES

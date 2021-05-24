@@ -20,6 +20,7 @@ import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_preference_data_service.dart';
 import 'package:webblen_web_app/services/location/google_places_service.dart';
 import 'package:webblen_web_app/services/location/location_service.dart';
+import 'package:webblen_web_app/services/navigation/custom_navigation_service.dart';
 import 'package:webblen_web_app/services/reactive/content_filter/reactive_content_filter_service.dart';
 import 'package:webblen_web_app/services/reactive/file_uploader/reactive_file_uploader_service.dart';
 import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
@@ -47,6 +48,12 @@ import 'package:webblen_web_app/ui/views/home/tabs/search/recent_search_view_mod
 import 'package:webblen_web_app/ui/views/home/tabs/wallet/wallet_view_model.dart';
 import 'package:webblen_web_app/ui/views/live_streams/create_live_stream_view/create_live_stream_view.dart';
 import 'package:webblen_web_app/ui/views/live_streams/live_stream_details_view/live_stream_details_view.dart';
+import 'package:webblen_web_app/ui/views/notifications/notifications_view.dart';
+import 'package:webblen_web_app/ui/views/onboarding/event_host_path/event_host_path_view.dart';
+import 'package:webblen_web_app/ui/views/onboarding/explorer_path/explorer_path_view.dart';
+import 'package:webblen_web_app/ui/views/onboarding/onboarding_complete/onboarding_complete_view.dart';
+import 'package:webblen_web_app/ui/views/onboarding/path_select/onboarding_path_select_view.dart';
+import 'package:webblen_web_app/ui/views/onboarding/streamer_path/streamer_path_view.dart';
 import 'package:webblen_web_app/ui/views/posts/create_post_view/create_post_view.dart';
 import 'package:webblen_web_app/ui/views/posts/post_view/post_view.dart';
 import 'package:webblen_web_app/ui/views/search/all_search_results/all_search_results_view.dart';
@@ -68,7 +75,36 @@ import 'package:webblen_web_app/ui/views/users/saved/saved_content_view.dart';
     ),
 
     //ONBOARDING
-    // MaterialRoute(page: OnboardingView, name: "OnboardingViewRoute"),
+    CustomRoute(
+      page: OnboardingPathSelectView,
+      name: "OnboardingPathSelectViewRoute",
+      path: "/onboarding/path_select",
+      durationInMilliseconds: 0,
+    ),
+    CustomRoute(
+      page: EventHostPathView,
+      name: "EventHostPathViewRoute",
+      path: "/onboarding/event_host",
+      durationInMilliseconds: 0,
+    ),
+    CustomRoute(
+      page: StreamerPathView,
+      name: "StreamerPathViewRoute",
+      path: "/onboarding/streamer",
+      durationInMilliseconds: 0,
+    ),
+    CustomRoute(
+      page: ExplorerPathView,
+      name: "ExplorerPathViewRoute",
+      path: "/onboarding/explorer",
+      durationInMilliseconds: 0,
+    ),
+    CustomRoute(
+      page: OnboardingCompleteView,
+      name: "OnboardingCompleteViewRoute",
+      path: "/onboarding/completed",
+      durationInMilliseconds: 0,
+    ),
 
     //HOME
     CustomRoute(
@@ -151,10 +187,15 @@ import 'package:webblen_web_app/ui/views/users/saved/saved_content_view.dart';
       //transitionsBuilder: TransitionsBuilders.fadeIn,
       durationInMilliseconds: 0,
     ),
-    //
-    // //NOTIFICATIONS
-    // MaterialRoute(page: NotificationsView, name: "NotificationsViewRoute"),
-    //
+
+    //NOTIFICATIONS
+    CustomRoute(
+      page: NotificationsView,
+      name: "NotificationsViewRoute",
+      path: "/notifications",
+      durationInMilliseconds: 0,
+    ),
+
     //USER PROFILE & SETTINGS
     CustomRoute(
       page: UserProfileView,
@@ -191,7 +232,6 @@ import 'package:webblen_web_app/ui/views/users/saved/saved_content_view.dart';
       //transitionsBuilder: TransitionsBuilders.fadeIn,
       durationInMilliseconds: 0,
     ),
-    //CustomRoute(page: SettingsView, name: "SettingsViewRoute"),
 
     // //WALLET
     // MaterialRoute(page: RedeemedRewardsView, name: 'RedeemedRewardsViewRoute'),
@@ -268,6 +308,7 @@ import 'package:webblen_web_app/ui/views/users/saved/saved_content_view.dart';
     LazySingleton(classType: DialogService),
     LazySingleton(classType: BottomSheetService),
     LazySingleton(classType: SnackbarService),
+    LazySingleton(classType: CustomNavigationService),
     LazySingleton(classType: CustomBottomSheetService),
     LazySingleton(classType: CustomDialogService),
     LazySingleton(classType: AuthService),

@@ -157,7 +157,7 @@ class PostTextBlockView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               GestureDetector(
-                onTap: () => model.saveUnsavePost(postID: post!.id),
+                onTap: () => model.saveUnsavePost(post: post!),
                 child: Icon(
                   model.savedPost ? FontAwesomeIcons.solidHeart : FontAwesomeIcons.heart,
                   size: 18,
@@ -219,7 +219,7 @@ class PostTextBlockView extends StatelessWidget {
                   maxWidth: 500,
                 ),
                 child: GestureDetector(
-                  onDoubleTap: () => model.saveUnsavePost(postID: post!.id),
+                  onDoubleTap: () => model.saveUnsavePost(post: post!),
                   onLongPress: () {
                     HapticFeedback.lightImpact();
                     showPostOptions!(post);

@@ -26,6 +26,12 @@ import '../ui/views/events/tickets/ticket_selection/ticket_selection_view.dart';
 import '../ui/views/events/tickets/tickets_purchase_success/tickets_purchase_success_view.dart';
 import '../ui/views/live_streams/create_live_stream_view/create_live_stream_view.dart';
 import '../ui/views/live_streams/live_stream_details_view/live_stream_details_view.dart';
+import '../ui/views/notifications/notifications_view.dart';
+import '../ui/views/onboarding/event_host_path/event_host_path_view.dart';
+import '../ui/views/onboarding/explorer_path/explorer_path_view.dart';
+import '../ui/views/onboarding/onboarding_complete/onboarding_complete_view.dart';
+import '../ui/views/onboarding/path_select/onboarding_path_select_view.dart';
+import '../ui/views/onboarding/streamer_path/streamer_path_view.dart';
 import '../ui/views/posts/create_post_view/create_post_view.dart';
 import '../ui/views/posts/post_view/post_view.dart';
 import '../ui/views/search/all_search_results/all_search_results_view.dart';
@@ -37,6 +43,11 @@ import '../ui/views/users/saved/saved_content_view.dart';
 
 class Routes {
   static const String AuthViewRoute = '/login';
+  static const String OnboardingPathSelectViewRoute = '/onboarding/path_select';
+  static const String EventHostPathViewRoute = '/onboarding/event_host';
+  static const String StreamerPathViewRoute = '/onboarding/streamer';
+  static const String ExplorerPathViewRoute = '/onboarding/explorer';
+  static const String OnboardingCompleteViewRoute = '/onboarding/completed';
   static const String WebblenBaseViewRoute = '/';
   static const String _PostViewRoute = '/posts/post?id=:id';
   static String PostViewRoute({@required dynamic id}) => '/posts/postid=$id';
@@ -69,6 +80,7 @@ class Routes {
   static const String _AllSearchResultsViewRoute = '/all_results/:term';
   static String AllSearchResultsViewRoute({@required dynamic term}) =>
       '/all_results/$term';
+  static const String NotificationsViewRoute = '/notifications';
   static const String _UserProfileView = '/profiles/profile?id=:id';
   static String UserProfileView({@required dynamic id}) =>
       '/profiles/profileid=$id';
@@ -98,6 +110,11 @@ class Routes {
   static const String SetUpInstantDepositViewRoute = '/setup-instant-deposit';
   static const all = <String>{
     AuthViewRoute,
+    OnboardingPathSelectViewRoute,
+    EventHostPathViewRoute,
+    StreamerPathViewRoute,
+    ExplorerPathViewRoute,
+    OnboardingCompleteViewRoute,
     WebblenBaseViewRoute,
     _PostViewRoute,
     _CreatePostViewRoute,
@@ -108,6 +125,7 @@ class Routes {
     _TicketSelectionViewRoute,
     _TicketPurchaseViewRoute,
     _AllSearchResultsViewRoute,
+    NotificationsViewRoute,
     _UserProfileView,
     EditProfileViewRoute,
     SavedContentViewRoute,
@@ -130,6 +148,12 @@ class StackedRouter extends RouterBase {
   List<RouteDef> get routes => _routes;
   final _routes = <RouteDef>[
     RouteDef(Routes.AuthViewRoute, page: AuthView),
+    RouteDef(Routes.OnboardingPathSelectViewRoute,
+        page: OnboardingPathSelectView),
+    RouteDef(Routes.EventHostPathViewRoute, page: EventHostPathView),
+    RouteDef(Routes.StreamerPathViewRoute, page: StreamerPathView),
+    RouteDef(Routes.ExplorerPathViewRoute, page: ExplorerPathView),
+    RouteDef(Routes.OnboardingCompleteViewRoute, page: OnboardingCompleteView),
     RouteDef(Routes.WebblenBaseViewRoute, page: WebblenBaseView),
     RouteDef(Routes._PostViewRoute, page: PostView),
     RouteDef(Routes._CreatePostViewRoute, page: CreatePostView),
@@ -140,6 +164,7 @@ class StackedRouter extends RouterBase {
     RouteDef(Routes._TicketSelectionViewRoute, page: TicketSelectionView),
     RouteDef(Routes._TicketPurchaseViewRoute, page: TicketPurchaseView),
     RouteDef(Routes._AllSearchResultsViewRoute, page: AllSearchResultsView),
+    RouteDef(Routes.NotificationsViewRoute, page: NotificationsView),
     RouteDef(Routes._UserProfileView, page: UserProfileView),
     RouteDef(Routes.EditProfileViewRoute, page: EditProfileView),
     RouteDef(Routes.SavedContentViewRoute, page: SavedContentView),
@@ -164,6 +189,46 @@ class StackedRouter extends RouterBase {
       return PageRouteBuilder<dynamic>(
         pageBuilder: (context, animation, secondaryAnimation) =>
             const AuthView(),
+        settings: data,
+        transitionDuration: const Duration(milliseconds: 0),
+      );
+    },
+    OnboardingPathSelectView: (data) {
+      return PageRouteBuilder<dynamic>(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            OnboardingPathSelectView(),
+        settings: data,
+        transitionDuration: const Duration(milliseconds: 0),
+      );
+    },
+    EventHostPathView: (data) {
+      return PageRouteBuilder<dynamic>(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            EventHostPathView(),
+        settings: data,
+        transitionDuration: const Duration(milliseconds: 0),
+      );
+    },
+    StreamerPathView: (data) {
+      return PageRouteBuilder<dynamic>(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            StreamerPathView(),
+        settings: data,
+        transitionDuration: const Duration(milliseconds: 0),
+      );
+    },
+    ExplorerPathView: (data) {
+      return PageRouteBuilder<dynamic>(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            ExplorerPathView(),
+        settings: data,
+        transitionDuration: const Duration(milliseconds: 0),
+      );
+    },
+    OnboardingCompleteView: (data) {
+      return PageRouteBuilder<dynamic>(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            OnboardingCompleteView(),
         settings: data,
         transitionDuration: const Duration(milliseconds: 0),
       );
@@ -250,6 +315,14 @@ class StackedRouter extends RouterBase {
       return PageRouteBuilder<dynamic>(
         pageBuilder: (context, animation, secondaryAnimation) =>
             AllSearchResultsView(data.pathParams['term'].value),
+        settings: data,
+        transitionDuration: const Duration(milliseconds: 0),
+      );
+    },
+    NotificationsView: (data) {
+      return PageRouteBuilder<dynamic>(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            NotificationsView(),
         settings: data,
         transitionDuration: const Duration(milliseconds: 0),
       );

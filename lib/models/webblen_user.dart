@@ -11,6 +11,7 @@ class WebblenUser {
   String? emailAddress;
   int? eventsToLvlUp;
   String? fbAccessToken;
+  List? mutedBy;
   List? followers;
   List? following;
   String? googleAccessToken;
@@ -26,7 +27,7 @@ class WebblenUser {
   bool? onboarded;
   String? lastSeenZipcode;
   String? lastSeenCity;
-  List? associatedTags;
+  List? tags;
 
   WebblenUser({
     // ignore: non_constant_identifier_names
@@ -38,6 +39,7 @@ class WebblenUser {
     this.emailAddress,
     this.eventsToLvlUp,
     this.fbAccessToken,
+    this.mutedBy,
     this.followers,
     this.following,
     this.googleAccessToken,
@@ -53,7 +55,7 @@ class WebblenUser {
     this.onboarded,
     this.lastSeenZipcode,
     this.lastSeenCity,
-    this.associatedTags,
+    this.tags,
   });
 
   WebblenUser.fromMap(Map<String, dynamic> data)
@@ -66,6 +68,7 @@ class WebblenUser {
           emailAddress: data['emailAddress'],
           eventsToLvlUp: data['eventsToLvlUp'],
           fbAccessToken: data['fbAccessToken'],
+          mutedBy: data['mutedBy'],
           followers: data['followers'],
           following: data['following'],
           googleAccessToken: data['googleAccessToken'],
@@ -81,7 +84,7 @@ class WebblenUser {
           onboarded: data['onboarded'],
           lastSeenZipcode: data['lastSeenZipcode'],
           lastSeenCity: data['lastSeenCity'],
-          associatedTags: data['associatedTags'],
+          tags: data['tags'],
         );
 
   Map<String, dynamic> toMap() => {
@@ -93,6 +96,7 @@ class WebblenUser {
         'emailAddress': this.emailAddress,
         'eventsToLvlUp': this.eventsToLvlUp,
         'fbAccessToken': this.fbAccessToken,
+        'mutedBy': mutedBy,
         'followers': this.followers,
         'following': this.following,
         'googleAccessToken': this.googleAccessToken,
@@ -108,7 +112,7 @@ class WebblenUser {
         'onboarded': this.onboarded,
         'lastSeenZipcode': this.lastSeenZipcode,
         'lastSeenCity': this.lastSeenCity,
-        'associatedTags': this.associatedTags,
+        'tags': this.tags,
       };
 
   WebblenUser generateNewUser(String id) {
@@ -124,6 +128,7 @@ class WebblenUser {
       emailAddress: null,
       eventsToLvlUp: 20,
       fbAccessToken: null,
+      mutedBy: [],
       followers: [],
       following: [],
       googleAccessToken: null,
@@ -138,7 +143,7 @@ class WebblenUser {
       onboarded: false,
       lastSeenZipcode: "58104",
       lastSeenCity: "Fargo",
-      associatedTags: [],
+      tags: [],
     );
     return user;
   }

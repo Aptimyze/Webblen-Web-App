@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:webblen_web_app/enums/notifcation_type.dart';
+import 'package:webblen_web_app/models/webblen_event.dart';
+import 'package:webblen_web_app/models/webblen_live_stream.dart';
+import 'package:webblen_web_app/models/webblen_post.dart';
 
 class WebblenNotification {
   String? receiverUID;
@@ -268,6 +270,37 @@ class WebblenNotification {
       header: '$commenterUsername mentioned you in post',
       subHeader: comment,
       additionalData: {'id': postID},
+      timePostedInMilliseconds: DateTime.now().millisecondsSinceEpoch,
+      expDateInMilliseconds: DateTime.now().millisecondsSinceEpoch + 7884000000, //Expiration Date Set 3 Months from Now
+      read: false,
+    );
+    return notif;
+  }
+
+  //Content Saved Notification
+  WebblenNotification generateContentSavedNotification({
+    required String receiverUID,
+    required String senderUID,
+    required String username,
+    required dynamic content,
+  }) {
+    WebblenNotification notif = WebblenNotification(
+      receiverUID: receiverUID,
+      senderUID: senderUID,
+      type: NotificationType.follower,
+      header: content is WebblenEvent
+          ? '@$username saved your event'
+          : content is WebblenLiveStream
+              ? '@$username saved your stream'
+              : '@$username saved your post',
+      subHeader: content is WebblenEvent || content is WebblenLiveStream
+          ? content.title
+          : content is WebblenPost
+              ? content.body!.length > 30
+                  ? '${content.body!.substring(0, 29)}...'
+                  : content.body
+              : 'View Profile',
+      additionalData: {'id': senderUID},
       timePostedInMilliseconds: DateTime.now().millisecondsSinceEpoch,
       expDateInMilliseconds: DateTime.now().millisecondsSinceEpoch + 7884000000, //Expiration Date Set 3 Months from Now
       read: false,

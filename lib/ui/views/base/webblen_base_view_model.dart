@@ -35,7 +35,6 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> with ReactiveSer
   CustomDialogService _customDialogService = locator<CustomDialogService>();
   CustomBottomSheetService customBottomSheetService = locator<CustomBottomSheetService>();
   DynamicLinkService _dynamicLinkService = locator<DynamicLinkService>();
-  // LiveStreamDataService _liveStreamDataService = locator<LiveStreamDataService>();
 
   ///INITIAL DATA
   InitErrorStatus initErrorStatus = InitErrorStatus.none;
@@ -48,6 +47,7 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> with ReactiveSer
   ///LOCATION DATA
   String get cityName => _reactiveContentFilterService.cityName;
   String get areaCode => _reactiveContentFilterService.areaCode;
+  bool? errorGettingLocation;
 
   ///PROMOS
   double? postPromo;
@@ -89,15 +89,13 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> with ReactiveSer
     while (true) {
       await Future.delayed(Duration(seconds: 2));
       WebblenUser streamedUser = WebblenUser();
-
       if (!isLoggedIn) {
-        print('not logged in');
         yield streamedUser;
       } else {
         String? uid = await _authService.getCurrentUserID();
         streamedUser = await _userDataService.getWebblenUserByID(uid);
 
-        if (cityName.isEmpty || areaCode.isEmpty) {
+        if ((errorGettingLocation != null && errorGettingLocation!) && cityName.isEmpty || areaCode.isEmpty) {
           String lastSeenAreaCode = (user.lastSeenZipcode?.isEmpty ?? true) ? "58104" : user.lastSeenZipcode!;
           String? lastSeenCity = await _locationService.getCityFromZip(lastSeenAreaCode);
           _reactiveContentFilterService.updateAreaCode(lastSeenAreaCode);
@@ -119,42 +117,29 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> with ReactiveSer
     streamPromo = await _platformDataService.getStreamPromo();
     eventPromo = await _platformDataService.getEventPromo();
     await _dynamicLinkService.handleDynamicLinks();
-    //await checkAuthState();
-    //getLocationDetails();
-    //load content promos (if any exists)
+    getLocationDetails();
   }
 
   ///LOCATION
-  FutureOr<bool> getLocationDetails() {
-    getCurrentPosition(allowInterop((pos) {
-      print(pos.coords.latitude);
-      print(pos.coords.longitude);
-      currentLocation['lat'] = pos.coords.latitude;
-      currentLocation['lon'] = pos.coords.longitude;
-      print(currentLocation['lat']);
-      // cityName = await _locationService.getCityNameFromLatLon(pos.coords.latitude, pos.coords.longitude);
-      // areaCode = await _locationService.getZipFromLatLon(pos.coords.latitude, pos.coords.longitude);
-      //_userDataService.updateLastSeenZipcode(id: uid, zip: areaCode);
-      notifyListeners();
-      return;
-    }));
-    return true;
+  getLocationDetails() {
+    getCurrentPosition(allowInterop((pos) => acquireLocation(pos)));
   }
 
   acquireLocation(pos) async {
     try {
-      print(pos.coords.latitude);
-      print(pos.coords.longitude);
-      currentLocation['lat'] = pos.coords.latitude;
-      currentLocation['lon'] = pos.coords.longitude;
-      print(currentLocation['lat']);
-      //cityName = await _locationService.getCityNameFromLatLon(pos.coords.latitude, pos.coords.longitude);
-      //reaCode = await _locationService.getZipFromLatLon(pos.coords.latitude, pos.coords.longitude);
-      //_userDataService.updateLastSeenZipcode(id: uid, zip: areaCode);
+      Map<String, dynamic> locDetails = await _locationService.getLocationDetailsFromLatLon(pos.coords.latitude, pos.coords.longitude);
+      if (locDetails.isNotEmpty) {
+        _reactiveContentFilterService.updateAreaCode(locDetails['zipcode']);
+        _reactiveContentFilterService.updateCityName(locDetails['city']);
+        errorGettingLocation = false;
+      } else {
+        errorGettingLocation = true;
+      }
       notifyListeners();
     } catch (ex) {
+      errorGettingLocation = true;
+      notifyListeners();
       print("Location Error Exception thrown : " + ex.toString());
-      //currentLocation = null;
     }
   }
 

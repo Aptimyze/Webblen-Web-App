@@ -23,8 +23,6 @@ dependencies:
   stacked_hooks: ^0.2.0
   flutter_hooks:
 
-
-
   #HTTP REQUESTS
   http:
 

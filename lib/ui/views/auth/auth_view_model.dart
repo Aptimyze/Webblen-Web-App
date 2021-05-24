@@ -5,7 +5,6 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:stacked_themes/stacked_themes.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/app/app.router.dart';
-import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/auth/auth_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
 import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
@@ -132,18 +131,7 @@ class AuthViewModel extends BaseViewModel {
   }
 
   signUserIn(String uid) async {
-    WebblenUser user = WebblenUser();
-    bool userExists = await _userDataService.checkIfUserExists(uid);
-    if (!userExists) {
-      user = WebblenUser().generateNewUser(uid);
-      await _userDataService.createWebblenUser(user);
-    } else {
-      user = await _userDataService.getWebblenUserByID(uid);
-    }
-    _reactiveWebblenUserService.updateUserLoggedIn(true);
-    _reactiveWebblenUserService.updateWebblenUser(user);
-    notifyListeners();
-    navigateToHomePage();
+    await _authService.completeUserSignIn(uid);
   }
 
   ///NAVIGATION

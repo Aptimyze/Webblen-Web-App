@@ -90,14 +90,14 @@ class WebblenBaseView extends StatelessWidget {
                 ),
               )
             : model.initErrorStatus == InitErrorStatus.network
-            ? NetworkErrorView(
-                tryAgainAction: () => model.initialize(),
-              )
-            : model.initErrorStatus == InitErrorStatus.location
-            ? LocationErrorView(
-                tryAgainAction: () => model.initialize(),
-              )
-            : getViewForIndex(model.navBarIndex, model),
+                ? NetworkErrorView(
+                    tryAgainAction: () => model.initialize(),
+                  )
+                : model.initErrorStatus == InitErrorStatus.location
+                    ? LocationErrorView(
+                        tryAgainAction: () => model.initialize(),
+                      )
+                    : getViewForIndex(model.navBarIndex, model),
         floatingActionButton: Container(
           width: 100,
           child: model.isBusy

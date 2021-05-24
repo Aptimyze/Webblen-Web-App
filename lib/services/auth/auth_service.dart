@@ -9,11 +9,15 @@ import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
+import 'package:webblen_web_app/services/navigation/custom_navigation_service.dart';
+import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
 
 class AuthService {
   static FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   UserDataService _userDataService = locator<UserDataService>();
+  CustomNavigationService _customNavigationService = locator<CustomNavigationService>();
   CustomDialogService _customDialogService = locator<CustomDialogService>();
+  ReactiveWebblenUserService _reactiveUserService = locator<ReactiveWebblenUserService>();
 
   ///AUTH STATE
   Future<bool> signInAnonymously() async {
@@ -92,8 +96,8 @@ class AuthService {
   Future<bool> signInWithPhone({required ConfirmationResult confirmationResult, required String phoneNo, required String smsCode}) async {
     bool signedIn = false;
     await confirmationResult.confirm(smsCode).then((credential) async {
-      bool userExists = await _userDataService.checkIfUserExists(credential.user!.uid);
-      if (!userExists) {
+      bool? userExists = await _userDataService.checkIfUserExists(credential.user!.uid);
+      if (userExists != null && !userExists) {
         WebblenUser user = WebblenUser().generateNewUser(credential.user!.uid);
         await _userDataService.createWebblenUser(user);
       }
@@ -117,8 +121,8 @@ class AuthService {
     await FirebaseAuthOAuth().openSignInFlow("apple.com", ["email"]).then((user) async {
       print('apple sign in with user: ${user!.uid}');
       print(user.email);
-      bool userExists = await _userDataService.checkIfUserExists(user.uid);
-      if (!userExists) {
+      bool? userExists = await _userDataService.checkIfUserExists(user.uid);
+      if (userExists != null && !userExists) {
         WebblenUser webblenUser = WebblenUser().generateNewUser(user.uid);
         await _userDataService.createWebblenUser(webblenUser);
       }
@@ -142,8 +146,8 @@ class AuthService {
       await googleAccount!.authentication.then((googleAuth) async {
         AuthCredential credential = GoogleAuthProvider.credential(idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
         await FirebaseAuth.instance.signInWithCredential(credential).then((val) async {
-          bool userExists = await _userDataService.checkIfUserExists(val.user!.uid);
-          if (!userExists) {
+          bool? userExists = await _userDataService.checkIfUserExists(val.user!.uid);
+          if (userExists != null && !userExists) {
             WebblenUser user = WebblenUser().generateNewUser(val.user!.uid);
             user.googleIDToken = googleAuth.idToken;
             user.googleAccessToken = googleAuth.accessToken;
@@ -170,8 +174,8 @@ class AuthService {
       case LoginStatus.success:
         final AuthCredential credential = FacebookAuthProvider.credential(result.accessToken!.token);
         await FirebaseAuth.instance.signInWithCredential(credential).then((val) async {
-          bool userExists = await _userDataService.checkIfUserExists(val.user!.uid);
-          if (!userExists) {
+          bool? userExists = await _userDataService.checkIfUserExists(val.user!.uid);
+          if (userExists != null && !userExists) {
             WebblenUser user = WebblenUser().generateNewUser(val.user!.uid);
             user.fbAccessToken = result.accessToken!.token;
             await _userDataService.createWebblenUser(user);
@@ -192,5 +196,41 @@ class AuthService {
         break;
     }
     return signedIn;
+  }
+
+  Future<bool> completeUserSignIn(String uid) async {
+    bool completedSignIn = true;
+    bool? userExists = await _userDataService.checkIfUserExists(uid);
+    if (userExists == null) {
+      _customDialogService.showErrorDialog(description: "Unknown error logging in. Please try again.");
+      _customNavigationService.navigateToAuthView();
+      return false;
+    } else if (userExists) {
+      WebblenUser user = await _userDataService.getWebblenUserByID(uid);
+      _reactiveUserService.updateWebblenUser(user);
+      _reactiveUserService.updateUserLoggedIn(true);
+
+      ///CHECK IF USER ONBOARDED
+      if (user.onboarded == null || !user.onboarded!) {
+        _customNavigationService.navigateToOnboardingView();
+      } else {
+        _customNavigationService.navigateToBase();
+      }
+    } else {
+      ///CREATE NEW USER
+      WebblenUser user = WebblenUser().generateNewUser(uid);
+      bool createdUser = await _userDataService.createWebblenUser(user);
+      if (createdUser) {
+        _reactiveUserService.updateWebblenUser(user);
+        _reactiveUserService.updateUserLoggedIn(true);
+        _customNavigationService.navigateToOnboardingView();
+      } else {
+        _customDialogService.showErrorDialog(description: "Unknown error logging in. Please try again.");
+        _customNavigationService.navigateToAuthView();
+        return false;
+      }
+    }
+
+    return completedSignIn;
   }
 }
