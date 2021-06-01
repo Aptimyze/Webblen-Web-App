@@ -7,6 +7,7 @@ import 'package:webblen_web_app/models/webblen_live_stream.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/firestore/data/live_stream_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
+import 'package:webblen_web_app/services/navigation/custom_navigation_service.dart';
 import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
 
 class LiveStreamBlockViewModel extends BaseViewModel {
@@ -14,6 +15,7 @@ class LiveStreamBlockViewModel extends BaseViewModel {
   LiveStreamDataService _liveStreamDataService = locator<LiveStreamDataService>();
   UserDataService _userDataService = locator<UserDataService>();
   ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
+  CustomNavigationService customNavigationService = locator<CustomNavigationService>();
 
   bool isLive = false;
   bool savedStream = false;

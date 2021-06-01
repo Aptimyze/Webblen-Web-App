@@ -8,7 +8,7 @@ import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/views/home/tabs/wallet/wallet_view_model.dart';
 import 'package:webblen_web_app/ui/widgets/common/buttons/custom_button.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
-import 'package:webblen_web_app/ui/widgets/wallet/stripe/create_earnings_account/create_earnings_account_block_view.dart';
+import 'package:webblen_web_app/ui/widgets/notices/create_earnings_account/create_earnings_account_block_view.dart';
 import 'package:webblen_web_app/ui/widgets/wallet/stripe/stripe_account/stripe_account_block_view.dart';
 import 'package:webblen_web_app/ui/widgets/wallet/webblen_balance_block.dart';
 

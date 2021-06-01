@@ -6,7 +6,8 @@ import 'package:stacked/stacked.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
-import 'package:webblen_web_app/ui/widgets/wallet/stripe/create_earnings_account/create_earnings_account_block_view_model.dart';
+
+import 'create_earnings_account_block_view_model.dart';
 
 class CreateEarningsAccountBlockView extends StatelessWidget {
   final VoidCallback dismissNotice;

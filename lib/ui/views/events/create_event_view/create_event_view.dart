@@ -30,9 +30,9 @@ import 'package:webblen_web_app/ui/widgets/events/ticketing_fees_and_discount_fo
 import 'package:webblen_web_app/ui/widgets/list_builders/list_discounts/list_discounts.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_fees/list_fees.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_tickets.dart';
+import 'package:webblen_web_app/ui/widgets/notices/create_earnings_account/create_earnings_account_block_view.dart';
 import 'package:webblen_web_app/ui/widgets/tags/tag_button.dart';
 import 'package:webblen_web_app/ui/widgets/tags/tag_dropdown_field.dart';
-import 'package:webblen_web_app/ui/widgets/wallet/stripe/create_earnings_account/create_earnings_account_block_view.dart';
 
 class CreateEventView extends StatelessWidget {
   final String? id;
@@ -241,8 +241,8 @@ class CreateEventView extends StatelessWidget {
                                     _FormSectionDivider(sectionName: "ADDITIONAL INFO"),
 
                                     ///STREAM EVENT
-                                    _ScheduleLiveStreamCheckBox(),
-                                    verticalSpaceSmall,
+                                    // _ScheduleLiveStreamCheckBox(),
+                                    // verticalSpaceSmall,
 
                                     ///EVENT SPONSORSHIP
                                     _AvailableToSponsorsCheckBox(),

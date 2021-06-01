@@ -10,12 +10,9 @@ class WebblenUser {
   List? blockedUsers;
   String? emailAddress;
   int? eventsToLvlUp;
-  String? fbAccessToken;
   List? mutedBy;
   List? followers;
   List? following;
-  String? googleAccessToken;
-  String? googleIDToken;
   String? id;
   bool? isAdmin;
   String? profilePicURL;
@@ -38,12 +35,9 @@ class WebblenUser {
     this.blockedUsers,
     this.emailAddress,
     this.eventsToLvlUp,
-    this.fbAccessToken,
     this.mutedBy,
     this.followers,
     this.following,
-    this.googleAccessToken,
-    this.googleIDToken,
     this.id,
     this.isAdmin,
     this.profilePicURL,
@@ -67,12 +61,9 @@ class WebblenUser {
           blockedUsers: data['blockedUsers'],
           emailAddress: data['emailAddress'],
           eventsToLvlUp: data['eventsToLvlUp'],
-          fbAccessToken: data['fbAccessToken'],
           mutedBy: data['mutedBy'],
           followers: data['followers'],
           following: data['following'],
-          googleAccessToken: data['googleAccessToken'],
-          googleIDToken: data['googleIDToken'],
           id: data['id'],
           isAdmin: data['isAdmin'],
           profilePicURL: data['profilePicURL'],
@@ -95,12 +86,9 @@ class WebblenUser {
         'blockedUsers': this.blockedUsers,
         'emailAddress': this.emailAddress,
         'eventsToLvlUp': this.eventsToLvlUp,
-        'fbAccessToken': this.fbAccessToken,
         'mutedBy': mutedBy,
         'followers': this.followers,
         'following': this.following,
-        'googleAccessToken': this.googleAccessToken,
-        'googleIDToken': this.googleIDToken,
         'id': this.id,
         'isAdmin': this.isAdmin,
         'profilePicURL': this.profilePicURL,
@@ -127,12 +115,9 @@ class WebblenUser {
       blockedUsers: [],
       emailAddress: null,
       eventsToLvlUp: 20,
-      fbAccessToken: null,
       mutedBy: [],
       followers: [],
       following: [],
-      googleAccessToken: null,
-      googleIDToken: googleIDToken,
       isAdmin: false,
       profilePicURL: randomImgURL,
       username: randomUsername,

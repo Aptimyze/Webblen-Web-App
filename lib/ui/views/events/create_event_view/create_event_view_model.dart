@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
@@ -43,7 +42,6 @@ class CreateEventViewModel extends ReactiveViewModel {
   WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();
   ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
   ReactiveFileUploaderService _reactiveFileUploaderService = locator<ReactiveFileUploaderService>();
-  late SharedPreferences _sharedPreferences;
 
   ///EVENT DETAILS CONTROLLERS
   TextEditingController tagTextController = TextEditingController();
@@ -105,6 +103,7 @@ class CreateEventViewModel extends ReactiveViewModel {
   ///EVENT DATA
   String? id;
   bool isEditing = false;
+  bool isDuplicate = false;
 
   WebblenEvent event = WebblenEvent();
 
@@ -161,8 +160,6 @@ class CreateEventViewModel extends ReactiveViewModel {
     if (promoVal != null) {
       promo = double.parse(promoVal);
     }
-    _sharedPreferences = await SharedPreferences.getInstance();
-
     //generate new event
     ticketDistro.authorID = user.id;
     event = WebblenEvent().generateNewWebblenEvent(authorID: user.id!, suggestedUIDs: user.followers == null ? [] : user.followers!);
@@ -176,9 +173,22 @@ class CreateEventViewModel extends ReactiveViewModel {
     event.endTime = timeFormatter.format(DateTime.now().add(Duration(hours: 2)).roundDown(delta: Duration(minutes: 30)));
     notifyListeners();
 
-    //check for promos & if editing existing event
-    if (eventID != "new") {
-      event = await _eventDataService.getEventByID(eventID!);
+    //check for promos & if editing/duplicating existing event
+    if (eventID!.contains("duplicate_")) {
+      String id = eventID.replaceAll("duplicate_", "");
+      event = await _eventDataService.getEventByID(id);
+      if (event.isValid()) {
+        event.id = getRandomString(32);
+        if (event.hasTickets!) {
+          ticketDistro = await _ticketDistroDataService.getTicketDistroByID(id);
+          ticketDistro.eventID = event.id;
+        }
+        event.attendees = {};
+        event.savedBy = [];
+        isDuplicate = true;
+      }
+    } else if (eventID != "new") {
+      event = await _eventDataService.getEventByID(eventID);
       if (event.isValid()) {
         eventStartDateTextController.text = event.startDate!;
         eventEndDateTextController.text = event.endDate!;
@@ -189,6 +199,11 @@ class CreateEventViewModel extends ReactiveViewModel {
           ticketDistro = await _ticketDistroDataService.getTicketDistroByID(event.id);
         }
       }
+    } else {
+      event.fbUsername = await _userDataService.getCurrentFbUsername(user.id!);
+      event.instaUsername = await _userDataService.getCurrentInstaUsername(user.id!);
+      event.twitterUsername = await _userDataService.getCurrentTwitterUsername(user.id!);
+      event.website = await _userDataService.getCurrentUserWebsite(user.id!);
     }
 
     //get webblen rates
@@ -213,9 +228,7 @@ class CreateEventViewModel extends ReactiveViewModel {
   String loadPreviousTitle() {
     String val = "";
     if (!loadedPreviousTitle) {
-      if (isEditing) {
-        val = event.title!;
-      }
+      val = event.title ?? "";
     }
     loadedPreviousTitle = true;
     notifyListeners();
@@ -225,9 +238,7 @@ class CreateEventViewModel extends ReactiveViewModel {
   String loadPreviousDesc() {
     String val = "";
     if (!loadedPreviousDescription) {
-      if (isEditing) {
-        val = event.description!;
-      }
+      val = event.description ?? "";
     }
     loadedPreviousDescription = true;
     notifyListeners();
@@ -237,9 +248,7 @@ class CreateEventViewModel extends ReactiveViewModel {
   String loadPreviousVenueName() {
     String val = "";
     if (!loadedPreviousVenueName) {
-      if (isEditing) {
-        val = event.venueName!;
-      }
+      val = event.venueName ?? "";
     }
     loadedPreviousVenueName = true;
     notifyListeners();
@@ -247,28 +256,40 @@ class CreateEventViewModel extends ReactiveViewModel {
   }
 
   String loadPreviousFBUsername() {
-    String val = _sharedPreferences.getString('fbUsername') == null ? "" : _sharedPreferences.getString('fbUsername')!;
+    String val = "";
+    if (!loadedPreviousFBUsername) {
+      val = event.fbUsername ?? "";
+    }
     loadedPreviousFBUsername = true;
     notifyListeners();
     return val;
   }
 
   String loadPreviousInstaUsername() {
-    String val = _sharedPreferences.getString('instaUsername') == null ? "" : _sharedPreferences.getString('instaUsername')!;
+    String val = "";
+    if (!loadedPreviousInstaUsername) {
+      val = event.instaUsername ?? "";
+    }
     loadedPreviousInstaUsername = true;
     notifyListeners();
     return val;
   }
 
   String loadPreviousTwitterUsername() {
-    String val = _sharedPreferences.getString('twitterUsername') == null ? "" : _sharedPreferences.getString('twitterUsername')!;
+    String val = "";
+    if (!loadedPreviousTwitterUsername) {
+      val = event.twitterUsername ?? "";
+    }
     loadedPreviousTwitterUsername = true;
     notifyListeners();
     return val;
   }
 
   String loadPreviousWebsite() {
-    String val = _sharedPreferences.getString('website') == null ? "" : _sharedPreferences.getString('website')!;
+    String val = "";
+    if (!loadedPreviousWebsite) {
+      val = event.website ?? "";
+    }
     loadedPreviousWebsite = true;
     notifyListeners();
     return val;
@@ -786,10 +807,15 @@ class CreateEventViewModel extends ReactiveViewModel {
     }
 
     //cache username data
-    await _sharedPreferences.setString('fbUsername', event.fbUsername == null ? "" : event.fbUsername!);
-    await _sharedPreferences.setString('instaUsername', event.instaUsername == null ? "" : event.instaUsername!);
-    await _sharedPreferences.setString('twitterUsername', event.twitterUsername == null ? "" : event.twitterUsername!);
-    await _sharedPreferences.setString('website', event.website == null ? "" : event.website!);
+    if (isValidString(event.fbUsername)) {
+      await _userDataService.updateFbUsername(id: event.authorID!, val: event.fbUsername!);
+    }
+    if (isValidString(event.instaUsername)) {
+      await _userDataService.updateInstaUsername(id: event.authorID!, val: event.instaUsername!);
+    }
+    if (isValidString(event.twitterUsername)) {
+      await _userDataService.updateTwitterUsername(id: event.authorID!, val: event.twitterUsername!);
+    }
 
     return success;
   }

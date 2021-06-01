@@ -13,7 +13,6 @@ class ReactiveContentFilterService with ReactiveServiceMixin {
 
   void updateCityName(String val) {
     _cityName.value = val;
-    print("updating city name to: $val");
   }
 
   void updateAreaCode(String val) => _areaCode.value = val;

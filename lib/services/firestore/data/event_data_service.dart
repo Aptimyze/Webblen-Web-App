@@ -7,6 +7,8 @@ import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/firestore/common/firestore_storage_service.dart';
 import 'package:webblen_web_app/services/firestore/data/post_data_service.dart';
+import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
+import 'package:webblen_web_app/utils/custom_string_methods.dart';
 
 class EventDataService {
   final CollectionReference eventsRef = FirebaseFirestore.instance.collection("webblen_events");
@@ -14,6 +16,7 @@ class EventDataService {
   CustomDialogService _customDialogService = locator<CustomDialogService>();
   SnackbarService? _snackbarService = locator<SnackbarService>();
   FirestoreStorageService? _firestoreStorageService = locator<FirestoreStorageService>();
+  UserDataService _userDataService = locator<UserDataService>();
 
   int dateTimeInMilliseconds2hrsAgog = DateTime.now().millisecondsSinceEpoch - 7200000;
 
@@ -108,10 +111,16 @@ class EventDataService {
     }
   }
 
-  Future createEvent({required WebblenEvent event}) async {
+  Future<bool> createEvent({required WebblenEvent event}) async {
+    String? error;
     await eventsRef.doc(event.id).set(event.toMap()).catchError((e) {
-      return e.message;
+      error = e.message;
     });
+    if (error != null) {
+      _customDialogService.showErrorDialog(description: error!);
+      return false;
+    }
+    return true;
   }
 
   Future updateEvent({required WebblenEvent event}) async {
@@ -198,7 +207,7 @@ class EventDataService {
         docs.removeWhere((doc) => !doc.data()!['tags'].contains(tagFilter));
       }
       if (sortBy == "Latest") {
-        docs.sort((docA, docB) => docB.data()!['startDateTimeInMilliseconds'].compareTo(docA.data()!['startDateTimeInMilliseconds']));
+        docs.sort((docA, docB) => docA.data()!['startDateTimeInMilliseconds'].compareTo(docB.data()!['startDateTimeInMilliseconds']));
       } else {
         docs.sort((docA, docB) => docB.data()!['savedBy'].length.compareTo(docA.data()!['savedBy'].length));
       }
@@ -214,14 +223,14 @@ class EventDataService {
     if (areaCode.isEmpty) {
       query = eventsRef
           .where('startDateTimeInMilliseconds', isGreaterThan: dateTimeInMilliseconds2hrsAgog)
-          .orderBy('startDateTimeInMilliseconds', descending: true)
+          .orderBy('startDateTimeInMilliseconds', descending: false)
           .startAfterDocument(lastDocSnap)
           .limit(resultsLimit);
     } else {
       query = eventsRef
           .where('nearbyZipcodes', arrayContains: areaCode)
           .where('startDateTimeInMilliseconds', isGreaterThan: dateTimeInMilliseconds2hrsAgog)
-          .orderBy('startDateTimeInMilliseconds', descending: true)
+          .orderBy('startDateTimeInMilliseconds', descending: false)
           .startAfterDocument(lastDocSnap)
           .limit(resultsLimit);
     }
@@ -241,7 +250,7 @@ class EventDataService {
         docs.removeWhere((doc) => !doc.data()!['tags'].contains(tagFilter));
       }
       if (sortBy == "Latest") {
-        docs.sort((docA, docB) => docB.data()!['startDateTimeInMilliseconds'].compareTo(docA.data()!['startDateTimeInMilliseconds']));
+        docs.sort((docA, docB) => docA.data()!['startDateTimeInMilliseconds'].compareTo(docB.data()!['startDateTimeInMilliseconds']));
       } else {
         docs.sort((docA, docB) => docB.data()!['savedBy'].length.compareTo(docA.data()!['savedBy'].length));
       }

@@ -323,132 +323,6 @@ class CreateLiveStreamView extends StatelessWidget {
                           onChanged: (val) => model.onSelectedTimezoneFromDropdown(val!),
                         ),
 
-                        ///EVENT TICKETING, FEES, AND DISCOUNTS
-                        // model.hasEarningsAccount == null || !model.hasEarningsAccount!
-                        //     ? Container()
-                        //     : Column(
-                        //         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        //         children: [
-                        //           formSectionDivider(sectionName: "TICKETING"),
-                        //
-                        //           textFieldHeader(
-                        //             header: "Ticketing",
-                        //             subHeader: "Add ticketing, fees, and discount info for your event",
-                        //             required: false,
-                        //           ),
-                        //           verticalSpaceSmall,
-                        //
-                        //           //list tickets
-                        //           model.ticketDistro!.tickets!.isEmpty
-                        //               ? Container()
-                        //               : ListTicketsForEditing(
-                        //                   ticketDistro: model.ticketDistro,
-                        //                   editTicketAtIndex: (index) => model.toggleTicketForm(ticketIndex: index),
-                        //                 ),
-                        //
-                        //           //list fees
-                        //           model.ticketDistro!.fees!.isEmpty || model.ticketDistro!.tickets!.isEmpty ? Container() : verticalSpaceSmall,
-                        //           model.ticketDistro!.fees!.isEmpty || model.ticketDistro!.tickets!.isEmpty
-                        //               ? Container()
-                        //               : ListFeesForEditing(
-                        //                   ticketDistro: model.ticketDistro,
-                        //                   editFeeAtIndex: (index) => model.toggleFeeForm(feeIndex: index),
-                        //                 ),
-                        //
-                        //           //list discount codes
-                        //           model.ticketDistro!.discountCodes!.isEmpty || model.ticketDistro!.discountCodes!.isEmpty ? Container() : verticalSpaceSmall,
-                        //           model.ticketDistro!.discountCodes!.isEmpty || model.ticketDistro!.discountCodes!.isEmpty
-                        //               ? Container()
-                        //               : ListDiscountsForEditing(
-                        //                   ticketDistro: model.ticketDistro,
-                        //                   editDiscountAtIndex: (index) => model.toggleDiscountsForm(discountIndex: index),
-                        //                 ),
-                        //           verticalSpaceSmall,
-                        //
-                        //           //ticket form
-                        //           model.showTicketForm
-                        //               ? TicketingForm(
-                        //                   editingTicket: model.ticketToEditIndex != null ? true : false,
-                        //                   ticketNameTextController: model.ticketNameTextController,
-                        //                   ticketQuantityTextController: model.ticketQuantityTextController,
-                        //                   ticketPriceTextController: model.ticketPriceTextController,
-                        //                   validateAndSubmitTicket: () => model.addTicket(),
-                        //                   deleteTicket: () => model.deleteTicket(),
-                        //                 )
-                        //
-                        //               //fee form
-                        //               : model.showFeeForm
-                        //               ? FeeForm(
-                        //                   editingFee: model.feeToEditIndex != null ? true : false,
-                        //                   feeNameTextController: model.feeNameTextController,
-                        //                   feePriceTextController: model.feePriceTextController,
-                        //                   validateAndSubmitFee: () => model.addFee(),
-                        //                   deleteFee: () => model.deleteFee(),
-                        //                 )
-                        //
-                        //               //discount form
-                        //               : model.showDiscountCodeForm
-                        //               ? DiscountForm(
-                        //                   editingDiscount: model.discountToEditIndex != null ? true : false,
-                        //                   discountNameTextController: model.discountNameTextController,
-                        //                   discountLimitTextController: model.discountLimitTextController,
-                        //                   discountValueTextController: model.discountValueTextController,
-                        //                   validateAndSubmitDiscount: () => model.addDiscount(),
-                        //                   deleteDiscount: () => model.deleteDiscount(),
-                        //                 )
-                        //
-                        //               //new ticket, fee, and discount buttons
-                        //               : Container(
-                        //                   child: Row(
-                        //                     children: [
-                        //                       CustomIconButton(
-                        //                         height: 40,
-                        //                         width: 40,
-                        //                         icon: Icon(
-                        //                           FontAwesomeIcons.ticketAlt,
-                        //                           size: 16,
-                        //                           color: appIconColor(),
-                        //                         ),
-                        //                         onPressed: () => model.toggleTicketForm(ticketIndex: null),
-                        //                         centerContent: true,
-                        //                         backgroundColor: appButtonColorAlt(),
-                        //                       ),
-                        //                       horizontalSpaceSmall,
-                        //                       model.ticketDistro!.tickets!.isEmpty
-                        //                           ? Container()
-                        //                           : CustomIconButton(
-                        //                               height: 40,
-                        //                               width: 40,
-                        //                               icon: Icon(
-                        //                                 FontAwesomeIcons.dollarSign,
-                        //                                 size: 16,
-                        //                                 color: appIconColor(),
-                        //                               ),
-                        //                               onPressed: () => model.toggleFeeForm(feeIndex: null),
-                        //                               centerContent: true,
-                        //                               backgroundColor: appButtonColorAlt(),
-                        //                             ),
-                        //                       horizontalSpaceSmall,
-                        //                       model.ticketDistro!.tickets!.isEmpty
-                        //                           ? Container()
-                        //                           : CustomIconButton(
-                        //                               height: 40,
-                        //                               width: 40,
-                        //                               icon: Icon(
-                        //                                 FontAwesomeIcons.percent,
-                        //                                 size: 16,
-                        //                                 color: appIconColor(),
-                        //                               ),
-                        //                               onPressed: () => model.toggleDiscountsForm(discountIndex: null),
-                        //                               centerContent: true,
-                        //                               backgroundColor: appButtonColorAlt(),
-                        //                             ),
-                        //                     ],
-                        //                   ),
-                        //                 ),
-                        //         ],
-                        //       ),
-
                         formSectionDivider(sectionName: "ADDITIONAL INFO"),
 
                         ///EVENT SPONSORSHIP
@@ -462,6 +336,7 @@ class CreateLiveStreamView extends StatelessWidget {
                         ),
                         verticalSpaceMedium,
 
+                        ///SOCIAL ACCOUNTS & WEBSITE
                         ///SOCIAL ACCOUNTS & WEBSITE
                         textFieldHeader(
                           header: "Social Accounts & Website",
@@ -533,6 +408,49 @@ class CreateLiveStreamView extends StatelessWidget {
                           child: Row(
                             children: [
                               Icon(
+                                FontAwesomeIcons.twitch,
+                                color: appFontColor(),
+                                size: 24,
+                              ),
+                              horizontalSpaceSmall,
+                              IconTextField(
+                                iconData: FontAwesomeIcons.at,
+                                controller: model.twitchTextController,
+                                hintText: "Twitch Username",
+                                onChanged: (val) => model.setTwitchUsername(val),
+                                keyboardType: TextInputType.visiblePassword,
+                              ),
+                            ],
+                          ),
+                        ),
+                        verticalSpaceSmall,
+                        Container(
+                          child: Row(
+                            children: [
+                              Icon(
+                                FontAwesomeIcons.youtube,
+                                color: appFontColor(),
+                                size: 24,
+                              ),
+                              horizontalSpaceSmall,
+                              Expanded(
+                                child: SingleLineTextField(
+                                  controller: model.youtubeTextController,
+                                  hintText: "https://youtube.com/channel/mychannel",
+                                  textLimit: null,
+                                  isPassword: false,
+                                  onChanged: (val) => model.setYoutube(val),
+                                  keyboardType: TextInputType.url,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        verticalSpaceSmall,
+                        Container(
+                          child: Row(
+                            children: [
+                              Icon(
                                 FontAwesomeIcons.link,
                                 color: appFontColor(),
                                 size: 24,
@@ -545,6 +463,146 @@ class CreateLiveStreamView extends StatelessWidget {
                                   textLimit: null,
                                   isPassword: false,
                                   onChanged: (val) => model.setWebsite(val),
+                                  keyboardType: TextInputType.url,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        verticalSpaceMedium,
+
+                        ///STREAM KEYS
+                        textFieldHeader(
+                          header: "Additional Streams",
+                          subHeader: "Stream on Additional Platforms at the Same Time.",
+                          required: false,
+                        ),
+                        verticalSpaceSmall,
+                        Container(
+                          child: Row(
+                            children: [
+                              Icon(
+                                FontAwesomeIcons.facebook,
+                                color: appFontColor(),
+                                size: 24,
+                              ),
+                              horizontalSpaceSmall,
+                              Expanded(
+                                child: SingleLineTextField(
+                                  controller: model.fbStreamURLTextController,
+                                  hintText: "Facebook Stream URL",
+                                  textLimit: null,
+                                  isPassword: false,
+                                  onChanged: (val) => model.setFBStreamURL(val),
+                                  keyboardType: TextInputType.url,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        verticalSpaceSmall,
+                        Container(
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 24,
+                              ),
+                              horizontalSpaceSmall,
+                              Expanded(
+                                child: SingleLineTextField(
+                                  controller: model.fbStreamKeyTextController,
+                                  hintText: "Facebook Stream Key",
+                                  textLimit: null,
+                                  isPassword: true,
+                                  onChanged: (val) => model.setFBStreamKey(val),
+                                  keyboardType: TextInputType.url,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        verticalSpaceMedium,
+                        Container(
+                          child: Row(
+                            children: [
+                              Icon(
+                                FontAwesomeIcons.twitch,
+                                color: appFontColor(),
+                                size: 24,
+                              ),
+                              horizontalSpaceSmall,
+                              Expanded(
+                                child: SingleLineTextField(
+                                  controller: model.twitchStreamURLTextController,
+                                  hintText: "Twitch Stream URL",
+                                  textLimit: null,
+                                  isPassword: false,
+                                  onChanged: (val) => model.setTwitchStreamURL(val),
+                                  keyboardType: TextInputType.url,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        verticalSpaceSmall,
+                        Container(
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 24,
+                              ),
+                              horizontalSpaceSmall,
+                              Expanded(
+                                child: SingleLineTextField(
+                                  controller: model.twitchStreamKeyTextController,
+                                  hintText: "Twitch Stream Key",
+                                  textLimit: null,
+                                  isPassword: true,
+                                  onChanged: (val) => model.setTwitchStreamKey(val),
+                                  keyboardType: TextInputType.url,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        verticalSpaceMedium,
+                        Container(
+                          child: Row(
+                            children: [
+                              Icon(
+                                FontAwesomeIcons.youtube,
+                                color: appFontColor(),
+                                size: 24,
+                              ),
+                              horizontalSpaceSmall,
+                              Expanded(
+                                child: SingleLineTextField(
+                                  controller: model.youtubeStreamURLTextController,
+                                  hintText: "Youtube Stream URL",
+                                  textLimit: null,
+                                  isPassword: false,
+                                  onChanged: (val) => model.setYoutubeStreamURL(val),
+                                  keyboardType: TextInputType.url,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        verticalSpaceSmall,
+                        Container(
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 24,
+                              ),
+                              horizontalSpaceSmall,
+                              Expanded(
+                                child: SingleLineTextField(
+                                  controller: model.youtubeStreamKeyTextController,
+                                  hintText: "Youtube Stream Key",
+                                  textLimit: null,
+                                  isPassword: true,
+                                  onChanged: (val) => model.setYoutubeStreamKey(val),
                                   keyboardType: TextInputType.url,
                                 ),
                               ),

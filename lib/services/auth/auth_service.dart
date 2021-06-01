@@ -22,6 +22,9 @@ class AuthService {
   ///AUTH STATE
   Future<bool> signInAnonymously() async {
     UserCredential userCredential = await firebaseAuth.signInAnonymously();
+    if (userCredential.user == null) {
+      signInAnonymously();
+    }
     return userCredential.user != null;
   }
 
@@ -149,8 +152,6 @@ class AuthService {
           bool? userExists = await _userDataService.checkIfUserExists(val.user!.uid);
           if (userExists != null && !userExists) {
             WebblenUser user = WebblenUser().generateNewUser(val.user!.uid);
-            user.googleIDToken = googleAuth.idToken;
-            user.googleAccessToken = googleAuth.accessToken;
             await _userDataService.createWebblenUser(user);
           }
           signedIn = true;
@@ -177,7 +178,6 @@ class AuthService {
           bool? userExists = await _userDataService.checkIfUserExists(val.user!.uid);
           if (userExists != null && !userExists) {
             WebblenUser user = WebblenUser().generateNewUser(val.user!.uid);
-            user.fbAccessToken = result.accessToken!.token;
             await _userDataService.createWebblenUser(user);
           }
           signedIn = true;

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:responsive_builder/responsive_builder.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
@@ -23,35 +22,60 @@ class ContentAuthorBottomSheet extends StatelessWidget {
     return ViewModelBuilder<ContentAuthorBottomSheetModel>.nonReactive(
       viewModelBuilder: () => ContentAuthorBottomSheetModel(),
       builder: (context, model, child) => Container(
-        constraints: BoxConstraints(
-          maxWidth: 300,
-        ),
         margin: EdgeInsets.symmetric(horizontal: 16, vertical: 25),
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         color: Colors.transparent,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            request!.customData != null && request!.customData['checkInAttendees']
+                ? CustomButton(
+                    onPressed: () => completer!(SheetResponse(responseData: "check in")),
+                    text: "Check In Attendees",
+                    textSize: 16,
+                    textColor: appFontColor(),
+                    height: 45,
+                    width: screenWidth(context),
+                    backgroundColor: appBackgroundColor,
+                    elevation: 1.0,
+                    isBusy: false,
+                  )
+                : Container(),
+            request!.customData != null && request!.customData['checkInAttendees'] ? verticalSpaceSmall : Container(),
             CustomButton(
               onPressed: () => completer!(SheetResponse(responseData: "edit")),
               text: "Edit",
               textSize: 16,
               textColor: appFontColor(),
               height: 45,
-              width: getValueForScreenType(context: context, mobile: screenWidth(context), tablet: 600, desktop: 700),
+              width: screenWidth(context),
               backgroundColor: appBackgroundColor,
               elevation: 1.0,
               isBusy: false,
             ),
             verticalSpaceSmall,
+            request!.customData != null && request!.customData['canDuplicate']
+                ? CustomButton(
+                    onPressed: () => completer!(SheetResponse(responseData: "duplicate")),
+                    text: "Duplicate",
+                    textSize: 16,
+                    textColor: appFontColor(),
+                    height: 45,
+                    width: screenWidth(context),
+                    backgroundColor: appBackgroundColor,
+                    elevation: 1.0,
+                    isBusy: false,
+                  )
+                : Container(),
+            request!.customData != null && request!.customData['canDuplicate'] ? verticalSpaceSmall : Container(),
             CustomButton(
               onPressed: () => completer!(SheetResponse(responseData: "share")),
               text: "Share",
               textSize: 16,
               textColor: appFontColor(),
               height: 45,
-              width: getValueForScreenType(context: context, mobile: screenWidth(context), tablet: 600, desktop: 700),
+              width: screenWidth(context),
               backgroundColor: appBackgroundColor,
               elevation: 1.0,
               isBusy: false,
@@ -63,7 +87,7 @@ class ContentAuthorBottomSheet extends StatelessWidget {
               textSize: 16,
               textColor: appDestructiveColor(),
               height: 45,
-              width: getValueForScreenType(context: context, mobile: screenWidth(context), tablet: 600, desktop: 700),
+              width: screenWidth(context),
               backgroundColor: appBackgroundColor,
               elevation: 1.0,
               isBusy: false,

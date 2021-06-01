@@ -102,13 +102,18 @@ class CustomBottomSheetService {
     WebblenUser user = _reactiveWebblenUserService.user;
     var sheetResponse = await _bottomSheetService.showCustomSheet(
       barrierDismissible: true,
+      customData: content is WebblenEvent && user.id == content.authorID && content.hasTickets!
+          ? {'checkInAttendees': true, 'canDuplicate': true}
+          : content is WebblenEvent || content is WebblenLiveStream
+              ? {'checkInAttendees': false, 'canDuplicate': true}
+              : {'checkInAttendees': false, 'canDuplicate': false},
       variant: content is WebblenLiveStream
           ? user.id == content.hostID
               ? BottomSheetType.contentAuthorOptions
               : BottomSheetType.contentOptions
           : user.id == content.authorID
-          ? BottomSheetType.contentAuthorOptions
-          : BottomSheetType.contentOptions,
+              ? BottomSheetType.contentAuthorOptions
+              : BottomSheetType.contentOptions,
     );
 
     if (sheetResponse != null) {
@@ -148,19 +153,26 @@ class CustomBottomSheetService {
           }
         }
       } else if (res == "report") {
-        if (!user.isValid()) {
-          _customDialogService.showLoginRequiredDialog(description: "You must be logged in to report content");
-        } else {
-          if (content is WebblenPost) {
-            //report post
-            _postDataService.reportPost(postID: content.id, reporterID: user.id);
-          } else if (content is WebblenEvent) {
-            //report event
-            _eventDataService.reportEvent(eventID: content.id, reporterID: user.id);
-          } else if (content is WebblenLiveStream) {
-            //report stream
-            _liveStreamDataService.reportStream(streamID: content.id, reporterID: user.id);
-          }
+        if (content is WebblenPost) {
+          //report post
+          _postDataService.reportPost(postID: content.id, reporterID: user.id);
+        } else if (content is WebblenEvent) {
+          //report event
+          _eventDataService.reportEvent(eventID: content.id, reporterID: user.id);
+        } else if (content is WebblenLiveStream) {
+          //report stream
+          _liveStreamDataService.reportStream(streamID: content.id, reporterID: user.id);
+        }
+      } else if (res == "check in") {
+        //scanner content
+        _customDialogService.showAppOnlyDialog(description: "Please Use the Webblen App to Check in Attendees");
+      } else if (res == "duplicate") {
+        if (content is WebblenEvent) {
+          //duplicate event
+          _navigationService.navigateTo(Routes.CreateEventViewRoute(id: "duplicate_${content.id}", promo: 0));
+        } else if (content is WebblenLiveStream) {
+          //duplicate stream
+          _navigationService.navigateTo(Routes.CreateLiveStreamViewRoute(id: "duplicate_${content.id}", promo: 0));
         }
       } else if (res == "delete") {
         //delete content

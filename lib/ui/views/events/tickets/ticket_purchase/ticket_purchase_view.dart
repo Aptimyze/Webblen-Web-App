@@ -111,6 +111,10 @@ class TicketPurchaseView extends StatelessWidget {
                             _DiscountCodeField(),
                             verticalSpaceMedium,
 
+                            ///EMAIL ADDRESS
+                            _EmailAddressField(),
+                            verticalSpaceMedium,
+
                             ///CARD FORM
                             model.chargeAmount <= 0
                                 ? Container()
@@ -204,13 +208,6 @@ class TicketPurchaseView extends StatelessWidget {
                                         SizedBox(height: 8.0),
                                         _CardHolderNameField(),
                                         SizedBox(height: 32.0),
-                                        CustomText(
-                                          text: "Please confirm your card details before submission.",
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                          color: appFontColor(),
-                                          textAlign: TextAlign.center,
-                                        ),
                                       ],
                                     ),
                                   ),
@@ -601,27 +598,46 @@ class _EmailAddressField extends HookViewModelWidget<TicketPurchaseViewModel> {
   @override
   Widget buildViewModelWidget(BuildContext context, TicketPurchaseViewModel model) {
     var emailAddress = useTextEditingController();
-    return TextFieldContainer(
-      child: TextFormField(
-        controller: emailAddress,
-        decoration: InputDecoration(
-          hintText: "Email Address",
-          contentPadding: EdgeInsets.only(
-            left: 8,
-            top: 8,
-            bottom: 8,
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 16),
+      constraints: BoxConstraints(
+        maxWidth: 500,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CustomText(
+            text: "Email Address",
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: appFontColor(),
+            textAlign: TextAlign.left,
           ),
-          border: InputBorder.none,
-        ),
-        onChanged: model.updateEmailAddress,
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 18.0,
-          fontWeight: FontWeight.w400,
-        ),
-        maxLines: 1,
-        textInputAction: TextInputAction.done,
-        autocorrect: false,
+          verticalSpaceSmall,
+          TextFieldContainer(
+            child: TextFormField(
+              controller: emailAddress,
+              decoration: InputDecoration(
+                hintText: "Email Address",
+                contentPadding: EdgeInsets.only(
+                  left: 8,
+                  top: 8,
+                  bottom: 8,
+                ),
+                border: InputBorder.none,
+              ),
+              onChanged: model.updateEmailAddress,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18.0,
+                fontWeight: FontWeight.w400,
+              ),
+              maxLines: 1,
+              textInputAction: TextInputAction.done,
+              autocorrect: false,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -833,13 +849,15 @@ class _PurchaseTicketsButton extends HookViewModelWidget<TicketPurchaseViewModel
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CustomText(
-            text: "Please confirm your card details before submission.",
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: appFontColor(),
-            textAlign: TextAlign.center,
-          ),
+          model.chargeAmount > 0
+              ? CustomText(
+                  text: "Please confirm your card details before submission.",
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: appFontColor(),
+                  textAlign: TextAlign.center,
+                )
+              : Container(),
           SizedBox(height: 16.0),
           CustomButton(
             text: "Purchase Tickets",

@@ -4,17 +4,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
+import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/firestore/common/firestore_storage_service.dart';
 import 'package:webblen_web_app/services/firestore/data/post_data_service.dart';
+import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
 import 'package:webblen_web_app/utils/custom_string_methods.dart';
 
 class LiveStreamDataService {
   final CollectionReference streamsRef = FirebaseFirestore.instance.collection("webblen_live_streams");
   PostDataService? _postDataService = locator<PostDataService>();
-
+  CustomDialogService _customDialogService = locator<CustomDialogService>();
   DialogService? _dialogService = locator<DialogService>();
   FirestoreStorageService? _firestoreStorageService = locator<FirestoreStorageService>();
-
+  UserDataService _userDataService = locator<UserDataService>();
   int dateTimeInMilliseconds2hrsAgog = DateTime.now().millisecondsSinceEpoch - 7200000;
 
   Future<bool?> checkIfStreamExists(String id) async {
@@ -29,7 +31,6 @@ class LiveStreamDataService {
         title: "Error",
         description: e.toString(),
       );
-      return null;
     }
     return exists;
   }
@@ -47,7 +48,6 @@ class LiveStreamDataService {
         }
       }
     } catch (e) {
-      return null;
     }
     return saved;
   }
@@ -83,7 +83,6 @@ class LiveStreamDataService {
         title: "Stream Error",
         description: e.message,
       );
-      return null;
     });
     if (snapshot.exists) {
       List reportedBy = snapshot.data()!['reportedBy'] == null ? [] : snapshot.data()!['reportedBy'].toList(growable: true);
@@ -103,11 +102,16 @@ class LiveStreamDataService {
     }
   }
 
-  Future createStream({required WebblenLiveStream stream}) async {
+  Future<bool> createStream({required WebblenLiveStream stream}) async {
+    String? error;
     await streamsRef.doc(stream.id).set(stream.toMap()).catchError((e) {
-      print(e.message);
-      return e.message;
+      error = e.message;
     });
+    if (error != null) {
+      _customDialogService.showErrorDialog(description: error!);
+      return false;
+    }
+    return true;
   }
 
   Future updateStream({required WebblenLiveStream stream}) async {
@@ -133,7 +137,6 @@ class LiveStreamDataService {
         title: "Stream Error",
         description: e.message,
       );
-      return null;
     });
     if (snapshot.exists) {
       stream = WebblenLiveStream.fromMap(snapshot.data()!);
@@ -142,7 +145,6 @@ class LiveStreamDataService {
         title: "his Stream No Longer Exists",
         description: "This stream has been removed",
       );
-      return null;
     }
     return stream;
   }
@@ -177,7 +179,6 @@ class LiveStreamDataService {
         title: "There was an issue starting this stream",
         description: "Please try again",
       );
-      return null;
     });
     if (snapshot.exists) {
       if (snapshot.data()!['token'] != null) {
@@ -219,7 +220,6 @@ class LiveStreamDataService {
           description: e.message,
         );
       }
-      return [];
     });
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
@@ -227,7 +227,7 @@ class LiveStreamDataService {
         docs.removeWhere((doc) => !doc.data()!['tags'].contains(tagFilter));
       }
       if (sortBy == "Latest") {
-        docs.sort((docA, docB) => docB.data()!['startDateTimeInMilliseconds'].compareTo(docA.data()!['startDateTimeInMilliseconds']));
+        docs.sort((docA, docB) => docA.data()!['startDateTimeInMilliseconds'].compareTo(docB.data()!['startDateTimeInMilliseconds']));
       } else {
         docs.sort((docA, docB) => docB.data()!['savedBy'].length.compareTo(docA.data()!['savedBy'].length));
       }
@@ -261,7 +261,6 @@ class LiveStreamDataService {
           description: e.message,
         );
       }
-      return [];
     });
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
@@ -269,7 +268,7 @@ class LiveStreamDataService {
         docs.removeWhere((doc) => !doc.data()!['tags'].contains(tagFilter));
       }
       if (sortBy == "Latest") {
-        docs.sort((docA, docB) => docB.data()!['startDateTimeInMilliseconds'].compareTo(docA.data()!['startDateTimeInMilliseconds']));
+        docs.sort((docA, docB) => docA.data()!['startDateTimeInMilliseconds'].compareTo(docB.data()!['startDateTimeInMilliseconds']));
       } else {
         docs.sort((docA, docB) => docB.data()!['savedBy'].length.compareTo(docA.data()!['savedBy'].length));
       }
@@ -288,7 +287,6 @@ class LiveStreamDataService {
           description: e.message,
         );
       }
-      return [];
     });
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
@@ -312,7 +310,6 @@ class LiveStreamDataService {
           description: e.message,
         );
       }
-      return [];
     });
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
@@ -331,7 +328,6 @@ class LiveStreamDataService {
           description: e.message,
         );
       }
-      return [];
     });
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;
@@ -358,7 +354,6 @@ class LiveStreamDataService {
           description: e.message,
         );
       }
-      return [];
     });
     if (snapshot.docs.isNotEmpty) {
       docs = snapshot.docs;

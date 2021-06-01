@@ -14,6 +14,7 @@ import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
 import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
 import 'package:webblen_web_app/services/share/share_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
+import 'package:webblen_web_app/utils/url_handler.dart';
 
 class UserProfileViewModel extends StreamViewModel<WebblenUser> {
   AuthService? _authService = locator<AuthService>();
@@ -104,6 +105,10 @@ class UserProfileViewModel extends StreamViewModel<WebblenUser> {
       notifyListeners();
       _userDataService!.followUser(currentUser.id!, user!.id!);
     }
+  }
+
+  viewWebsite(){
+    UrlHandler().launchInWebViewOrVC(user!.website!);
   }
 
   ///BOTTOM SHEETS

@@ -7,7 +7,6 @@ import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
 import 'package:webblen_web_app/models/webblen_post.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
-import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/firestore/data/platform_data_service.dart';
 
 class DynamicLinkService {
@@ -23,7 +22,7 @@ class DynamicLinkService {
     String kDynamicLinkURL = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=$key';
 
     // Construct the link which will open when the Dynamic Link is used
-    String link = 'https://app.webblen.io/profiles/profile?id=${user.id}';
+    String link = 'https://app.webblen.io/profiles/${user.id}';
     Map<String, String> headers = {'Content-Type': 'application/json'};
 
     // Configure the Dynamic Link
@@ -31,8 +30,70 @@ class DynamicLinkService {
       'dynamicLinkInfo': {
         'link': link,
         'domainUriPrefix': webblenShareContentPrefix,
-        'androidInfo': {'androidPackageName': androidPackageName},
-        'iosInfo': {'iosBundleId': iosBundleID, 'iosAppStoreId': iosAppStoreID}
+        'androidInfo': {
+          'androidPackageName': androidPackageName,
+          'androidFallbackLink': link,
+        },
+        'iosInfo': {
+          'iosBundleId': iosBundleID,
+          'iosAppStoreId': iosAppStoreID,
+          'iosFallbackLink': link,
+          'iosIpadFallbackLink': link,
+        },
+        'navigationInfo': {
+          "enableForcedRedirect": true,
+        },
+        'socialMetaTagInfo': {
+          'socialTitle': "Checkout @${user.username}'s account on Webblen",
+          'socialDescription': user.bio != null ? user.bio : null,
+          'socialImageLink': user.profilePicURL != null ? user.profilePicURL! : null,
+        },
+      },
+      'suffix': {'option': 'SHORT'}
+    };
+
+    // Request the deep link
+    http.Response response = await http.post(
+      Uri.parse(kDynamicLinkURL),
+      body: jsonEncode(body),
+      headers: headers,
+      encoding: Encoding.getByName("utf-8"),
+    );
+
+    // Check if we generated a valid Dynamic Link
+    if (response.statusCode == 200) {
+      Map bodyAnswer = jsonDecode(response.body);
+      return bodyAnswer['shortLink'];
+    } else {
+      return '';
+    }
+  }
+
+  Future<String?> createProfileAppLink({required WebblenUser user}) async {
+    String? key = await _platformDataService!.getGoogleApiKey();
+    String kDynamicLinkURL = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=$key';
+
+    // Construct the link which will open when the Dynamic Link is used
+    String link = 'https://app.webblen.io/profiles/${user.id}';
+    Map<String, String> headers = {'Content-Type': 'application/json'};
+
+    // Configure the Dynamic Link
+    Map body = {
+      'dynamicLinkInfo': {
+        'link': link,
+        'domainUriPrefix': webblenShareContentPrefix,
+        'androidInfo': {
+          'androidPackageName': androidPackageName,
+        },
+        'iosInfo': {
+          'iosBundleId': iosBundleID,
+          'iosAppStoreId': iosAppStoreID,
+        },
+        'socialMetaTagInfo': {
+          'socialTitle': "Checkout @${user.username}'s account on Webblen",
+          'socialDescription': user.bio != null ? user.bio : null,
+          'socialImageLink': user.profilePicURL != null ? user.profilePicURL! : null,
+        },
       },
       'suffix': {'option': 'SHORT'}
     };
@@ -59,20 +120,84 @@ class DynamicLinkService {
     String kDynamicLinkURL = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=$key';
 
     // Construct the link which will open when the Dynamic Link is used
-    String link = 'https://app.webblen.io/posts/post?id=${post.id}';
+    String link = 'https://app.webblen.io/posts/${post.id}';
     Map<String, String> headers = {'Content-Type': 'application/json'};
 
     Map body = {
       'dynamicLinkInfo': {
         'link': link,
         'domainUriPrefix': webblenShareContentPrefix,
-        'androidInfo': {'androidPackageName': androidPackageName},
-        'iosInfo': {'iosBundleId': iosBundleID, 'iosAppStoreId': iosAppStoreID}
+        'androidInfo': {
+          'androidPackageName': androidPackageName,
+          'androidFallbackLink': link,
+        },
+        'iosInfo': {
+          'iosBundleId': iosBundleID,
+          'iosAppStoreId': iosAppStoreID,
+          'iosFallbackLink': link,
+          'iosIpadFallbackLink': link,
+        },
+        'navigationInfo': {
+          "enableForcedRedirect": true,
+        },
+        'socialMetaTagInfo': {
+          'socialTitle': "Checkout $authorUsername's post on Webblen",
+          'socialDescription': post.body!.length > 200 ? post.body!.substring(0, 190) + "..." : post.body,
+          'socialImageLink': post.imageURL != null ? post.imageURL! : null,
+        },
       },
       'suffix': {'option': 'SHORT'}
     };
 
-    print(jsonEncode(body));
+    // Request the deep link
+    http.Response response = await http
+        .post(
+      Uri.parse(kDynamicLinkURL),
+      body: jsonEncode(body),
+      headers: headers,
+      encoding: Encoding.getByName("utf-8"),
+    )
+        .catchError((e) {
+      print(e);
+    });
+
+    // Check if we generated a valid Dynamic Link
+    if (response.statusCode == 200) {
+      print(response.body);
+      var bodyAnswer = jsonDecode(response.body);
+      return bodyAnswer['shortLink'];
+    } else {
+      return '';
+    }
+  }
+
+  Future<String?> createPostAppLink({required String? authorUsername, required WebblenPost post}) async {
+    String? key = await _platformDataService!.getGoogleApiKey();
+    String kDynamicLinkURL = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=$key';
+
+    // Construct the link which will open when the Dynamic Link is used
+    String link = 'https://app.webblen.io/posts/${post.id}';
+    Map<String, String> headers = {'Content-Type': 'application/json'};
+
+    Map body = {
+      'dynamicLinkInfo': {
+        'link': link,
+        'domainUriPrefix': webblenShareContentPrefix,
+        'androidInfo': {
+          'androidPackageName': androidPackageName,
+        },
+        'iosInfo': {
+          'iosBundleId': iosBundleID,
+          'iosAppStoreId': iosAppStoreID,
+        },
+        'socialMetaTagInfo': {
+          'socialTitle': "Checkout $authorUsername's post on Webblen",
+          'socialDescription': post.body!.length > 200 ? post.body!.substring(0, 190) + "..." : post.body,
+          'socialImageLink': post.imageURL != null ? post.imageURL! : null,
+        },
+      },
+      'suffix': {'option': 'SHORT'}
+    };
 
     // Request the deep link
     http.Response response = await http
@@ -101,7 +226,7 @@ class DynamicLinkService {
     String kDynamicLinkURL = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=$key';
 
     // Construct the link which will open when the Dynamic Link is used
-    String link = 'https://app.webblen.io/events/event?id=${event.id}';
+    String link = 'https://app.webblen.io/events/${event.id}';
     Map<String, String> headers = {'Content-Type': 'application/json'};
 
     // Configure the Dynamic Link
@@ -109,8 +234,70 @@ class DynamicLinkService {
       'dynamicLinkInfo': {
         'link': link,
         'domainUriPrefix': webblenShareContentPrefix,
-        'androidInfo': {'androidPackageName': androidPackageName},
-        'iosInfo': {'iosBundleId': iosBundleID, 'iosAppStoreId': iosAppStoreID}
+        'androidInfo': {
+          'androidPackageName': androidPackageName,
+          'androidFallbackLink': link,
+        },
+        'iosInfo': {
+          'iosBundleId': iosBundleID,
+          'iosAppStoreId': iosAppStoreID,
+          'iosFallbackLink': link,
+          'iosIpadFallbackLink': link,
+        },
+        'navigationInfo': {
+          "enableForcedRedirect": true,
+        },
+        'socialMetaTagInfo': {
+          'socialTitle': "Checkout ${event.title} hosted by @$authorUsername on Webblen",
+          'socialDescription': event.description!.length > 200 ? event.description!.substring(0, 190) + "..." : event.description,
+          'socialImageLink': event.imageURL != null ? event.imageURL! : null,
+        },
+      },
+      'suffix': {'option': 'SHORT'}
+    };
+
+    // Request the deep link
+    http.Response response = await http.post(
+      Uri.parse(kDynamicLinkURL),
+      body: jsonEncode(body),
+      headers: headers,
+      encoding: Encoding.getByName("utf-8"),
+    );
+
+    // Check if we generated a valid Dynamic Link
+    if (response.statusCode == 200) {
+      Map bodyAnswer = jsonDecode(response.body);
+      return bodyAnswer['shortLink'];
+    } else {
+      return '';
+    }
+  }
+
+  Future<String?> createEventAppLink({required String? authorUsername, required WebblenEvent event}) async {
+    String? key = await _platformDataService!.getGoogleApiKey();
+    String kDynamicLinkURL = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=$key';
+
+    // Construct the link which will open when the Dynamic Link is used
+    String link = 'https://app.webblen.io/events/${event.id}';
+    Map<String, String> headers = {'Content-Type': 'application/json'};
+
+    // Configure the Dynamic Link
+    Map body = {
+      'dynamicLinkInfo': {
+        'link': link,
+        'domainUriPrefix': webblenShareContentPrefix,
+        'androidInfo': {
+          'androidPackageName': androidPackageName,
+        },
+        'iosInfo': {
+          'iosBundleId': iosBundleID,
+          'iosAppStoreId': iosAppStoreID,
+        },
+        'socialMetaTagInfo': {
+          'socialTitle': "Checkout ${event.title} hosted by @$authorUsername on Webblen",
+          'socialDescription': event.description!.length > 200 ? event.description!.substring(0, 190) + "..." : event.description,
+          'socialImageLink': event.imageURL != null ? event.imageURL! : null,
+        },
       },
       'suffix': {'option': 'SHORT'}
     };
@@ -137,7 +324,7 @@ class DynamicLinkService {
     String kDynamicLinkURL = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=$key';
 
     // Construct the link which will open when the Dynamic Link is used
-    String link = 'https://app.webblen.io/streams/stream?id=${stream.id}';
+    String link = 'https://app.webblen.io/streams/${stream.id}';
     Map<String, String> headers = {'Content-Type': 'application/json'};
 
     // Configure the Dynamic Link
@@ -145,8 +332,71 @@ class DynamicLinkService {
       'dynamicLinkInfo': {
         'link': link,
         'domainUriPrefix': webblenShareContentPrefix,
-        'androidInfo': {'androidPackageName': androidPackageName},
-        'iosInfo': {'iosBundleId': iosBundleID, 'iosAppStoreId': iosAppStoreID}
+        'androidInfo': {
+          'androidPackageName': androidPackageName,
+          'androidFallbackLink': link,
+        },
+        'iosInfo': {
+          'iosBundleId': iosBundleID,
+          'iosAppStoreId': iosAppStoreID,
+          'iosFallbackLink': link,
+          'iosIpadFallbackLink': link,
+        },
+        'navigationInfo': {
+          "enableForcedRedirect": true,
+        },
+        'socialMetaTagInfo': {
+          'socialTitle': "Checkout this video stream: ${stream.title}\nhosted by @$authorUsername on Webblen",
+          'socialDescription': stream.description!.length > 200 ? stream.description!.substring(0, 190) + "..." : stream.description,
+          'socialImageLink': stream.imageURL != null ? stream.imageURL! : null,
+        },
+      },
+      'suffix': {'option': 'SHORT'}
+    };
+
+    // Request the deep link
+    http.Response response = await http.post(
+      Uri.parse(kDynamicLinkURL),
+      body: jsonEncode(body),
+      headers: headers,
+      encoding: Encoding.getByName("utf-8"),
+    );
+
+    // Check if we generated a valid Dynamic Link
+    if (response.statusCode == 200) {
+      Map bodyAnswer = jsonDecode(response.body);
+      print(bodyAnswer);
+      return bodyAnswer['shortLink'];
+    } else {
+      return '';
+    }
+  }
+
+  Future<String?> createLiveStreamAppLink({required String? authorUsername, required WebblenLiveStream stream}) async {
+    String? key = await _platformDataService!.getGoogleApiKey();
+    String kDynamicLinkURL = 'https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=$key';
+
+    // Construct the link which will open when the Dynamic Link is used
+    String link = 'https://app.webblen.io/streams/${stream.id}';
+    Map<String, String> headers = {'Content-Type': 'application/json'};
+
+    // Configure the Dynamic Link
+    Map body = {
+      'dynamicLinkInfo': {
+        'link': link,
+        'domainUriPrefix': webblenShareContentPrefix,
+        'androidInfo': {
+          'androidPackageName': androidPackageName,
+        },
+        'iosInfo': {
+          'iosBundleId': iosBundleID,
+          'iosAppStoreId': iosAppStoreID,
+        },
+        'socialMetaTagInfo': {
+          'socialTitle': "Checkout this video stream: ${stream.title}\nhosted by @$authorUsername on Webblen",
+          'socialDescription': stream.description!.length > 200 ? stream.description!.substring(0, 190) + "..." : stream.description,
+          'socialImageLink': stream.imageURL != null ? stream.imageURL! : null,
+        },
       },
       'suffix': {'option': 'SHORT'}
     };
@@ -167,42 +417,4 @@ class DynamicLinkService {
       return '';
     }
   }
-
-  Future handleDynamicLinks() async {
-    CustomDialogService _customDialogService = locator<CustomDialogService>();
-
-    // It will handle app links while the app is already started - be it in
-    // // the foreground or in the background.
-    // StreamSubscription _sub = uriLinkStream.listen((Uri? uri) {
-    //   print('got uri: $uri');
-    // }, onError: (Object err) {
-    //   print('got err: $err');
-    // });
-  }
-
-  // void _handleDynamicLink(PendingDynamicLinkData? linkData) {
-  //   NavigationService _navigationService = locator<NavigationService>();
-  //   CustomDialogService _customDialogService = locator<CustomDialogService>();
-  //   final Uri? link = linkData?.link;
-  //   if (link != null) {
-  //     String? id = link.queryParameters['id'];
-  //     if (id != null) {
-  //       if (link.pathSegments.contains('profile')) {
-  //         _navigationService.navigateTo(Routes.UserProfileView(id: id));
-  //       } else if (link.pathSegments.contains('post')) {
-  //         _navigationService.navigateTo(Routes.PostViewRoute(id: id));
-  //       } else if (link.pathSegments.contains('event')) {
-  //         _navigationService.navigateTo(Routes.EventDetailsViewRoute(id: id));
-  //       } else if (link.pathSegments.contains('stream')) {
-  //         _navigationService.navigateTo(Routes.LiveStreamViewRoute(id: id));
-  //       } else if (link.pathSegments.contains('ticket')) {
-  //         _navigationService.navigateTo(Routes.TicketSelectionViewRoute(id: id));
-  //       } else {
-  //         _customDialogService.showErrorDialog(description: "There was an issue loading the desired link");
-  //       }
-  //     } else {
-  //       _customDialogService.showErrorDialog(description: "There was an issue loading the desired link");
-  //     }
-  //   }
-  // }
 }

@@ -23,39 +23,43 @@ class CustomTopNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            width: thirdScreenWidth(context) - 16,
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
-                  child: SizedBox(
-                    height: 40,
-                    child: Image.asset(
-                      'assets/images/webblen_coin.png',
-                      filterQuality: FilterQuality.low,
+          Expanded(
+            flex: 6,
+            child: Container(
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
+                    child: SizedBox(
+                      height: 40,
+                      child: Image.asset(
+                        'assets/images/webblen_coin.png',
+                        filterQuality: FilterQuality.low,
+                      ),
                     ),
-                  ),
-                ).showCursorOnHover,
-                horizontalSpaceSmall,
-                GestureDetector(
-                  onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
-                  child: SizedBox(
-                    height: 30,
-                    child: Image.asset(
-                      'assets/images/webblen_logo_text.png',
-                      filterQuality: FilterQuality.low,
+                  ).showCursorOnHover,
+                  horizontalSpaceSmall,
+                  GestureDetector(
+                    onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
+                    child: SizedBox(
+                      height: 30,
+                      child: Image.asset(
+                        'assets/images/webblen_logo_text.png',
+                        filterQuality: FilterQuality.low,
+                      ),
                     ),
-                  ),
-                ).showCursorOnHover,
-              ],
+                  ).showCursorOnHover,
+                ],
+              ),
             ),
           ),
-          Container(
-            width: thirdScreenWidth(context) - 16,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: navBarItems!,
+          Expanded(
+            flex: 2,
+            child: Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: navBarItems!,
+              ),
             ),
           ),
         ],
@@ -72,44 +76,48 @@ class CustomTopNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            width: thirdScreenWidth(context) - 16,
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
-                  child: SizedBox(
-                    height: 40,
-                    child: Image.asset(
-                      'assets/images/webblen_coin.png',
-                      filterQuality: FilterQuality.low,
+          Expanded(
+            flex: 4,
+            child: Container(
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
+                    child: SizedBox(
+                      height: 40,
+                      child: Image.asset(
+                        'assets/images/webblen_coin.png',
+                        filterQuality: FilterQuality.medium,
+                      ),
                     ),
-                  ),
-                ).showCursorOnHover,
-                horizontalSpaceSmall,
-                GestureDetector(
-                  onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
-                  child: _webblenBaseViewModel.cityName.isEmpty
-                      ? SizedBox(
-                          height: 30,
-                          child: Image.asset(
-                            'assets/images/webblen_logo_text.png',
-                            filterQuality: FilterQuality.low,
+                  ).showCursorOnHover,
+                  horizontalSpaceSmall,
+                  GestureDetector(
+                    onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
+                    child: _webblenBaseViewModel.cityName.isEmpty
+                        ? SizedBox(
+                            height: 30,
+                            child: Image.asset(
+                              'assets/images/webblen_logo_text.png',
+                              filterQuality: FilterQuality.medium,
+                            ),
+                          )
+                        : AutoSizeText(
+                            _webblenBaseViewModel.cityName,
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                           ),
-                        )
-                      : AutoSizeText(
-                          _webblenBaseViewModel.cityName,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                        ),
-                ).showCursorOnHover,
-              ],
+                  ).showCursorOnHover,
+                ],
+              ),
             ),
           ),
-          Container(
-            width: 350,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: navBarItems!,
+          Expanded(
+            flex: 3,
+            child: Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: navBarItems!,
+              ),
             ),
           ),
         ],
@@ -126,46 +134,50 @@ class CustomTopNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            width: thirdScreenWidth(context) - 16,
-            child: Row(
-              children: [
-                GestureDetector(
-                  onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
-                  child: SizedBox(
-                    height: 40,
-                    child: Image.asset(
-                      'assets/images/webblen_coin.png',
-                      filterQuality: FilterQuality.low,
+          Expanded(
+            flex: 2,
+            child: Container(
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
+                    child: SizedBox(
+                      height: 40,
+                      child: Image.asset(
+                        'assets/images/webblen_coin.png',
+                        filterQuality: FilterQuality.low,
+                      ),
                     ),
-                  ),
-                ).showCursorOnHover,
-                horizontalSpaceSmall,
-                GestureDetector(
-                  onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
-                  child: _webblenBaseViewModel.cityName.isEmpty
-                      ? Container()
-                      : Container(
-                          constraints: BoxConstraints(
-                            maxWidth: 250,
+                  ).showCursorOnHover,
+                  horizontalSpaceSmall,
+                  GestureDetector(
+                    onTap: () => _webblenBaseViewModel.navigateToHomeWithIndex(0),
+                    child: _webblenBaseViewModel.cityName.isEmpty
+                        ? Container()
+                        : Container(
+                            constraints: BoxConstraints(
+                              maxWidth: 250,
+                            ),
+                            child: AutoSizeText(
+                              _webblenBaseViewModel.cityName,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                              maxFontSize: 20,
+                              minFontSize: 14,
+                              maxLines: 1,
+                            ),
                           ),
-                          child: AutoSizeText(
-                            _webblenBaseViewModel.cityName,
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                            maxFontSize: 20,
-                            minFontSize: 12,
-                            maxLines: 1,
-                          ),
-                        ),
-                ).showCursorOnHover,
-              ],
+                  ).showCursorOnHover,
+                ],
+              ),
             ),
           ),
-          Container(
-            width: 300,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: navBarItems!,
+          Expanded(
+            flex: 3,
+            child: Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: navBarItems!,
+              ),
             ),
           ),
         ],

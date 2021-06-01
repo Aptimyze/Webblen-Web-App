@@ -18,60 +18,64 @@ class ListHomeEvents extends StatelessWidget {
       builder: (context, model, child) => model.isBusy
           ? Container()
           : model.dataResults.isEmpty
-          ? ZeroStateView(
-              scrollController: model.scrollController,
-              imageAssetName: "calendar",
-              imageSize: 200,
-              header: "No Events in ${model.cityName} Found",
-              subHeader: model.webblenBaseViewModel!.streamPromo != null
-                  ? "Schedule an Event for ${model.cityName} Now and Earn ${model.webblenBaseViewModel!.eventPromo!.toStringAsFixed(2)} WBLN!"
-                  : "Schedule an Event for ${model.cityName} Now!",
-              mainActionButtonTitle:
-                  model.webblenBaseViewModel!.streamPromo != null ? "Earn ${model.webblenBaseViewModel!.eventPromo!.toStringAsFixed(2)} WBLN" : "Create Stream",
-              mainAction: () => model.webblenBaseViewModel!.navigateToCreateEventPage(
-                id: null,
-                addPromo: model.webblenBaseViewModel!.eventPromo != null,
-              ),
-              secondaryActionButtonTitle: null,
-              secondaryAction: null,
-              refreshData: model.refreshData,
-            )
-          : Container(
-              height: screenHeight(context),
-              color: appBackgroundColor,
-              child: RefreshIndicator(
-                onRefresh: model.refreshData,
-                child: ListView.builder(
-                  cacheExtent: 8000,
-                  controller: model.scrollController,
-                  key: PageStorageKey(model.listKey),
-                  addAutomaticKeepAlives: true,
-                  shrinkWrap: true,
-                  itemCount: model.dataResults.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index < model.dataResults.length) {
-                      WebblenEvent event;
-                      event = WebblenEvent.fromMap(model.dataResults[index].data()!);
-                      return EventBlockView(
-                        event: event,
-                        showEventOptions: (event) => model.showContentOptions(event),
-                      );
-                    } else {
-                      if (model.moreDataAvailable) {
-                        WidgetsBinding.instance!.addPostFrameCallback((_) {
-                          model.loadAdditionalData();
-                        });
-                        return Align(
-                          alignment: Alignment.center,
-                          child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
-                        );
-                      }
-                      return Container();
-                    }
-                  },
+              ? ZeroStateView(
+                  scrollController: model.scrollController,
+                  imageAssetName: "calendar",
+                  imageSize: 200,
+                  header: "No Events in ${model.cityName} Found",
+                  subHeader: model.webblenBaseViewModel!.streamPromo != null
+                      ? "Schedule an Event for ${model.cityName} Now and Earn ${model.webblenBaseViewModel!.eventPromo!.toStringAsFixed(2)} WBLN!"
+                      : "Schedule an Event for ${model.cityName} Now!",
+                  mainActionButtonTitle: model.webblenBaseViewModel!.streamPromo != null
+                      ? "Earn ${model.webblenBaseViewModel!.eventPromo!.toStringAsFixed(2)} WBLN"
+                      : "Create Stream",
+                  mainAction: () => model.webblenBaseViewModel!.navigateToCreateEventPage(
+                    id: null,
+                    addPromo: model.webblenBaseViewModel!.eventPromo != null,
+                  ),
+                  secondaryActionButtonTitle: null,
+                  secondaryAction: null,
+                  refreshData: model.refreshData,
+                )
+              : Container(
+                  height: screenHeight(context),
+                  color: appBackgroundColor,
+                  child: RefreshIndicator(
+                    onRefresh: model.refreshData,
+                    backgroundColor: appBackgroundColor,
+                    color: appFontColorAlt(),
+                    child: SingleChildScrollView(
+                      controller: model.scrollController,
+                      child: ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        key: PageStorageKey(model.listKey),
+                        shrinkWrap: true,
+                        itemCount: model.dataResults.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index < model.dataResults.length) {
+                            WebblenEvent event;
+                            event = WebblenEvent.fromMap(model.dataResults[index].data()!);
+                            return EventBlockView(
+                              event: event,
+                              showEventOptions: (event) => model.showContentOptions(event),
+                            );
+                          } else {
+                            if (model.moreDataAvailable) {
+                              WidgetsBinding.instance!.addPostFrameCallback((_) {
+                                model.loadAdditionalData();
+                              });
+                              return Align(
+                                alignment: Alignment.center,
+                                child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
+                              );
+                            }
+                            return Container();
+                          }
+                        },
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
     );
   }
 }

@@ -79,7 +79,7 @@ class PostImgBlockView extends StatelessWidget {
                       ),
               ],
             ),
-          ),
+          ).showCursorOnHover,
           IconButton(
             icon: Icon(Icons.more_horiz),
             onPressed: () => showPostOptions!(post),

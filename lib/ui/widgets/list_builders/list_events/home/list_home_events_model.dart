@@ -36,7 +36,7 @@ class ListHomeEventsModel extends ReactiveViewModel {
   bool loadingAdditionalData = false;
   bool moreDataAvailable = true;
 
-  int resultsLimit = 10;
+  int resultsLimit = 20;
 
   @override
   List<ReactiveServiceMixin> get reactiveServices => [_reactiveContentFilterService];

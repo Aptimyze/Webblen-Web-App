@@ -119,7 +119,7 @@ import 'package:webblen_web_app/ui/views/users/saved/saved_content_view.dart';
     CustomRoute(
       page: PostView,
       name: "PostViewRoute",
-      path: "/posts/post?id=:id",
+      path: "/posts/:id",
       //transitionsBuilder: TransitionsBuilders.fadeIn,
       durationInMilliseconds: 0,
     ),
@@ -135,7 +135,7 @@ import 'package:webblen_web_app/ui/views/users/saved/saved_content_view.dart';
     CustomRoute(
       page: EventDetailsView,
       name: "EventDetailsViewRoute",
-      path: "/events/event?id=:id",
+      path: "/events/:id",
       //transitionsBuilder: TransitionsBuilders.fadeIn,
       durationInMilliseconds: 0,
     ),
@@ -151,7 +151,7 @@ import 'package:webblen_web_app/ui/views/users/saved/saved_content_view.dart';
     CustomRoute(
       page: LiveStreamDetailsView,
       name: "LiveStreamViewRoute",
-      path: "/streams/stream?id=:id",
+      path: "/streams/:id",
       //transitionsBuilder: TransitionsBuilders.fadeIn,
       durationInMilliseconds: 0,
     ),
@@ -200,7 +200,7 @@ import 'package:webblen_web_app/ui/views/users/saved/saved_content_view.dart';
     CustomRoute(
       page: UserProfileView,
       name: "UserProfileView",
-      path: "/profiles/profile?id=:id",
+      path: "/profiles/:id",
       //transitionsBuilder: TransitionsBuilders.fadeIn,
       durationInMilliseconds: 0,
     ),

@@ -59,7 +59,7 @@ Future<void> setupAuthListener() async {
       }
     } else {
       //print('main dart says not logged in');
-      _authService.signInAnonymously();
+      await _authService.signInAnonymously();
     }
   });
 }

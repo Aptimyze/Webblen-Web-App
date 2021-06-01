@@ -12,7 +12,6 @@ import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/auth/auth_service.dart';
 import 'package:webblen_web_app/services/bottom_sheets/custom_bottom_sheet_service.dart';
 import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
-import 'package:webblen_web_app/services/dynamic_links/dynamic_link_service.dart';
 import 'package:webblen_web_app/services/firestore/data/platform_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
 import 'package:webblen_web_app/services/location/location_js.dart';
@@ -34,7 +33,6 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> with ReactiveSer
   ReactiveContentFilterService _reactiveContentFilterService = locator<ReactiveContentFilterService>();
   CustomDialogService _customDialogService = locator<CustomDialogService>();
   CustomBottomSheetService customBottomSheetService = locator<CustomBottomSheetService>();
-  DynamicLinkService _dynamicLinkService = locator<DynamicLinkService>();
 
   ///INITIAL DATA
   InitErrorStatus initErrorStatus = InitErrorStatus.none;
@@ -116,7 +114,6 @@ class WebblenBaseViewModel extends StreamViewModel<WebblenUser> with ReactiveSer
     postPromo = await _platformDataService.getPostPromo();
     streamPromo = await _platformDataService.getStreamPromo();
     eventPromo = await _platformDataService.getEventPromo();
-    await _dynamicLinkService.handleDynamicLinks();
     getLocationDetails();
   }
 

@@ -2,13 +2,14 @@ import 'package:flutter/services.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
-import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/models/webblen_notification.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
+import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/firestore/data/event_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/notification_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
+import 'package:webblen_web_app/services/navigation/custom_navigation_service.dart';
 import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
 
 class EventBlockViewModel extends BaseViewModel {
@@ -16,7 +17,8 @@ class EventBlockViewModel extends BaseViewModel {
   UserDataService _userDataService = locator<UserDataService>();
   ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
   NotificationDataService _notificationDataService = locator<NotificationDataService>();
-  NavigationService _navigationService = locator<NavigationService>();
+  CustomNavigationService customNavigationService = locator<CustomNavigationService>();
+  CustomDialogService _customDialogService = locator<CustomDialogService>();
 
   ///USER DATA
   bool get isLoggedIn => _reactiveWebblenUserService.userLoggedIn;
@@ -63,33 +65,24 @@ class EventBlockViewModel extends BaseViewModel {
   }
 
   saveUnsaveEvent({required WebblenEvent event}) async {
-    if (savedEvent) {
-      savedEvent = false;
+    if (user.isValid()) {
+      if (savedEvent) {
+        savedEvent = false;
+      } else {
+        savedEvent = true;
+        WebblenNotification notification = WebblenNotification().generateContentSavedNotification(
+          receiverUID: event.authorID!,
+          senderUID: user.id!,
+          username: user.username!,
+          content: event,
+        );
+        _notificationDataService.sendNotification(notif: notification);
+      }
+      HapticFeedback.lightImpact();
+      notifyListeners();
+      await _eventDataService.saveUnsaveEvent(uid: user.id, eventID: event.id, savedEvent: savedEvent);
     } else {
-      savedEvent = true;
-      WebblenNotification notification = WebblenNotification().generateContentSavedNotification(
-        receiverUID: event.authorID!,
-        senderUID: user.id!,
-        username: user.username!,
-        content: event,
-      );
-      _notificationDataService.sendNotification(notif: notification);
+      _customDialogService.showLoginRequiredDialog(description: "You Must Login to Save Content on Webblen");
     }
-    HapticFeedback.lightImpact();
-    notifyListeners();
-    await _eventDataService.saveUnsaveEvent(uid: user.id, eventID: event.id, savedEvent: savedEvent);
-  }
-
-  ///NAVIGATION
-// replaceWithPage() {
-//   _navigationService.replaceWith(PageRouteName);
-// }
-//
-  navigateToEventView(String id) async {
-    _navigationService.navigateTo(Routes.EventDetailsViewRoute(id: id));
-  }
-
-  navigateToUserView(String? id) {
-    _navigationService.navigateTo(Routes.UserProfileView(id: id));
   }
 }

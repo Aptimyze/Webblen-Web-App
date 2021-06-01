@@ -8,13 +8,14 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
+import 'package:webblen_web_app/models/webblen_notification.dart';
 import 'package:webblen_web_app/models/webblen_ticket_distro.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
-import 'package:webblen_web_app/services/auth/auth_service.dart';
 import 'package:webblen_web_app/services/bottom_sheets/custom_bottom_sheet_service.dart';
 import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/email/email_service.dart';
 import 'package:webblen_web_app/services/firestore/data/event_data_service.dart';
+import 'package:webblen_web_app/services/firestore/data/notification_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/platform_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/ticket_distro_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
@@ -24,7 +25,7 @@ import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 import 'package:webblen_web_app/utils/custom_string_methods.dart';
 
 class TicketPurchaseViewModel extends ReactiveViewModel {
-  AuthService _authService = locator<AuthService>();
+  NotificationDataService _notificationDataService = locator<NotificationDataService>();
   EmailService _emailService = locator<EmailService>();
   NavigationService _navigationService = locator<NavigationService>();
   UserDataService _userDataService = locator<UserDataService>();
@@ -53,6 +54,10 @@ class TicketPurchaseViewModel extends ReactiveViewModel {
 
   ///HOST
   WebblenUser? host;
+
+  ///NOTIFS
+  WebblenNotification purchaseNotif = WebblenNotification();
+  WebblenNotification soldNotif = WebblenNotification();
 
   ///TICKET DATA
   WebblenEvent? event;
@@ -153,6 +158,20 @@ class TicketPurchaseViewModel extends ReactiveViewModel {
       customDialogService.showAuthDialog();
     }
 
+    //pre-generate notifications to send
+    purchaseNotif = WebblenNotification().generateTicketsPurchasedNotification(
+      eventID: event!.id!,
+      eventTitle: event!.title!,
+      uid: user.id!,
+      numberOfTickets: numOfTicketsToPurchase,
+    );
+    soldNotif = WebblenNotification().generateTicketsSoldNotification(
+      receiverUID: event!.authorID!,
+      senderUID: user.id!,
+      eventTitle: event!.title!,
+      numberOfTickets: numOfTicketsToPurchase,
+    );
+
     setBusy(false);
   }
 
@@ -196,6 +215,7 @@ class TicketPurchaseViewModel extends ReactiveViewModel {
             discountCodeDescription = " \$${(discountAmount).toStringAsFixed(2)} off ";
             ticketCharge = ticketCharge - discountAmount;
             if (ticketCharge <= 0) {
+              ticketCharge = 0;
               ticketFeeCharge = 0;
               taxCharge = (ticketCharge + ticketFeeCharge) * taxRate!;
               chargeAmount = ticketCharge + ticketFeeCharge + taxCharge;
@@ -298,12 +318,18 @@ class TicketPurchaseViewModel extends ReactiveViewModel {
 
   processPurchase() async {
     if (user.isValid()) {
+      processingPayment = true;
+      notifyListeners();
       if (chargeAmount <= 0) {
         if (emailAddress == null || !isValidEmail(emailAddress!)) {
           customDialogService.showErrorDialog(description: "Please provide a valid email address");
+          processingPayment = false;
+          notifyListeners();
           return;
         }
-        List purchasedTickets = await _ticketDistroDataService.completeTicketPurchase(user.id!, ticketsToPurchase, event!);
+        List purchasedTickets = await _ticketDistroDataService.completeTicketPurchase(uid: user.id!, event: event!, ticketsToPurchase: ticketsToPurchase);
+        await _notificationDataService.sendNotification(notif: purchaseNotif);
+        await _notificationDataService.sendNotification(notif: soldNotif);
         _emailService.sendTicketPurchaseConfirmationEmail(
           emailAddress: emailAddress!,
           eventTitle: event!.title!,
@@ -336,7 +362,9 @@ class TicketPurchaseViewModel extends ReactiveViewModel {
           email: emailAddress!,
         );
         if (status == "passed") {
-          List purchasedTickets = await _ticketDistroDataService.completeTicketPurchase(user.id!, ticketsToPurchase, event!);
+          await _notificationDataService.sendNotification(notif: purchaseNotif);
+          await _notificationDataService.sendNotification(notif: soldNotif);
+          List purchasedTickets = await _ticketDistroDataService.completeTicketPurchase(uid: user.id!, event: event!, ticketsToPurchase: ticketsToPurchase);
           _emailService.sendTicketPurchaseConfirmationEmail(
             emailAddress: emailAddress!,
             eventTitle: event!.title!,

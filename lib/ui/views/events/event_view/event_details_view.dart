@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked/stacked_annotations.dart';
+import 'package:stacked_hooks/stacked_hooks.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
@@ -12,6 +13,7 @@ import 'package:webblen_web_app/ui/widgets/common/custom_text_with_links.dart';
 import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_bottom_nav_bar.dart';
 import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_top_nav_bar/custom_top_nav_bar.dart';
 import 'package:webblen_web_app/ui/widgets/common/navigation/nav_bar/custom_top_nav_bar/custom_top_nav_bar_item.dart';
+import 'package:webblen_web_app/ui/widgets/notices/open_app/open_app_block_view.dart';
 import 'package:webblen_web_app/ui/widgets/tags/tag_button.dart';
 import 'package:webblen_web_app/ui/widgets/user/user_profile_pic.dart';
 
@@ -23,7 +25,96 @@ class EventDetailsView extends StatelessWidget {
 
   final FocusNode focusNode = FocusNode();
 
-  Widget sectionDivider({required String sectionName}) {
+  @override
+  Widget build(BuildContext context) {
+    return ViewModelBuilder<EventDetailsViewModel>.reactive(
+      onModelReady: (model) => model.initialize(id!),
+      viewModelBuilder: () => EventDetailsViewModel(),
+      builder: (context, model, child) => Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(48),
+          child: CustomTopNavBar(
+            navBarItems: [
+              CustomTopNavBarItem(
+                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(0),
+                iconData: FontAwesomeIcons.home,
+                isActive: false,
+              ),
+              CustomTopNavBarItem(
+                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(1),
+                iconData: FontAwesomeIcons.search,
+                isActive: false,
+              ),
+              CustomTopNavBarItem(
+                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(2),
+                iconData: FontAwesomeIcons.wallet,
+                isActive: false,
+              ),
+              CustomTopNavBarItem(
+                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(3),
+                iconData: FontAwesomeIcons.user,
+                isActive: false,
+              ),
+            ],
+          ),
+        ),
+        body: Container(
+          height: screenHeight(context),
+          color: appBackgroundColor,
+          child: model.isBusy
+              ? Container()
+              : Stack(
+                  children: [
+                    RefreshIndicator(
+                      backgroundColor: appBackgroundColor,
+                      onRefresh: () async {},
+                      child: ListView(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        controller: null,
+                        shrinkWrap: true,
+                        children: [
+                          Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              constraints: BoxConstraints(
+                                maxWidth: 500,
+                              ),
+                              child: Column(
+                                children: [
+                                  _Body(),
+                                  SizedBox(height: 50),
+                                  SizedBox(height: 80),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+        bottomNavigationBar: model.isBusy || model.event == null
+            ? Container()
+            : !model.event!.hasTickets! || model.eventPassed
+                ? _OpenAppNotice()
+                : CustomBottomActionBar(
+                    header: 'Tickets Available',
+                    subHeader: "on Webblen",
+                    buttonTitle: "Purchase Tickets",
+                    buttonAction: () => model.navigateToTicketView(),
+                  ),
+      ),
+    );
+  }
+}
+
+class _SectionDivider extends HookViewModelWidget<EventDetailsViewModel> {
+  final String sectionName;
+  _SectionDivider({required this.sectionName});
+
+  @override
+  Widget buildViewModelWidget(BuildContext context, EventDetailsViewModel model) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -42,8 +133,11 @@ class EventDetailsView extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget eventHead(EventDetailsViewModel model) {
+class _Head extends HookViewModelWidget<EventDetailsViewModel> {
+  @override
+  Widget buildViewModelWidget(BuildContext context, EventDetailsViewModel model) {
     return Padding(
       padding: EdgeInsets.fromLTRB(16.0, 0.0, 8.0, 4.0),
       child: Row(
@@ -93,16 +187,29 @@ class EventDetailsView extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget eventImg(String url) {
+class _OpenAppNotice extends HookViewModelWidget<EventDetailsViewModel> {
+  @override
+  Widget buildViewModelWidget(BuildContext context, EventDetailsViewModel model) {
+    return OpenAppBlock(content: model.event!);
+  }
+}
+
+class _Image extends HookViewModelWidget<EventDetailsViewModel> {
+  @override
+  Widget buildViewModelWidget(BuildContext context, EventDetailsViewModel model) {
     return FadeInImage.memoryNetwork(
-      image: url,
+      image: model.event!.imageURL!,
       fit: BoxFit.cover,
       placeholder: kTransparentImage,
     );
   }
+}
 
-  Widget eventTags(EventDetailsViewModel model) {
+class _Tags extends HookViewModelWidget<EventDetailsViewModel> {
+  @override
+  Widget buildViewModelWidget(BuildContext context, EventDetailsViewModel model) {
     return model.event!.tags == null || model.event!.tags!.isEmpty
         ? Container()
         : Container(
@@ -127,8 +234,11 @@ class EventDetailsView extends StatelessWidget {
             ),
           );
   }
+}
 
-  Widget eventDesc(EventDetailsViewModel model) {
+class _Description extends HookViewModelWidget<EventDetailsViewModel> {
+  @override
+  Widget buildViewModelWidget(BuildContext context, EventDetailsViewModel model) {
     List<TextSpan> linkifiedText = [];
 
     linkifiedText.addAll(linkify(text: model.event!.description!.trim(), fontSize: 16));
@@ -142,8 +252,11 @@ class EventDetailsView extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget eventDateAndTime(EventDetailsViewModel model) {
+class _DateAndTime extends HookViewModelWidget<EventDetailsViewModel> {
+  @override
+  Widget buildViewModelWidget(BuildContext context, EventDetailsViewModel model) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -159,8 +272,11 @@ class EventDetailsView extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget eventLocation(EventDetailsViewModel model) {
+class _Location extends HookViewModelWidget<EventDetailsViewModel> {
+  @override
+  Widget buildViewModelWidget(BuildContext context, EventDetailsViewModel model) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -191,8 +307,11 @@ class EventDetailsView extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget eventSocialAccounts(EventDetailsViewModel model) {
+class _SocialAccounts extends HookViewModelWidget<EventDetailsViewModel> {
+  @override
+  Widget buildViewModelWidget(BuildContext context, EventDetailsViewModel model) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -259,8 +378,11 @@ class EventDetailsView extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget eventBody(BuildContext context, EventDetailsViewModel model) {
+class _Body extends HookViewModelWidget<EventDetailsViewModel> {
+  @override
+  Widget buildViewModelWidget(BuildContext context, EventDetailsViewModel model) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 4.0),
       child: Column(
@@ -268,108 +390,26 @@ class EventDetailsView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           verticalSpaceSmall,
-          eventHead(model),
+          model.event!.hasTickets! && !model.eventPassed ? _OpenAppNotice() : Container(),
           verticalSpaceSmall,
-          eventImg(model.event!.imageURL!),
-          eventTags(model),
+          _Head(),
           verticalSpaceSmall,
-          sectionDivider(sectionName: "Details"),
-          eventDesc(model),
+          _Image(),
+          _Tags(),
+          verticalSpaceSmall,
+          _SectionDivider(sectionName: "Details"),
+          _Description(),
           verticalSpaceMedium,
-          sectionDivider(sectionName: "Date & Time"),
-          eventDateAndTime(model),
+          _SectionDivider(sectionName: "Date & Time"),
+          _DateAndTime(),
           verticalSpaceMedium,
-          sectionDivider(sectionName: "Location"),
-          eventLocation(model),
+          _SectionDivider(sectionName: "Location"),
+          _Location(),
           verticalSpaceMedium,
-          model.hasSocialAccounts ? sectionDivider(sectionName: "Social Accounts & Websites") : Container(),
-          eventSocialAccounts(model),
+          model.hasSocialAccounts ? _SectionDivider(sectionName: "Social Accounts & Websites") : Container(),
+          _SocialAccounts(),
           verticalSpaceMedium,
         ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ViewModelBuilder<EventDetailsViewModel>.reactive(
-      onModelReady: (model) => model.initialize(id!),
-      viewModelBuilder: () => EventDetailsViewModel(),
-      builder: (context, model, child) => Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(48),
-          child: CustomTopNavBar(
-            navBarItems: [
-              CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(0),
-                iconData: FontAwesomeIcons.home,
-                isActive: false,
-              ),
-              CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(1),
-                iconData: FontAwesomeIcons.search,
-                isActive: false,
-              ),
-              CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(2),
-                iconData: FontAwesomeIcons.wallet,
-                isActive: false,
-              ),
-              CustomTopNavBarItem(
-                onTap: () => model.webblenBaseViewModel.navigateToHomeWithIndex(3),
-                iconData: FontAwesomeIcons.user,
-                isActive: false,
-              ),
-            ],
-          ),
-        ),
-        body: Container(
-          height: screenHeight(context),
-          color: appBackgroundColor,
-          child: model.isBusy
-              ? Container()
-              : Stack(
-                  children: [
-                    RefreshIndicator(
-                      backgroundColor: appBackgroundColor,
-                      onRefresh: () async {},
-                      child: ListView(
-                        physics: AlwaysScrollableScrollPhysics(),
-                        controller: null,
-                        shrinkWrap: true,
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Container(
-                              constraints: BoxConstraints(
-                                maxWidth: 500,
-                              ),
-                              child: Column(
-                                children: [
-                                  eventBody(context, model),
-                                  SizedBox(height: 50),
-                                  SizedBox(height: 80),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-        ),
-        bottomNavigationBar: model.isBusy || model.event == null || !model.event!.hasTickets! || model.eventPassed
-            ? Container(
-                height: 0,
-                width: 0,
-              )
-            : CustomBottomActionBar(
-                header: 'Tickets Available',
-                subHeader: "on Webblen",
-                buttonTitle: "Purchase Tickets",
-                buttonAction: () => model.navigateToTicketView(),
-              ),
       ),
     );
   }

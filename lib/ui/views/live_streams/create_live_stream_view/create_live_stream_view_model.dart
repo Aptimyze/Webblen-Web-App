@@ -5,7 +5,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
@@ -34,17 +33,16 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
   CustomDialogService _customDialogService = locator<CustomDialogService>();
   NavigationService? _navigationService = locator<NavigationService>();
   PlatformDataService? _platformDataService = locator<PlatformDataService>();
-  UserDataService? _userDataService = locator<UserDataService>();
+  UserDataService _userDataService = locator<UserDataService>();
   LocationService? _locationService = locator<LocationService>();
   FirestoreStorageService? _firestoreStorageService = locator<FirestoreStorageService>();
-  LiveStreamDataService? _liveStreamDataService = locator<LiveStreamDataService>();
+  LiveStreamDataService _liveStreamDataService = locator<LiveStreamDataService>();
   BottomSheetService? _bottomSheetService = locator<BottomSheetService>();
   TicketDistroDataService? _ticketDistroDataService = locator<TicketDistroDataService>();
   StripeConnectAccountService? _stripeConnectAccountService = locator<StripeConnectAccountService>();
   WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();
   ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
   ReactiveFileUploaderService _reactiveFileUploaderService = locator<ReactiveFileUploaderService>();
-  late SharedPreferences _sharedPreferences;
 
   ///STREAM DETAILS CONTROLLERS
   TextEditingController tagTextController = TextEditingController();
@@ -55,7 +53,15 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
   TextEditingController instaUsernameTextController = TextEditingController();
   TextEditingController fbUsernameTextController = TextEditingController();
   TextEditingController twitterUsernameTextController = TextEditingController();
+  TextEditingController twitchTextController = TextEditingController();
+  TextEditingController youtubeTextController = TextEditingController();
   TextEditingController websiteTextController = TextEditingController();
+  TextEditingController fbStreamKeyTextController = TextEditingController();
+  TextEditingController twitchStreamKeyTextController = TextEditingController();
+  TextEditingController youtubeStreamKeyTextController = TextEditingController();
+  TextEditingController fbStreamURLTextController = TextEditingController();
+  TextEditingController twitchStreamURLTextController = TextEditingController();
+  TextEditingController youtubeStreamURLTextController = TextEditingController();
 
   ///TICKET DETAILS CONTROLLERS
   TextEditingController ticketNameTextController = TextEditingController();
@@ -104,9 +110,7 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
   ///STREAM DATA
   String? id;
   bool isEditing = false;
-  int? ticketToEditIndex;
-  int? feeToEditIndex;
-  int? discountToEditIndex;
+  bool isDuplicate = false;
 
   WebblenLiveStream stream = WebblenLiveStream();
 
@@ -143,6 +147,9 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
   String? discountCodeName;
   String? discountCodeQuantity;
   String? discountCodePercentage;
+  int? ticketToEditIndex;
+  int? feeToEditIndex;
+  int? discountToEditIndex;
 
   ///WEBBLEN CURRENCY
   double? newStreamTaxRate;
@@ -155,8 +162,6 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
   ///INITIALIZE
   initialize({String? streamID}) async {
     setBusy(true);
-
-    _sharedPreferences = await SharedPreferences.getInstance();
 
     //generate new stream
     stream = WebblenLiveStream().generateNewWebblenLiveStream(hostID: user.id!, suggestedUIDs: user.followers == null ? [] : user.followers!);
@@ -171,30 +176,27 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
     notifyListeners();
 
     //set previously used social accounts
-    setPreviousUsernameData();
+    setPreviousSocialData();
 
     id = streamID;
 
-    //check if editing existing post
-    if (id != "new") {
-      WebblenLiveStream existingStream = await _liveStreamDataService!.getStreamForEditingByID(id);
+    //check for promos & if editing/duplicating existing stream
+    if (streamID!.contains("duplicate_")) {
+      String id = streamID.replaceAll("duplicate_", "");
+      stream = await _liveStreamDataService.getStreamByID(id);
+      if (stream.isValid()) {
+        stream.id = getRandomString(32);
+        setPreviousStreamData();
+        stream.attendees = {};
+        stream.savedBy = [];
+        isDuplicate = true;
+      }
+    } else if (id != "new") {
+      WebblenLiveStream existingStream = await _liveStreamDataService.getStreamForEditingByID(id);
       if (existingStream.isValid()) {
         stream = existingStream;
-        titleTextController.text = stream.title == null ? "" : stream.title!;
-        descTextController.text = stream.description == null ? "" : stream.description!;
-        startDateTextController.text = stream.startDate!;
-        endDateTextController.text = stream.endDate!;
-        fbUsernameTextController.text = stream.fbUsername == null ? "" : stream.fbUsername!;
-        instaUsernameTextController.text = stream.instaUsername == null ? "" : stream.instaUsername!;
-        twitterUsernameTextController.text = stream.twitterUsername == null ? "" : stream.twitterUsername!;
-        websiteTextController.text = stream.website == null ? "" : stream.website!;
-        selectedStartDate = dateFormatter.parse(stream.startDate!);
-        selectedEndDate = dateFormatter.parse(stream.endDate!);
+        setPreviousStreamData();
         isEditing = true;
-        //check if editing with ticket distro
-        if (stream.hasTickets!) {
-          ticketDistro = await _ticketDistroDataService!.getTicketDistroByID(stream.id);
-        }
       }
     }
 
@@ -212,27 +214,40 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
   }
 
   ///SHARE PREF
-  setPreviousUsernameData() {
-    String? prevFbUsername = _sharedPreferences.getString('fbUsername');
-    String? prevInstaUsername = _sharedPreferences.getString('instaUsername');
-    String? prevTwitterUsername = _sharedPreferences.getString('twitterUsername');
-    String? prevWebsite = _sharedPreferences.getString('website');
-    if (prevFbUsername != null) {
-      fbUsernameTextController.text = prevFbUsername;
-      stream.fbUsername = prevFbUsername;
-    }
-    if (prevInstaUsername != null) {
-      instaUsernameTextController.text = prevInstaUsername;
-      stream.instaUsername = prevInstaUsername;
-    }
-    if (prevTwitterUsername != null) {
-      twitterUsernameTextController.text = prevTwitterUsername;
-      stream.twitterUsername = prevTwitterUsername;
-    }
-    if (prevWebsite != null) {
-      websiteTextController.text = prevWebsite;
-      stream.website = prevWebsite;
-    }
+  setPreviousSocialData() async {
+    fbUsernameTextController.text = await _userDataService.getCurrentFbUsername(user.id!);
+    instaUsernameTextController.text = await _userDataService.getCurrentInstaUsername(user.id!);
+    twitterUsernameTextController.text = await _userDataService.getCurrentTwitterUsername(user.id!);
+    websiteTextController.text = await _userDataService.getCurrentUserWebsite(user.id!);
+    twitchTextController.text = await _userDataService.getCurrentTwitchUsername(user.id!);
+    youtubeTextController.text = await _userDataService.getCurrentYoutube(user.id!);
+    fbStreamKeyTextController.text = await _userDataService.getCurrentUserFBStreamKey(user.id!);
+    twitchStreamKeyTextController.text = await _userDataService.getCurrentUserTwitchStreamKey(user.id!);
+    youtubeStreamKeyTextController.text = await _userDataService.getCurrentUserYoutubeStreamKey(user.id!);
+    fbStreamURLTextController.text = await _userDataService.getCurrentUserFBStreamURL(user.id!);
+    twitchStreamURLTextController.text = await _userDataService.getCurrentUserTwitchStreamURL(user.id!);
+    youtubeStreamURLTextController.text = await _userDataService.getCurrentUserYoutubeStreamURL(user.id!);
+  }
+
+  setPreviousStreamData() {
+    titleTextController.text = stream.title!;
+    descTextController.text = stream.description!;
+    startDateTextController.text = stream.startDate!;
+    endDateTextController.text = stream.endDate!;
+    fbUsernameTextController.text = stream.fbUsername == null ? "" : stream.fbUsername!;
+    instaUsernameTextController.text = stream.instaUsername == null ? "" : stream.instaUsername!;
+    twitterUsernameTextController.text = stream.twitterUsername == null ? "" : stream.twitterUsername!;
+    websiteTextController.text = stream.website == null ? "" : stream.website!;
+    twitchTextController.text = stream.twitchUsername == null ? "" : stream.twitchUsername!;
+    youtubeTextController.text = stream.youtube == null ? "" : stream.youtube!;
+    fbStreamKeyTextController.text = stream.fbStreamKey == null ? "" : stream.fbStreamKey!;
+    twitchStreamKeyTextController.text = stream.twitchStreamKey == null ? "" : stream.twitchStreamKey!;
+    youtubeStreamKeyTextController.text = stream.youtubeStreamKey == null ? "" : stream.youtubeStreamKey!;
+    fbStreamURLTextController.text = stream.fbStreamURL == null ? "" : stream.fbStreamURL!;
+    twitchStreamURLTextController.text = stream.twitchStreamURL == null ? "" : stream.twitchStreamURL!;
+    youtubeStreamURLTextController.text = stream.youtubeStreamURL == null ? "" : stream.youtubeStreamURL!;
+    selectedStartDate = dateFormatter.parse(stream.startDate!);
+    selectedEndDate = dateFormatter.parse(stream.endDate!);
   }
 
   ///STREAM IMAGE
@@ -569,8 +584,48 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
     notifyListeners();
   }
 
+  setTwitchUsername(String val) {
+    stream.twitchUsername = val.trim();
+    notifyListeners();
+  }
+
+  setYoutube(String val) {
+    stream.youtube = val.trim();
+    notifyListeners();
+  }
+
   setWebsite(String val) {
     stream.website = val.trim();
+    notifyListeners();
+  }
+
+  setYoutubeStreamURL(String val) {
+    stream.youtubeStreamURL = val.trim();
+    notifyListeners();
+  }
+
+  setYoutubeStreamKey(String val) {
+    stream.youtubeStreamKey = val.trim();
+    notifyListeners();
+  }
+
+  setTwitchStreamURL(String val) {
+    stream.twitchStreamURL = val.trim();
+    notifyListeners();
+  }
+
+  setTwitchStreamKey(String val) {
+    stream.twitchStreamKey = val.trim();
+    notifyListeners();
+  }
+
+  setFBStreamURL(String val) {
+    stream.fbStreamURL = val.trim();
+    notifyListeners();
+  }
+
+  setFBStreamKey(String val) {
+    stream.fbStreamKey = val.trim();
     notifyListeners();
   }
 
@@ -708,9 +763,9 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
     //upload stream data
     var uploadResult;
     if (isEditing) {
-      uploadResult = await _liveStreamDataService!.updateStream(stream: stream);
+      uploadResult = await _liveStreamDataService.updateStream(stream: stream);
     } else {
-      uploadResult = await _liveStreamDataService!.createStream(stream: stream);
+      uploadResult = await _liveStreamDataService.createStream(stream: stream);
     }
 
     if (uploadResult is String) {
@@ -721,12 +776,45 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
     }
 
     //cache username data
-    await _sharedPreferences.setString('fbUsername', stream.fbUsername == null ? "" : stream.fbUsername!);
-    await _sharedPreferences.setString('instaUsername', stream.instaUsername == null ? "" : stream.instaUsername!);
-    await _sharedPreferences.setString('twitterUsername', stream.twitterUsername == null ? "" : stream.twitterUsername!);
-    await _sharedPreferences.setString('website', stream.website == null ? "" : stream.website!);
+    await saveSocialData();
 
     return success;
+  }
+
+  saveSocialData() async {
+    if (isValidString(stream.fbUsername)) {
+      await _userDataService.updateFbUsername(id: stream.hostID!, val: stream.fbUsername!);
+    }
+    if (isValidString(stream.instaUsername)) {
+      await _userDataService.updateInstaUsername(id: stream.hostID!, val: stream.instaUsername!);
+    }
+    if (isValidString(stream.twitterUsername)) {
+      await _userDataService.updateTwitterUsername(id: stream.hostID!, val: stream.twitterUsername!);
+    }
+    if (isValidString(stream.twitchUsername)) {
+      await _userDataService.updateTwitchUsername(id: stream.hostID!, val: stream.twitchUsername!);
+    }
+    if (isValidString(stream.youtube)) {
+      await _userDataService.updateYoutube(id: stream.hostID!, val: stream.youtube!);
+    }
+    if (isValidString(stream.youtubeStreamURL)) {
+      await _userDataService.updateYoutubeStreamURL(id: stream.hostID!, val: stream.youtubeStreamURL!);
+    }
+    if (isValidString(stream.youtubeStreamKey)) {
+      await _userDataService.updateYoutubeStreamKey(id: stream.hostID!, val: stream.youtubeStreamKey!);
+    }
+    if (isValidString(stream.twitchStreamURL)) {
+      await _userDataService.updateTwitchStreamURL(id: stream.hostID!, val: stream.twitchStreamURL!);
+    }
+    if (isValidString(stream.twitchStreamKey)) {
+      await _userDataService.updateTwitchStreamKey(id: stream.hostID!, val: stream.twitchStreamKey!);
+    }
+    if (isValidString(stream.fbStreamURL)) {
+      await _userDataService.updateFBStreamURL(id: stream.hostID!, val: stream.fbStreamURL!);
+    }
+    if (isValidString(stream.fbStreamKey)) {
+      await _userDataService.updateFBStreamKey(id: stream.hostID!, val: stream.fbStreamKey!);
+    }
   }
 
   submitForm() async {
@@ -791,9 +879,9 @@ class CreateLiveStreamViewModel extends ReactiveViewModel {
   displayUploadSuccessBottomSheet() async {
     //deposit and/or withdraw webblen & promo
     if (promo != null) {
-      _userDataService!.depositWebblen(uid: user.id, amount: promo!);
+      _userDataService.depositWebblen(uid: user.id, amount: promo!);
     }
-    _userDataService!.withdrawWebblen(uid: user.id, amount: newStreamTaxRate!);
+    _userDataService.withdrawWebblen(uid: user.id, amount: newStreamTaxRate!);
 
     //display success
     var sheetResponse = await _bottomSheetService!.showCustomSheet(

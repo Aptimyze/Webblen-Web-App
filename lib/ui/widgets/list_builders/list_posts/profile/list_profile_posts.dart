@@ -19,83 +19,86 @@ class ListProfilePosts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<ListProfilePostsModel>.reactive(
-      onModelReady: (model) => model.initialize(
-        uid: id,
-        embeddedScrollController: scrollController == null ? null : scrollController,
-      ),
-      viewModelBuilder: () => ListProfilePostsModel(),
-      builder: (context, model, child) => model.isBusy
-          ? Container()
-          : model.dataResults.isEmpty
-          ? isCurrentUser
-              ? ZeroStateView(
-                  imageAssetName: "umbrella_chair",
-                  imageSize: 200,
-                  header: "You Do Not Have Any Posts",
-                  subHeader: "Create a New Post to Share with the Community",
-                  mainActionButtonTitle: "Create Post",
-                  mainAction: () => model.webblenBaseViewModel!.navigateToCreatePostPage(
-                    id: null,
-                    addPromo: false,
-                  ),
-                  secondaryActionButtonTitle: null,
-                  secondaryAction: null,
-                  refreshData: model.refreshData,
-                  scrollController: scrollController == null ? model.scrollController : scrollController,
-                )
-              : ZeroStateView(
-                  scrollController: scrollController == null ? model.scrollController : scrollController,
-                  imageAssetName: "umbrella_chair",
-                  imageSize: 200,
-                  header: "This Account Has No Posts",
-                  subHeader: "Check Back Later",
-                  mainActionButtonTitle: "",
-                  mainAction: null,
-                  secondaryActionButtonTitle: null,
-                  secondaryAction: null,
-                  refreshData: model.refreshData,
-                )
-          : Container(
-              height: screenHeight(context),
-              color: appBackgroundColor,
-              child: RefreshIndicator(
-                onRefresh: model.refreshData,
-                child: ListView.builder(
-                  cacheExtent: 8000,
-                  controller: scrollController == null ? model.scrollController : scrollController,
-                  key: PageStorageKey(model.listKey),
-                  addAutomaticKeepAlives: true,
-                  shrinkWrap: true,
-                  itemCount: model.dataResults.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index < model.dataResults.length) {
-                      WebblenPost post;
-                      post = WebblenPost.fromMap(model.dataResults[index].data()!);
-                      return post.imageURL == null
-                          ? PostTextBlockView(
-                              post: post,
-                              showPostOptions: (post) => model.showContentOptions(post),
-                            )
-                          : PostImgBlockView(
-                              post: post,
-                              showPostOptions: (post) => model.showContentOptions(post),
-                            );
-                    } else {
-                      if (model.moreDataAvailable) {
-                        WidgetsBinding.instance!.addPostFrameCallback((_) {
-                          model.loadAdditionalData();
-                        });
-                        return Align(
-                          alignment: Alignment.center,
-                          child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
-                        );
-                      }
-                      return Container();
-                    }
-                  },
-                ),
-              ),
+        onModelReady: (model) => model.initialize(
+              uid: id,
+              embeddedScrollController: scrollController == null ? null : scrollController,
             ),
-    );
+        viewModelBuilder: () => ListProfilePostsModel(),
+        builder: (context, model, child) => model.isBusy
+            ? Container()
+            : model.dataResults.isEmpty
+                ? isCurrentUser
+                    ? ZeroStateView(
+                        imageAssetName: "umbrella_chair",
+                        imageSize: 200,
+                        header: "You Do Not Have Any Posts",
+                        subHeader: "Create a New Post to Share with the Community",
+                        mainActionButtonTitle: "Create Post",
+                        mainAction: () => model.webblenBaseViewModel!.navigateToCreatePostPage(
+                          id: null,
+                          addPromo: false,
+                        ),
+                        secondaryActionButtonTitle: null,
+                        secondaryAction: null,
+                        refreshData: model.refreshData,
+                        scrollController: scrollController == null ? model.scrollController : scrollController,
+                      )
+                    : ZeroStateView(
+                        scrollController: scrollController == null ? model.scrollController : scrollController,
+                        imageAssetName: "umbrella_chair",
+                        imageSize: 200,
+                        header: "This Account Has No Posts",
+                        subHeader: "Check Back Later",
+                        mainActionButtonTitle: "",
+                        mainAction: null,
+                        secondaryActionButtonTitle: null,
+                        secondaryAction: null,
+                        refreshData: model.refreshData,
+                      )
+                : Container(
+                    height: screenHeight(context),
+                    color: appBackgroundColor,
+                    child: RefreshIndicator(
+                      onRefresh: model.refreshData,
+                      backgroundColor: appBackgroundColor,
+                      color: appFontColorAlt(),
+                      child: SingleChildScrollView(
+                        controller: scrollController == null ? model.scrollController : scrollController,
+                        child: ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          key: PageStorageKey(model.listKey),
+                          addAutomaticKeepAlives: true,
+                          shrinkWrap: true,
+                          itemCount: model.dataResults.length + 1,
+                          itemBuilder: (context, index) {
+                            if (index < model.dataResults.length) {
+                              WebblenPost post;
+                              post = WebblenPost.fromMap(model.dataResults[index].data()!);
+                              return post.imageURL == null
+                                  ? PostTextBlockView(
+                                      post: post,
+                                      showPostOptions: (post) => model.showContentOptions(post),
+                                    )
+                                  : PostImgBlockView(
+                                      post: post,
+                                      showPostOptions: (post) => model.showContentOptions(post),
+                                    );
+                            } else {
+                              if (model.moreDataAvailable) {
+                                WidgetsBinding.instance!.addPostFrameCallback((_) {
+                                  model.loadAdditionalData();
+                                });
+                                return Align(
+                                  alignment: Alignment.center,
+                                  child: CustomCircleProgressIndicator(size: 10, color: appActiveColor()),
+                                );
+                              }
+                              return Container();
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ));
   }
 }
