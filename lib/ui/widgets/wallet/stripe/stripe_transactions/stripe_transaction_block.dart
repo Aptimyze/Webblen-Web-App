@@ -31,7 +31,7 @@ class StripeTransactionBlock extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           CustomText(
-            text: transaction.description,
+            text: transaction.description ?? "",
             textAlign: TextAlign.left,
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -49,7 +49,7 @@ class StripeTransactionBlock extends StatelessWidget {
                 color: appFontColorAlt(),
               ),
               CustomText(
-                text: transaction.description!.toLowerCase().contains("payout") ? "- ${transaction.value}" : transaction.value,
+                text: transaction.description!.toLowerCase().contains("payout") ? "- ${transaction.value ?? "\$0.00"}" : transaction.value ?? "\$0.00",
                 textAlign: TextAlign.right,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,

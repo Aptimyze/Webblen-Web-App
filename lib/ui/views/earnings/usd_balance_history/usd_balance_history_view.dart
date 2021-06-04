@@ -68,8 +68,7 @@ class USDBalanceHistoryView extends StatelessWidget {
                   SizedBox(height: 4),
                   _SearchBar(),
                   SizedBox(height: 4),
-                  Container(
-                    height: screenHeight(context),
+                  Expanded(
                     child: ListStripeTransactions(searchFilter: model.searchTerm),
                   ),
                 ],
