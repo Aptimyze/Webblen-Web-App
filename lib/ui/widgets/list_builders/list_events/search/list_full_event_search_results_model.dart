@@ -1,16 +1,11 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:stacked/stacked.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
-import 'package:webblen_web_app/models/webblen_event_ticket.dart';
-import 'package:webblen_web_app/models/webblen_live_stream.dart';
 import 'package:webblen_web_app/services/algolia/algolia_search_service.dart';
 import 'package:webblen_web_app/services/bottom_sheets/custom_bottom_sheet_service.dart';
-import 'package:webblen_web_app/services/firestore/data/live_stream_data_service.dart';
-import 'package:webblen_web_app/services/reactive/content_filter/reactive_content_filter_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 import 'package:webblen_web_app/utils/custom_string_methods.dart';
 
@@ -52,7 +47,7 @@ class ListFullEventSearchResultsModel extends BaseViewModel {
   }
 
   loadData() async {
-    dataResults = await _algoliaSearchService.queryEvents(searchTerm: searchTerm, resultsLimit: resultsLimit);
+    dataResults = await _algoliaSearchService.queryEvents(searchTerm: searchTerm ?? "", resultsLimit: resultsLimit);
     resultsPageNum += 1;
     notifyListeners();
   }
@@ -64,7 +59,7 @@ class ListFullEventSearchResultsModel extends BaseViewModel {
     loadingAdditionalData = true;
     notifyListeners();
     List<WebblenEvent> newResults = await _algoliaSearchService.queryAdditionalEvents(
-      searchTerm: searchTerm,
+      searchTerm: searchTerm ?? "",
       resultsLimit: resultsLimit,
       pageNum: resultsPageNum,
     );

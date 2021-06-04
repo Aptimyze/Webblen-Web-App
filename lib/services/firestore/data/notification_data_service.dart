@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/webblen_notification.dart';
+import 'package:webblen_web_app/utils/custom_string_methods.dart';
 
 class NotificationDataService {
   SnackbarService? _snackbarService = locator<SnackbarService>();
@@ -30,7 +31,7 @@ class NotificationDataService {
   Future sendNotification({
     required WebblenNotification notif,
   }) async {
-    String notifID = notif.receiverUID! + "-" + notif.timePostedInMilliseconds.toString();
+    String notifID = notif.receiverUID! + "-" + notif.timePostedInMilliseconds.toString() + getRandomString(5);
     await notifsRef.doc(notifID).set(notif.toMap()).catchError((e) {
       return e.message;
     });

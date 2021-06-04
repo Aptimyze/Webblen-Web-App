@@ -47,7 +47,7 @@ class ListFullPostSearchResultsModel extends BaseViewModel {
   }
 
   loadData() async {
-    dataResults = await _algoliaSearchService.queryPosts(searchTerm: searchTerm, resultsLimit: resultsLimit);
+    dataResults = await _algoliaSearchService.queryPosts(searchTerm: searchTerm ?? "", resultsLimit: resultsLimit);
     resultsPageNum += 1;
     notifyListeners();
   }
@@ -59,7 +59,7 @@ class ListFullPostSearchResultsModel extends BaseViewModel {
     loadingAdditionalData = true;
     notifyListeners();
     List<WebblenPost> newResults = await _algoliaSearchService.queryAdditionalPosts(
-      searchTerm: searchTerm,
+      searchTerm: searchTerm ?? "",
       resultsLimit: resultsLimit,
       pageNum: resultsPageNum,
     );

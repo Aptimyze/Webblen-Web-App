@@ -4,8 +4,10 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
+import 'package:webblen_web_app/models/webblen_notification.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
 import 'package:webblen_web_app/services/firestore/data/live_stream_data_service.dart';
+import 'package:webblen_web_app/services/firestore/data/notification_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
 import 'package:webblen_web_app/services/navigation/custom_navigation_service.dart';
 import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
@@ -16,6 +18,11 @@ class LiveStreamBlockViewModel extends BaseViewModel {
   UserDataService _userDataService = locator<UserDataService>();
   ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
   CustomNavigationService customNavigationService = locator<CustomNavigationService>();
+  NotificationDataService _notificationDataService = locator<NotificationDataService>();
+
+  ///USER DATA
+  bool get isLoggedIn => _reactiveWebblenUserService.userLoggedIn;
+  WebblenUser get user => _reactiveWebblenUserService.user;
 
   bool isLive = false;
   bool savedStream = false;
@@ -56,15 +63,22 @@ class LiveStreamBlockViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  saveUnsaveStream({String? streamID}) async {
+  saveUnsaveStream({required WebblenLiveStream stream}) async {
     if (savedStream) {
       savedStream = false;
     } else {
       savedStream = true;
+      WebblenNotification notification = WebblenNotification().generateContentSavedNotification(
+        receiverUID: stream.hostID!,
+        senderUID: user.id!,
+        username: user.username!,
+        content: stream,
+      );
+      _notificationDataService.sendNotification(notif: notification);
     }
     HapticFeedback.lightImpact();
     notifyListeners();
-    await _liveStreamDataService.saveUnsaveStream(uid: _reactiveWebblenUserService.user.id, streamID: streamID, savedStream: savedStream);
+    await _liveStreamDataService.saveUnsaveStream(uid: _reactiveWebblenUserService.user.id, streamID: stream.id!, savedStream: savedStream);
   }
 
   ///NAVIGATION

@@ -5,15 +5,15 @@ import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/models/webblen_event_ticket.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
-import 'package:webblen_web_app/services/firestore/data/event_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/ticket_distro_data_service.dart';
+import 'package:webblen_web_app/services/navigation/custom_navigation_service.dart';
 import 'package:webblen_web_app/services/reactive/webblen_user/reactive_webblen_user_service.dart';
 import 'package:webblen_web_app/services/share/share_service.dart';
 import 'package:webblen_web_app/ui/views/base/webblen_base_view_model.dart';
 
 class MyTicketsViewModel extends ReactiveViewModel {
   WebblenBaseViewModel webblenBaseViewModel = locator<WebblenBaseViewModel>();
-  EventDataService _eventDataService = locator<EventDataService>();
+  CustomNavigationService customNavigationService = locator<CustomNavigationService>();
   NavigationService _navigationService = locator<NavigationService>();
   TicketDistroDataService _ticketDistroDataService = locator<TicketDistroDataService>();
   ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
@@ -23,9 +23,13 @@ class MyTicketsViewModel extends ReactiveViewModel {
   bool get isLoggedIn => _reactiveWebblenUserService.userLoggedIn;
   WebblenUser get user => _reactiveWebblenUserService.user;
 
+  ///EVENT & TICKET DATA
   List<WebblenEvent> events = [];
   List loadedEvents = [];
   Map<String, dynamic> ticsPerEvent = {};
+
+  ///FILTER DATA
+  String searchTerm = "";
 
   @override
   List<ReactiveServiceMixin> get reactiveServices => [_reactiveWebblenUserService];
@@ -69,5 +73,10 @@ class MyTicketsViewModel extends ReactiveViewModel {
 
   navigateToEventTickets({required String eventID}) {
     _navigationService.navigateTo(Routes.EventTicketsViewRoute(id: eventID));
+  }
+
+  updateSearchTerm(String val) {
+    searchTerm = val.toLowerCase();
+    notifyListeners();
   }
 }

@@ -63,7 +63,7 @@ class WebblenNotification {
       type: NotificationType.follower,
       header: 'You have a new follower',
       subHeader: '$followerUsername has started following you',
-      additionalData: null,
+      additionalData: {'id': senderUID},
       timePostedInMilliseconds: DateTime.now().millisecondsSinceEpoch,
       expDateInMilliseconds: DateTime.now().millisecondsSinceEpoch + 7884000000, //Expiration Date Set 3 Months from Now
       read: false,
@@ -322,7 +322,7 @@ class WebblenNotification {
       type: NotificationType.webblenReceived,
       header: '$senderUsername sent you WBLN',
       subHeader: '$amountReceived WBLN has been deposited in your wallet',
-      additionalData: null,
+      additionalData: {'id': ''},
       timePostedInMilliseconds: DateTime.now().millisecondsSinceEpoch,
       expDateInMilliseconds: DateTime.now().millisecondsSinceEpoch + 7884000000, //Expiration Date Set 3 Months from Now
       read: false,
@@ -343,7 +343,7 @@ class WebblenNotification {
       type: NotificationType.tickets,
       header: "Tickets Purchased!",
       subHeader: "You've purchased $numberOfTickets ticket(s) for the event: $eventTitle",
-      additionalData: null,
+      additionalData: {'id': ''},
       timePostedInMilliseconds: DateTime.now().millisecondsSinceEpoch,
       expDateInMilliseconds: DateTime.now().millisecondsSinceEpoch + 7884000000, //Expiration Date Set 3 Months from Now
       read: false,
@@ -364,7 +364,7 @@ class WebblenNotification {
       type: NotificationType.earnings,
       header: "Tickets Sold!",
       subHeader: "You've sold $numberOfTickets ticket(s) for your event: $eventTitle",
-      additionalData: null,
+      additionalData: {'id': ''},
       timePostedInMilliseconds: DateTime.now().millisecondsSinceEpoch,
       expDateInMilliseconds: DateTime.now().millisecondsSinceEpoch + 7884000000, //Expiration Date Set 3 Months from Now
       read: false,

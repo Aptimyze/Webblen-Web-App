@@ -8,7 +8,7 @@ import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 
 class UserDataService {
   CollectionReference userRef = FirebaseFirestore.instance.collection('webblen_users');
-  CollectionReference postsRef = FirebaseFirestore.instance.collection('posts');
+  CollectionReference postsRef = FirebaseFirestore.instance.collection('webblen_posts');
   SnackbarService? _snackbarService = locator<SnackbarService>();
   CustomDialogService _customDialogService = locator<CustomDialogService>();
 

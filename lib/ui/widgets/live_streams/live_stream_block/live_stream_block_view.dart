@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/extensions/hover_extensions.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
@@ -85,7 +84,7 @@ class LiveStreamBlockView extends StatelessWidget {
                                 size: 18,
                                 color: model.savedStream ? appSavedContentColor() : Colors.white54,
                               ),
-                              onPressed: () => model.saveUnsaveStream(streamID: stream.id),
+                              onPressed: () => model.saveUnsaveStream(stream: stream),
                             ),
                           ],
                         ),
@@ -116,41 +115,41 @@ class LiveStreamBlockView extends StatelessWidget {
                           ),
                           model.isLive
                               ? Container(
-                            padding: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: appActiveColor(),
-                              borderRadius: BorderRadius.all(Radius.circular(8)),
-                            ),
-                            child: Center(
-                              child: Text(
-                                "Happening Now",
-                                style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          )
+                                  padding: EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: appActiveColor(),
+                                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "Happening Now",
+                                      style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                )
                               : Container(
-                            child: Row(
-                              children: <Widget>[
-                                Icon(
-                                  Icons.access_time,
-                                  size: 12,
-                                  color: Colors.white,
+                                  child: Row(
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.access_time,
+                                        size: 12,
+                                        color: Colors.white,
+                                      ),
+                                      SizedBox(
+                                        width: 8,
+                                      ),
+                                      CustomText(
+                                        text: "${stream.startDate!.substring(0, stream.startDate!.length - 6)} - ${stream.startTime} ${stream.timezone}",
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                CustomText(
-                                  text: "${stream.startDate!.substring(0, stream.startDate!.length - 6)} - ${stream.startTime} ${stream.timezone}",
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                              ],
-                            ),
-                          ),
                         ],
                       ),
                       verticalSpaceSmall,
@@ -170,26 +169,26 @@ class LiveStreamBlockView extends StatelessWidget {
     return stream.tags == null || stream.tags!.isEmpty
         ? Container()
         : Container(
-      margin: EdgeInsets.only(top: 4, bottom: 8, right: 16),
-      height: 30,
-      child: ListView.builder(
-        addAutomaticKeepAlives: true,
-        physics: NeverScrollableScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        padding: EdgeInsets.only(
-          top: 4.0,
-          bottom: 4.0,
-        ),
-        itemCount: stream.tags!.length,
-        itemBuilder: (context, index) {
-          return TagButton(
-            onTap: null,
-            tag: stream.tags![index],
+            margin: EdgeInsets.only(top: 4, bottom: 8, right: 16),
+            height: 30,
+            child: ListView.builder(
+              addAutomaticKeepAlives: true,
+              physics: NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              padding: EdgeInsets.only(
+                top: 4.0,
+                bottom: 4.0,
+              ),
+              itemCount: stream.tags!.length,
+              itemBuilder: (context, index) {
+                return TagButton(
+                  onTap: null,
+                  tag: stream.tags![index],
+                );
+              },
+            ),
           );
-        },
-      ),
-    );
   }
 
   @override
@@ -200,24 +199,23 @@ class LiveStreamBlockView extends StatelessWidget {
       builder: (context, model, child) => model.isBusy
           ? Container()
           : Align(
-        alignment: Alignment.center,
-        child:  Container(
-          constraints: BoxConstraints(
-            maxWidth: 500,
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          child: GestureDetector(
-            onDoubleTap: () => model.saveUnsaveStream(streamID: stream.id),
-            onLongPress: () {
-              HapticFeedback.lightImpact();
-              showStreamOptions(stream);
-            },
-            onTap: () => model.customNavigationService.navigateToLiveStreamView(stream.id!),
-            child: streamBody(context, model),
-          ),
-        ),
-      ).showCursorOnHover,
+              alignment: Alignment.center,
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: 500,
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                child: GestureDetector(
+                  onDoubleTap: () => model.saveUnsaveStream(stream: stream),
+                  onLongPress: () {
+                    HapticFeedback.lightImpact();
+                    showStreamOptions(stream);
+                  },
+                  onTap: () => model.customNavigationService.navigateToLiveStreamView(stream.id!),
+                  child: streamBody(context, model),
+                ),
+              ),
+            ).showCursorOnHover,
     );
   }
 }
-

@@ -4,7 +4,7 @@ import 'package:webblen_web_app/services/firestore/common/firestore_storage_serv
 
 class ForYouPostDataService {
   CollectionReference usersRef = FirebaseFirestore.instance.collection('webblen_users');
-  CollectionReference postsRef = FirebaseFirestore.instance.collection('posts');
+  CollectionReference postsRef = FirebaseFirestore.instance.collection('webblen_posts');
   CollectionReference eventsRef = FirebaseFirestore.instance.collection('webblen_events');
   CollectionReference streamsRef = FirebaseFirestore.instance.collection('webblen_live_streams');
 

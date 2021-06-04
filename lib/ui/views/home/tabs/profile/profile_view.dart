@@ -138,7 +138,7 @@ class _ProfileBody extends HookViewModelWidget<ProfileViewModel> {
                 floating: true,
                 snap: true,
                 forceElevated: innerBoxIsScrolled,
-                expandedHeight: ((user.bio?.isNotEmpty ?? true) || (user.website?.isNotEmpty ?? true)) ? 200 : 250,
+                expandedHeight: ((user.bio?.isNotEmpty ?? true) || (user.website?.isNotEmpty ?? true)) ? 225 : 250,
                 backgroundColor: appBackgroundColor,
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(

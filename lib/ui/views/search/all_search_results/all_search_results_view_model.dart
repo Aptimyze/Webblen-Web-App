@@ -49,7 +49,7 @@ class AllSearchResultsViewModel extends BaseViewModel {
   }
 
   loadUsers() async {
-    userResults = await _algoliaSearchService!.queryUsers(searchTerm: searchTerm, resultsLimit: resultsLimit);
+    userResults = await _algoliaSearchService!.queryUsers(searchTerm: searchTerm ?? "", resultsLimit: resultsLimit);
     userResultsPageNum += 1;
     notifyListeners();
   }
@@ -61,7 +61,7 @@ class AllSearchResultsViewModel extends BaseViewModel {
     loadingAdditionalUsers = true;
     notifyListeners();
     List<WebblenUser> newResults = await _algoliaSearchService!.queryAdditionalUsers(
-      searchTerm: searchTerm,
+      searchTerm: searchTerm ?? "",
       resultsLimit: resultsLimit,
       pageNum: userResultsPageNum,
     );

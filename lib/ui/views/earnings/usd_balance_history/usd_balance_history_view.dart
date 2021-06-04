@@ -48,39 +48,33 @@ class USDBalanceHistoryView extends StatelessWidget {
         body: Container(
           height: screenHeight(context),
           color: appBackgroundColor,
-          child: ListView(
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            children: [
-              Align(
-                alignment: Alignment.topCenter,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  constraints: BoxConstraints(
-                    maxWidth: 500,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      CustomText(
-                        text: "USD Balance History",
-                        textAlign: TextAlign.left,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: appFontColor(),
-                      ),
-                      SizedBox(height: 4),
-                      _SearchBar(),
-                      SizedBox(height: 4),
-                      Container(
-                        height: screenHeight(context),
-                        child: ListStripeTransactions(searchFilter: model.searchTerm),
-                      ),
-                    ],
-                  ),
-                ),
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              constraints: BoxConstraints(
+                maxWidth: 500,
               ),
-            ],
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CustomText(
+                    text: "USD Balance History",
+                    textAlign: TextAlign.left,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: appFontColor(),
+                  ),
+                  SizedBox(height: 4),
+                  _SearchBar(),
+                  SizedBox(height: 4),
+                  Container(
+                    height: screenHeight(context),
+                    child: ListStripeTransactions(searchFilter: model.searchTerm),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

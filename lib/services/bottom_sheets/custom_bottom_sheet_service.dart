@@ -124,10 +124,18 @@ class CustomBottomSheetService {
           _navigationService.navigateTo(Routes.CreatePostViewRoute(id: content.id, promo: 0));
         } else if (content is WebblenEvent) {
           //edit event
-          _navigationService.navigateTo(Routes.CreateEventViewRoute(id: content.id, promo: 0));
+          if (content.concluded()) {
+            _customDialogService.showErrorDialog(description: "You Cannot Edit Past Events");
+          } else {
+            _navigationService.navigateTo(Routes.CreateEventViewRoute(id: content.id, promo: 0));
+          }
         } else if (content is WebblenLiveStream) {
           //edit stream
-          _navigationService.navigateTo(Routes.CreateLiveStreamViewRoute(id: content.id, promo: 0));
+          if (content.concluded()) {
+            _customDialogService.showErrorDialog(description: "You Cannot Edit Past Streams");
+          } else {
+            _navigationService.navigateTo(Routes.CreateLiveStreamViewRoute(id: content.id, promo: 0));
+          }
         }
       } else if (res == "share") {
         if (content is WebblenPost) {
