@@ -40,7 +40,7 @@ class PostTextBlockView extends StatelessWidget {
                 SizedBox(
                   width: 10.0,
                 ),
-                post!.city == null || post!.city!.isEmpty
+                post!.city == null
                     ? Text(
                         "@${model.authorUsername}",
                         style: TextStyle(
@@ -60,12 +60,22 @@ class PostTextBlockView extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Text(
-                            post!.tags.toString().replaceAll("[", "").replaceAll("]", ""),
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: appFontColorAlt(),
-                            ),
+                          SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Icon(
+                                FontAwesomeIcons.mapMarkerAlt,
+                                size: 10,
+                                color: appFontColorAlt(),
+                              ),
+                              Text(
+                                ' ${post!.city}, ${post!.province}',
+                                style: TextStyle(
+                                  color: appFontColorAlt(),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -88,7 +98,7 @@ class PostTextBlockView extends StatelessWidget {
         post!.body!,
         style: TextStyle(
           color: appFontColor(),
-          fontSize: 18.0,
+          fontSize: 16.0,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -164,6 +174,14 @@ class PostTextBlockView extends StatelessWidget {
                   color: model.savedPost ? appSavedContentColor() : appIconColorAlt(),
                 ),
               ),
+              SizedBox(width: 6),
+              Text(
+                "${model.savedBy.length}",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: appFontColorAlt(),
+                ),
+              ),
             ],
           ),
           Text(
@@ -232,6 +250,7 @@ class PostTextBlockView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
                         head(model),
+                        verticalSpaceTiny,
                         postBody(),
                         commentCount(model),
                         verticalSpaceTiny,

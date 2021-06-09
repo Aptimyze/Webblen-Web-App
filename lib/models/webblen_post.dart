@@ -25,6 +25,7 @@ class WebblenPost {
   List? participantIDs;
   List? followers;
   List? suggestedUIDs;
+  List? viewedBy;
 
   WebblenPost({
     this.id,
@@ -51,6 +52,7 @@ class WebblenPost {
     this.participantIDs,
     this.followers,
     this.suggestedUIDs,
+    this.viewedBy,
   });
 
   WebblenPost.fromMap(Map<String, dynamic> data)
@@ -79,6 +81,7 @@ class WebblenPost {
           participantIDs: data['participantIDs'],
           followers: data['followers'],
           suggestedUIDs: data['suggestedUIDs'],
+          viewedBy: data['viewedBy'],
         );
 
   Map<String, dynamic> toMap() => {
@@ -106,6 +109,7 @@ class WebblenPost {
         'participantIDs': this.participantIDs,
         'followers': this.followers,
         'suggestedUIDs': this.suggestedUIDs,
+        'viewedBy': this.viewedBy,
       };
 
   WebblenPost generateNewWebblenPost({required String authorID, required List suggestedUIDs}) {
@@ -124,6 +128,7 @@ class WebblenPost {
       followers: suggestedUIDs,
       commentCount: 0,
       postType: 'post',
+      viewedBy: [],
     );
     return post;
   }

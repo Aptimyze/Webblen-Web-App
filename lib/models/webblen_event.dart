@@ -43,6 +43,7 @@ class WebblenEvent {
   bool? paidOut;
   bool? openToSponsors;
   List? suggestedUIDs;
+  List? viewedBy;
 
   WebblenEvent({
     this.id,
@@ -87,6 +88,7 @@ class WebblenEvent {
     this.paidOut,
     this.openToSponsors,
     this.suggestedUIDs,
+    this.viewedBy,
   });
 
   WebblenEvent.fromMap(Map<String, dynamic> data)
@@ -133,6 +135,7 @@ class WebblenEvent {
           paidOut: data['paidOut'],
           openToSponsors: data['openToSponsors'],
           suggestedUIDs: data['suggestedUIDs'],
+      viewedBy: data['viewedBy'],
         );
 
   Map<String, dynamic> toMap() => {
@@ -178,6 +181,7 @@ class WebblenEvent {
         'paidOut': this.paidOut,
         'openToSponsors': this.openToSponsors,
         'suggestedUIDs': this.suggestedUIDs,
+    'viewedBy': this.viewedBy,
       };
 
   WebblenEvent generateNewWebblenEvent({required String authorID, required List suggestedUIDs}) {
@@ -196,6 +200,7 @@ class WebblenEvent {
       attendees: {},
       clicks: 0,
       estimatedTurnout: 0,
+        viewedBy: [],
     );
     return event;
   }

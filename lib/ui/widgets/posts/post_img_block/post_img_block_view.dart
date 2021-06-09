@@ -117,6 +117,14 @@ class PostImgBlockView extends StatelessWidget {
                   color: model.savedPost ? appSavedContentColor() : appIconColorAlt(),
                 ),
               ),
+              SizedBox(width: 6),
+              Text(
+                "${model.savedBy.length}",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: appFontColorAlt(),
+                ),
+              ),
             ],
           ),
           Text(

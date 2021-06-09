@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_hooks/stacked_hooks.dart';
@@ -8,8 +7,8 @@ import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/ui/ui_helpers/ui_helpers.dart';
 import 'package:webblen_web_app/ui/widgets/common/buttons/custom_button.dart';
 import 'package:webblen_web_app/ui/widgets/common/custom_text.dart';
-import 'package:webblen_web_app/ui/widgets/common/navigation/tab_bar/custom_tab_bar.dart';
 import 'package:webblen_web_app/ui/widgets/common/progress_indicator/custom_circle_progress_indicator.dart';
+import 'package:webblen_web_app/ui/widgets/list_builders/list_congregated_content/list_discover_content/list_discover_content.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_events/home/list_home_events.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_live_streams/home/list_home_live_streams.dart';
 import 'package:webblen_web_app/ui/widgets/list_builders/list_posts/home/list_home_posts.dart';
@@ -98,41 +97,19 @@ class _ChooseLocationView extends StatelessWidget {
 class _DesktopHomeBody extends HookViewModelWidget<HomeViewModel> {
   @override
   Widget buildViewModelWidget(BuildContext context, HomeViewModel model) {
-    var _tabController = useTabController(initialLength: 3);
-
     return Stack(
       children: [
         Column(
           children: [
             verticalSpaceMedium,
-            WebblenHomePageTabBar(
-              tabController: _tabController,
-            ),
             Expanded(
-              child: DefaultTabController(
-                length: 3,
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    ///FOR YOU
-                    // ListForYouContent(
-                    //   showPostOptions: (post) => model.showContentOptions(content: post),
-                    //   showEventOptions: (event) => model.showContentOptions(content: event),
-                    //   showStreamOptions: (stream) => model.showContentOptions(content: stream),
-                    // ),
-
-                    ///POSTS
-                    ListHomePosts(),
-
-                    ///STREAMS & VIDEO
-                    ListHomeLiveStreams(),
-
-                    ///EVENTS
-                    ListHomeEvents(),
-                  ],
-                ),
-              ),
-            ),
+                child: model.contentType == "Posts Only"
+                    ? ListHomePosts()
+                    : model.contentType == "Streams Only"
+                        ? ListHomeLiveStreams()
+                        : model.contentType == "Events Only"
+                            ? ListHomeEvents()
+                            : ListDiscoverContent()),
           ],
         ),
         Align(
@@ -151,41 +128,17 @@ class _DesktopHomeBody extends HookViewModelWidget<HomeViewModel> {
 class _HomeBody extends HookViewModelWidget<HomeViewModel> {
   @override
   Widget buildViewModelWidget(BuildContext context, HomeViewModel model) {
-    var _tabController = useTabController(initialLength: 3);
-
     return Column(
       children: [
         SizedBox(height: 16),
-        WebblenHomePageTabBar(
-          tabController: _tabController,
-        ),
-        SizedBox(height: 4),
         Expanded(
-          //width: screenWidth(context),
-          child: DefaultTabController(
-            length: 3,
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                ///FOR YOU
-                // ListForYouContent(
-                //   showPostOptions: (post) => model.showContentOptions(content: post),
-                //   showEventOptions: (event) => model.showContentOptions(content: event),
-                //   showStreamOptions: (stream) => model.showContentOptions(content: stream),
-                // ),
-
-                ///POSTS
-                ListHomePosts(),
-
-                ///STREAMS & VIDEO
-                ListHomeLiveStreams(),
-
-                ///EVENTS
-                ListHomeEvents(),
-              ],
-            ),
-          ),
-        ),
+            child: model.contentType == "Posts Only"
+                ? ListHomePosts()
+                : model.contentType == "Streams Only"
+                    ? ListHomeLiveStreams()
+                    : model.contentType == "Events Only"
+                        ? ListHomeEvents()
+                        : ListDiscoverContent()),
       ],
     );
   }

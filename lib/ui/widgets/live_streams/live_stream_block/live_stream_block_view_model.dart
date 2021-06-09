@@ -6,6 +6,7 @@ import 'package:webblen_web_app/app/app.router.dart';
 import 'package:webblen_web_app/models/webblen_live_stream.dart';
 import 'package:webblen_web_app/models/webblen_notification.dart';
 import 'package:webblen_web_app/models/webblen_user.dart';
+import 'package:webblen_web_app/services/dialogs/custom_dialog_service.dart';
 import 'package:webblen_web_app/services/firestore/data/live_stream_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/notification_data_service.dart';
 import 'package:webblen_web_app/services/firestore/data/user_data_service.dart';
@@ -19,6 +20,7 @@ class LiveStreamBlockViewModel extends BaseViewModel {
   ReactiveWebblenUserService _reactiveWebblenUserService = locator<ReactiveWebblenUserService>();
   CustomNavigationService customNavigationService = locator<CustomNavigationService>();
   NotificationDataService _notificationDataService = locator<NotificationDataService>();
+  CustomDialogService _customDialogService = locator<CustomDialogService>();
 
   ///USER DATA
   bool get isLoggedIn => _reactiveWebblenUserService.userLoggedIn;
@@ -26,6 +28,7 @@ class LiveStreamBlockViewModel extends BaseViewModel {
 
   bool isLive = false;
   bool savedStream = false;
+  List savedBy = [];
   String? hostImageURL = "";
   String? hostUsername = "";
 
@@ -33,10 +36,15 @@ class LiveStreamBlockViewModel extends BaseViewModel {
     setBusy(true);
 
     //check if user saved event
-    if (_reactiveWebblenUserService.userLoggedIn) {
-      if (stream.savedBy!.contains(_reactiveWebblenUserService.user.id)) {
-        savedStream = true;
+    if (stream.savedBy != null) {
+      if (_reactiveWebblenUserService.userLoggedIn) {
+        if (stream.savedBy!.contains(_reactiveWebblenUserService.user.id)) {
+          savedStream = true;
+        }
       }
+      savedBy = stream.savedBy!;
+    } else {
+      savedBy = [];
     }
 
     //check if event is happening now
@@ -64,10 +72,16 @@ class LiveStreamBlockViewModel extends BaseViewModel {
   }
 
   saveUnsaveStream({required WebblenLiveStream stream}) async {
+    if (!_reactiveWebblenUserService.user.isValid()) {
+      _customDialogService.showLoginRequiredDialog(description: "You Must Be Logged in to Save Streams");
+      return;
+    }
     if (savedStream) {
       savedStream = false;
+      savedBy.remove(user.id);
     } else {
       savedStream = true;
+      savedBy.add(user.id);
       WebblenNotification notification = WebblenNotification().generateContentSavedNotification(
         receiverUID: stream.hostID!,
         senderUID: user.id!,

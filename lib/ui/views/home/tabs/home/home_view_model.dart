@@ -11,6 +11,7 @@ class HomeViewModel extends ReactiveViewModel {
   ReactiveContentFilterService _reactiveContentFilterService = locator<ReactiveContentFilterService>();
 
   ///DATA
+  String get contentType => _reactiveContentFilterService.contentType;
   String get cityName => _reactiveContentFilterService.cityName;
 
   @override

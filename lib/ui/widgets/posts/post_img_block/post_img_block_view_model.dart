@@ -23,17 +23,22 @@ class PostImgBlockViewModel extends BaseViewModel {
   WebblenUser get user => _reactiveWebblenUserService.user;
 
   bool savedPost = false;
+  List savedBy = [];
   String? authorImageURL;
   String? authorUsername;
 
   initialize({required WebblenPost post}) async {
     setBusy(true);
     //check if user saved content
-    savedPost = await _postDataService.checkIfPostSaved(userID: _reactiveWebblenUserService.user.id, postID: post.id);
-    if (_reactiveWebblenUserService.userLoggedIn) {
-      if (post.savedBy!.contains(_reactiveWebblenUserService.user.id)) {
-        savedPost = true;
+    if (post.savedBy != null) {
+      if (_reactiveWebblenUserService.userLoggedIn) {
+        if (post.savedBy!.contains(_reactiveWebblenUserService.user.id)) {
+          savedPost = true;
+        }
       }
+      savedBy = post.savedBy!;
+    } else {
+      savedBy = [];
     }
 
     WebblenUser author = await _userDataService.getWebblenUserByID(post.authorID);
@@ -53,8 +58,10 @@ class PostImgBlockViewModel extends BaseViewModel {
     }
     if (savedPost) {
       savedPost = false;
+      savedBy.remove(user.id);
     } else {
       savedPost = true;
+      savedBy.add(user.id);
       WebblenNotification notification = WebblenNotification().generateContentSavedNotification(
         receiverUID: post.authorID!,
         senderUID: user.id!,

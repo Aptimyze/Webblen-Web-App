@@ -78,6 +78,15 @@ class EventBlockView extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
+                            Text(
+                              "${model.savedBy.length}",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white54,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
                             IconButton(
                               icon: Icon(
                                 FontAwesomeIcons.solidHeart,

@@ -25,6 +25,7 @@ class HomeFilterBottomSheetModel extends BaseViewModel {
   String get cityName => _reactiveContentFilterService.cityName;
   String get areaCode => _reactiveContentFilterService.areaCode;
   String get tagFilter => _reactiveContentFilterService.tagFilter;
+  String get contentType => _reactiveContentFilterService.contentType;
   String get sortByFilter => _reactiveContentFilterService.sortByFilter;
   bool get isLoggedIn => _reactiveWebblenUserService.userLoggedIn;
   WebblenUser get user => _reactiveWebblenUserService.user;
@@ -33,9 +34,11 @@ class HomeFilterBottomSheetModel extends BaseViewModel {
   String tempCityName = "";
   String tempAreaCode = "";
   String tempTagFilter = "";
+  String tempContentType = "";
   String tempSortByFilter = "Latest";
 
   ///FILTERS
+  List<String> contentTypeList = ["Posts, Streams, and Events", "Posts Only", "Streams Only", "Events Only"];
   List<String> sortByList = ["Latest", "Most Popular"];
   Map<String, dynamic> placeSearchResults = {};
 
@@ -47,8 +50,14 @@ class HomeFilterBottomSheetModel extends BaseViewModel {
     tempCityName = cityName;
     tempAreaCode = areaCode;
     tempTagFilter = tagFilter;
+    tempContentType = contentType;
     tempSortByFilter = sortByFilter;
     googleAPIKey = await _platformDataService.getGoogleApiKey();
+    notifyListeners();
+  }
+
+  updateContentType(String val) {
+    tempContentType = val;
     notifyListeners();
   }
 
@@ -101,6 +110,7 @@ class HomeFilterBottomSheetModel extends BaseViewModel {
   updatePreferences() {
     _reactiveContentFilterService.updateCityName(tempCityName);
     _reactiveContentFilterService.updateAreaCode(tempAreaCode);
+    _reactiveContentFilterService.updateContentTypeFilter(tempContentType);
     _reactiveContentFilterService.updateSortByFilter(tempSortByFilter);
     _reactiveContentFilterService.updateTagFilter(tempTagFilter);
     notifyListeners();

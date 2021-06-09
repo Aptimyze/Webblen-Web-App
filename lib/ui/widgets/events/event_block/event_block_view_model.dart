@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:stacked/stacked.dart';
-import 'package:stacked_services/stacked_services.dart';
 import 'package:webblen_web_app/app/app.locator.dart';
 import 'package:webblen_web_app/models/webblen_event.dart';
 import 'package:webblen_web_app/models/webblen_notification.dart';
@@ -26,6 +25,7 @@ class EventBlockViewModel extends BaseViewModel {
 
   bool eventIsHappeningNow = false;
   bool savedEvent = false;
+  List savedBy = [];
   String? authorImageURL = "";
   String? authorUsername = "";
 
@@ -33,10 +33,15 @@ class EventBlockViewModel extends BaseViewModel {
     setBusy(true);
 
     //check if user saved event
-    if (_reactiveWebblenUserService.userLoggedIn) {
-      if (event.savedBy!.contains(_reactiveWebblenUserService.user.id)) {
-        savedEvent = true;
+    if (event.savedBy != null) {
+      if (_reactiveWebblenUserService.userLoggedIn) {
+        if (event.savedBy!.contains(_reactiveWebblenUserService.user.id)) {
+          savedEvent = true;
+        }
       }
+      savedBy = event.savedBy!;
+    } else {
+      savedBy = [];
     }
 
     //check if event is happening now
@@ -68,8 +73,10 @@ class EventBlockViewModel extends BaseViewModel {
     if (user.isValid()) {
       if (savedEvent) {
         savedEvent = false;
+        savedBy.remove(user.id);
       } else {
         savedEvent = true;
+        savedBy.add(user.id);
         WebblenNotification notification = WebblenNotification().generateContentSavedNotification(
           receiverUID: event.authorID!,
           senderUID: user.id!,
