@@ -103,13 +103,14 @@ class _DesktopHomeBody extends HookViewModelWidget<HomeViewModel> {
           children: [
             verticalSpaceMedium,
             Expanded(
-                child: model.contentType == "Posts Only"
-                    ? ListHomePosts()
-                    : model.contentType == "Streams Only"
-                        ? ListHomeLiveStreams()
-                        : model.contentType == "Events Only"
-                            ? ListHomeEvents()
-                            : ListDiscoverContent()),
+              child: model.contentType == "Posts Only"
+                  ? ListHomePosts()
+                  : model.contentType == "Streams Only"
+                      ? ListHomeLiveStreams()
+                      : model.contentType == "Events Only"
+                          ? ListHomeEvents()
+                          : ListDiscoverContent(),
+            ),
           ],
         ),
         Align(

@@ -79,7 +79,7 @@ dependencies:
     git:
       url: https://github.com/mukai154/flutter_xlider.git
   intl_phone_field: ^2.0.0
-
+  lazy_loading_list: ^1.0.1
 
 dev_dependencies:
   flutter_test:

@@ -47,8 +47,7 @@ class LiveStreamDataService {
           saved = true;
         }
       }
-    } catch (e) {
-    }
+    } catch (e) {}
     return saved;
   }
 
@@ -75,6 +74,12 @@ class LiveStreamDataService {
       await streamsRef.doc(streamID).update({'savedBy': savedBy});
     }
     return savedBy.contains(uid);
+  }
+
+  addClick({required String? uid, required String? streamID}) async {
+    await streamsRef.doc(streamID).update({
+      'clickedBy': FieldValue.arrayUnion([uid!])
+    });
   }
 
   Future reportStream({required String? streamID, required String? reporterID}) async {
@@ -301,7 +306,7 @@ class LiveStreamDataService {
   }) async {
     List<DocumentSnapshot> docs = [];
     Query query =
-    streamsRef.where('hostID', isEqualTo: id).orderBy('startDateTimeInMilliseconds', descending: false).startAfterDocument(lastDocSnap).limit(resultsLimit);
+        streamsRef.where('hostID', isEqualTo: id).orderBy('startDateTimeInMilliseconds', descending: false).startAfterDocument(lastDocSnap).limit(resultsLimit);
     QuerySnapshot snapshot = await query.get().catchError((e) {
       if (!e.message.contains("insufficient permissions")) {
         print(e.message);

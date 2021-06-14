@@ -1,14 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:webblen_web_app/constants/app_colors.dart';
 import 'package:webblen_web_app/constants/custom_colors.dart';
 
 class UserProfilePic extends StatelessWidget {
   final String? userPicUrl;
   final double? size;
   final bool? isBusy;
+  final bool? hasBorder;
 
   UserProfilePic({
+    this.hasBorder = false,
     this.userPicUrl,
     this.size,
     this.isBusy,
@@ -22,11 +25,21 @@ class UserProfilePic extends StatelessWidget {
             width: size,
             decoration: BoxDecoration(color: CustomColors.iosOffWhite, borderRadius: BorderRadius.all(Radius.circular(size! / 2))),
           )
-        : CircleAvatar(
-            radius: size! / 2,
-            backgroundImage: NetworkImage(userPicUrl!),
-            backgroundColor: CustomColors.iosOffWhite,
-          );
+        : hasBorder!
+            ? CircleAvatar(
+                backgroundColor: appActiveColor(),
+                radius: size! / 2 - 1,
+                child: CircleAvatar(
+                  radius: (size! / 2) - 3,
+                  backgroundImage: NetworkImage(userPicUrl!),
+                  backgroundColor: CustomColors.iosOffWhite,
+                ),
+              )
+            : CircleAvatar(
+                radius: size! / 2,
+                backgroundImage: NetworkImage(userPicUrl!),
+                backgroundColor: CustomColors.iosOffWhite,
+              );
   }
 }
 
