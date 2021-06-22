@@ -18,7 +18,7 @@ class ListHorizontalStreamsFeed extends StatelessWidget {
           ? Container()
           : ListView.builder(
               controller: model.scrollController,
-              padding: EdgeInsets.symmetric(vertical: 10),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
               scrollDirection: Axis.horizontal,
               physics: AlwaysScrollableScrollPhysics(),
               key: PageStorageKey(model.listKey),
